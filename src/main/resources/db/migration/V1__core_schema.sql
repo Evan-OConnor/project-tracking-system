@@ -38,13 +38,22 @@ CREATE TABLE vat_rate (
 CREATE TABLE work_description (
     work_description_id BIGINT NOT NULL AUTO_INCREMENT,
 
-    name VARCHAR(150) NOT NULL,
+    name VARCHAR(100) NOT NULL,
 
     CONSTRAINT pk_work_description PRIMARY KEY (work_description_id),
 
     CONSTRAINT uk_work_description_name UNIQUE (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE document_type (
+    document_type_id BIGINT NOT NULL AUTO_INCREMENT,
+
+    name VARCHAR(100) NOT NULL,
+
+    CONSTRAINT pk_document_type PRIMARY KEY (document_type_id),
+
+    CONSTRAINT uk_document_type_name UNIQUE (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Core Tables
 
@@ -84,7 +93,7 @@ CREATE TABLE project (
     insurance_company_contact_id BIGINT NULL,
 
     start_date DATE NOT NULL,
-    title VARCHAR(100) NOT NULL,
+    title VARCHAR(255) NOT NULL,
     description TEXT NULL,
 
     CONSTRAINT pk_project PRIMARY KEY (project_id),
@@ -200,15 +209,16 @@ CREATE TABLE project_report_document (
     report_document_id BIGINT NOT NULL AUTO_INCREMENT,
 
     project_id BIGINT NOT NULL,
+    document_type_id BIGINT NOT NULL,
     uploaded_by_employee_id BIGINT NOT NULL,
 
     title VARCHAR(255) NOT NULL,
-    document_type VARCHAR(100) NOT NULL,
     date_created DATETIME NOT NULL,
     storage_location VARCHAR(500) NOT NULL,
 
     CONSTRAINT pk_project_report_document PRIMARY KEY (report_document_id),
 
     CONSTRAINT fk_project_report_document_project FOREIGN KEY (project_id) REFERENCES project(project_id),
+    CONSTRAINT fk_project_report_document_type FOREIGN KEY (document_type_id) REFERENCES document_type(document_type_id),
     CONSTRAINT fk_project_report_document_employee FOREIGN KEY (uploaded_by_employee_id) REFERENCES employee(employee_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
