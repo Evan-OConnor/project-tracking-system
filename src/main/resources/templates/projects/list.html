@@ -21,25 +21,40 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Reference</th>
                 <th>Title</th>
                 <th>Status</th>
+                <th>Category</th>
+                <th>Client</th>
                 <th>Start Date</th>
                 <th class="text-end">Actions</th>
             </tr>
             </thead>
+
             <tbody>
             <tr th:each="p : ${projects}">
                 <td th:text="${p.id}">1</td>
-                <td th:text="${p.reference}">PRJ-001</td>
+
                 <td th:text="${p.title}">Example Project</td>
+
                 <td>
-                    <span class="badge text-bg-secondary" th:text="${p.status}">OPEN</span>
+                    <span class="badge text-bg-secondary"
+                          th:text="${p.status.name}">
+                        Open
+                    </span>
                 </td>
+
+                <td th:text="${p.category.name}">Category</td>
+
+                <td th:text="${p.clientContact.name}">Client Name</td>
+
                 <td th:text="${p.startDate}">2026-02-04</td>
+
                 <td class="text-end">
-                    <a class="btn btn-sm btn-outline-secondary" th:href="@{/projects/{id}(id=${p.id})}">View</a>
-                    <a class="btn btn-sm btn-outline-primary" th:href="@{/projects/{id}/edit(id=${p.id})}">Edit</a>
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:href="@{/projects/{id}(id=${p.id})}">View</a>
+
+                    <a class="btn btn-sm btn-outline-primary"
+                       th:href="@{/projects/{id}/edit(id=${p.id})}">Edit</a>
 
                     <form th:action="@{/projects/{id}/delete(id=${p.id})}" method="post" class="d-inline">
                         <button class="btn btn-sm btn-outline-danger" type="submit"
@@ -51,9 +66,8 @@
             </tr>
 
             <tr th:if="${#lists.isEmpty(projects)}">
-                <td colspan="6" class="text-center text-muted">No projects yet.</td>
+                <td colspan="7" class="text-center text-muted">No projects yet.</td>
             </tr>
-
             </tbody>
         </table>
     </div>
