@@ -11,10 +11,10 @@ public class uiController {
         return "dashboard";
     }
 
-    @GetMapping("/projects")
+   /* @GetMapping("/projects")
     public String projects() {
         return "projects";
-    }
+    }*/
 
     @GetMapping("/clients")
     public String clients() {

@@ -1,3 +1,4 @@
+/*
 package ie.universityofgalway.projecttrackingsystem.domain;
 
 import jakarta.persistence.Entity;
@@ -32,3 +33,4 @@ public class Project {
         this.name = name;
     }
 }
+*/
