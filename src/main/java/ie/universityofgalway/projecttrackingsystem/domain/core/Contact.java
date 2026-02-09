@@ -1,0 +1,84 @@
+package ie.universityofgalway.projecttrackingsystem.domain.core;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "contact")
+public class Contact {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "contact_id")
+    private Long id;
+
+    @Column(name = "name", nullable = false, length = 150)
+    private String name;
+
+    @Column(name = "address", length = 255)
+    private String address;
+
+    @Column(name = "phone", length = 50)
+    private String phone;
+
+    @Column(name = "fax", length = 50)
+    private String fax;
+
+    @Column(name = "comments", columnDefinition = "TEXT")
+    private String comments;
+
+    // Constructors
+
+    protected Contact() {
+    }
+
+    public Contact(String name) {
+        this.name = name;
+    }
+
+    // Getters
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getFax() {
+        return fax;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    // Setters
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setFax(String fax) {
+        this.fax = fax;
+    }
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+}
