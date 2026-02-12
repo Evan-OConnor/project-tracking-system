@@ -76,6 +76,7 @@ CREATE TABLE employee (
     name VARCHAR(150) NOT NULL,
     address VARCHAR(255) NULL,
     hourly_rate DECIMAL(10,2) NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
 
     CONSTRAINT pk_employee PRIMARY KEY (employee_id),
 
