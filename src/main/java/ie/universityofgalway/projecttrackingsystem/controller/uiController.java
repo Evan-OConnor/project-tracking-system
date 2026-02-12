@@ -16,6 +16,11 @@ public class uiController {
         return "projects";
     }*/
 
+    @GetMapping("/search")
+    public String search() {
+        return "search";
+    }
+
     @GetMapping("/clients")
     public String clients() {
         return "clients";
@@ -46,8 +51,4 @@ public class uiController {
         return "reports";
     }
 
-    @GetMapping("/search")
-    public String search() {
-        return "search";
-    }
 }
