@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Timesheet Entries</title>
+</head>
+<body>
+<h1>Timesheet Entries</h1>
+<table>
+    <tr>
+        <th>Project</th>
+        <th>Employee</th>
+        <th>Description</th>
+        <th>Date</th>
+        <th>Hours</th>
+    </tr>
+    <tr th:each="entry : ${entries}">
+        <td th:text="${entry.project.name}">Project Name</td>
+        <td th:text="${entry.employee.name}">Employee Name</td>
+        <td th:text="${entry.workDescription.name}">Work Description</td>
+        <td th:text="${entry.entryDate}">Date</td>
+        <td th:text="${entry.hours}">Hours</td>
+    </tr>
+</table>
+<a th:href="@{/timesheet-entries/new}">Add New Entry</a>
+</body>
+</html>

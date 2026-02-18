@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Outstanding Invoice Letter</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+
+    <div class="card shadow-sm">
+        <div class="card-body p-5">
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Outstanding Invoice Notice</h2>
+            </div>
+
+            <!-- Date -->
+            <div class="text-end mb-4">
+                <p class="mb-0"
+                   th:text="${#temporals.format(today, 'dd MMMM yyyy')}">
+                    18 February 2026
+                </p>
+            </div>
+
+            <!-- Contact Details -->
+            <div class="mb-4">
+                <h5 class="fw-semibold mb-1"
+                    th:text="${contact.contactName}">Client Name</h5>
+                <p class="text-muted mb-0"
+                   th:text="${contactPhone}">Phone</p>
+            </div>
+
+            <!-- Letter Content -->
+            <div class="mb-4">
+
+                <p>
+                    Dear
+                    <span class="fw-semibold"
+                          th:text="${contact.contactName}">Client</span>,
+                </p>
+
+                <p>
+                    Our records indicate that the following invoice(s)
+                    remain outstanding:
+                </p>
+
+                <!-- Invoice Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>Invoice Number</th>
+                            <th>Project</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="invoice : ${contact.outstandingInvoices}">
+                            <td th:text="${invoice.invoiceNumber}">INV001</td>
+                            <td th:text="${invoice.projectName}">Project A</td>
+                            <td class="text-end"
+                                th:text="${invoice.amount}">0.00</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="mt-4">
+                    We kindly request that payment be made at your earliest
+                    convenience. If payment has already been processed,
+                    please disregard this notice.
+                </p>
+
+                <p>
+                    Thank you for your prompt attention to this matter.
+                </p>
+
+                <p class="mt-5">
+                    Sincerely,<br>
+                    <strong>Project Tracking System</strong>
+                </p>
+            </div>
+
+            <!-- Print Button -->
+            <div class="text-center mt-4 no-print">
+                <button class="btn btn-primary px-4"
+                        onclick="window.print()">
+                    Print Letter
+                </button>
+                <a th:href="@{/reports}"
+                   class="btn btn-outline-secondary ms-2">
+                    Back to Reports
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
