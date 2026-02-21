@@ -9,4 +9,8 @@ import java.util.Optional;
 @Repository
 public interface SystemUserRepository extends JpaRepository<SystemUser, Long> {
     Optional<SystemUser> findByUsername(String username);
+
+    Optional<SystemUser> findByEmployeeId(Long employeeId);
+
+    void deleteByEmployeeId(Long employeeId);
 }
