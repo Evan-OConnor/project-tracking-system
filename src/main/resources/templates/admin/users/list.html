@@ -20,6 +20,25 @@
     <a class="btn btn-primary" th:href="@{/admin/users/new}">Create user</a>
   </div>
 
+  <form class="mb-3" th:action="@{/admin/users}" method="get" role="search" style="max-width:640px;">
+    <div class="input-group">
+      <span class="input-group-text" id="search-addon" aria-hidden="true" style="padding:6px 10px;">
+        <!-- inline magnifying-glass SVG (small, no external dependency) -->
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+
+      <input class="form-control" type="search" name="q" placeholder="Search username or employee name" aria-label="Search users" th:value="${q}" />
+
+      <button class="btn btn-outline-primary" type="submit" aria-label="Submit search">Search</button>
+
+      <a class="btn btn-outline-dark" th:if="${q}" th:href="@{/admin/users}" aria-label="Clear search">Clear</a>
+    </div>
+    <div th:if="${q}" class="form-text text-muted mt-1">Showing results for: <strong th:text="${q}"></strong></div>
+  </form>
+
   <table class="table table-striped">
     <thead>
     <tr>
@@ -37,7 +56,7 @@
       <td th:text="${u.role.name}">Role</td>
       <td th:text="${u.active}">true</td>
       <td>
-        <span th:if="${u.username == 'U000001'}" class="badge bg-warning text-dark">System Admin</span>
+        <span th:if="${u.username == 'U000001'}" class="badge bg-info">System Admin</span>
         <a th:if="${u.username != 'U000001'}" class="btn btn-secondary btn-sm" th:href="@{/admin/users/edit(employeeId=${u.employee.id})}">Edit</a>
       </td>
     </tr>

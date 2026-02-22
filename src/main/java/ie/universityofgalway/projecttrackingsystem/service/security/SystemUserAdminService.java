@@ -90,6 +90,12 @@ public class SystemUserAdminService {
     }
 
     @Transactional(readOnly = true)
+    public List<SystemUser> searchUsers(String q) {
+        if (q == null || q.isBlank()) return listAllUsers();
+        return userRepository.searchByUsernameOrEmployeeName(q.trim());
+    }
+
+    @Transactional(readOnly = true)
     public java.util.Optional<SystemUser> findUserByEmployeeId(Long employeeId) {
         return userRepository.findByEmployeeId(employeeId);
     }

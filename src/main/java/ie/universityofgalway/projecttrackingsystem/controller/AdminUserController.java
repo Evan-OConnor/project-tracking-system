@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
@@ -33,8 +34,9 @@ public class AdminUserController {
     }
 
     @GetMapping("/admin/users")
-    public String usersList(Model model) {
-        model.addAttribute("users", systemUserAdminService.listAllUsers());
+    public String usersList(@RequestParam(value = "q", required = false) String q, Model model) {
+        model.addAttribute("users", systemUserAdminService.searchUsers(q));
+        model.addAttribute("q", q);
         return "admin/users/list";
     }
 
