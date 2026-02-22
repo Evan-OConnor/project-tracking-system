@@ -45,7 +45,7 @@
       <th>Username</th>
       <th>Employee</th>
       <th>Role</th>
-      <th>Active</th>
+      <th>Status</th>
       <th>Actions</th>
     </tr>
     </thead>
@@ -54,7 +54,9 @@
       <td th:text="${u.username}">U000000</td>
       <td th:text="${u.employee.name}">Employee Name</td>
       <td th:text="${u.role.name}">Role</td>
-      <td th:text="${u.active}">true</td>
+      <td>
+        <span th:class="${u.active} ? 'badge bg-success' : 'badge bg-danger'" th:text="${u.active} ? 'ACTIVE' : 'INACTIVE'" role="status" aria-live="polite"></span>
+      </td>
       <td>
         <span th:if="${u.username == 'U000001'}" class="badge bg-info">System Admin</span>
         <a th:if="${u.username != 'U000001'}" class="btn btn-secondary btn-sm" th:href="@{/admin/users/edit(employeeId=${u.employee.id})}">Edit</a>
