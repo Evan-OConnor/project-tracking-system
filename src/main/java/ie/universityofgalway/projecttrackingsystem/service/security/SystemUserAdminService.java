@@ -4,6 +4,7 @@ import ie.universityofgalway.projecttrackingsystem.domain.core.Employee;
 import ie.universityofgalway.projecttrackingsystem.domain.security.SystemRole;
 import ie.universityofgalway.projecttrackingsystem.domain.security.SystemUser;
 import ie.universityofgalway.projecttrackingsystem.dto.CreateUserForm;
+import ie.universityofgalway.projecttrackingsystem.dto.EditUserForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.EmployeeRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.security.SystemRoleRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.security.SystemUserRepository;
@@ -88,5 +89,37 @@ public class SystemUserAdminService {
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public java.util.Optional<SystemUser> findUserByEmployeeId(Long employeeId) {
+        return userRepository.findByEmployeeId(employeeId);
+    }
 
+    @Transactional(readOnly = true)
+    public java.util.Optional<EditUserForm> loadEditFormForEmployee(Long employeeId) {
+        return userRepository.findByEmployeeId(employeeId).map(u -> {
+            EditUserForm f = new EditUserForm();
+            f.setEmployeeId(u.getEmployee().getId());
+            f.setEmployeeName(u.getEmployee().getName());
+            f.setHourlyRate(u.getEmployee().getHourlyRate());
+            f.setAddress(u.getEmployee().getAddress());
+            f.setActive(u.isActive());
+            return f;
+        });
+    }
+
+    @Transactional
+    public SystemUser updateEmployeeAndUser(EditUserForm form) {
+        Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + form.getEmployeeId()));
+        employee.setName(form.getEmployeeName());
+        employee.setHourlyRate(form.getHourlyRate());
+        employee.setAddress(form.getAddress());
+        employeeRepository.save(employee);
+
+        SystemUser user = userRepository.findByEmployeeId(employee.getId()).orElseThrow(() -> new IllegalStateException("System user not found for employee: " + employee.getId()));
+        user.setActive(form.isActive());
+        if (form.getPassword() != null && !form.getPassword().isBlank()) {
+            user.setPasswordHash(passwordEncoder.encode(form.getPassword()));
+        }
+        return userRepository.save(user);
+    }
 }

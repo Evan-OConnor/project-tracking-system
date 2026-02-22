@@ -37,7 +37,8 @@
       <td th:text="${u.role.name}">Role</td>
       <td th:text="${u.active}">true</td>
       <td>
-        <a class="btn btn-secondary btn-sm" href="#">Edit</a>
+        <span th:if="${u.username == 'U000001'}" class="badge bg-warning text-dark">System Admin</span>
+        <a th:if="${u.username != 'U000001'}" class="btn btn-secondary btn-sm" th:href="@{/admin/users/edit(employeeId=${u.employee.id})}">Edit</a>
       </td>
     </tr>
     </tbody>

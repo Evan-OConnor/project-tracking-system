@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
+import ie.universityofgalway.projecttrackingsystem.dto.EditUserForm;
+import java.util.Optional;
 
 @Controller
 public class AdminUserController {
@@ -33,6 +36,71 @@ public class AdminUserController {
     public String usersList(Model model) {
         model.addAttribute("users", systemUserAdminService.listAllUsers());
         return "admin/users/list";
+    }
+
+    @GetMapping("/admin/users/edit")
+    public String editUserForm(Long employeeId, Model model, RedirectAttributes redirectAttributes) {
+        if (employeeId == null) {
+            redirectAttributes.addFlashAttribute("error", "Employee id required");
+            return "redirect:/admin/users";
+        }
+
+        // load a form DTO populated from the user/employee
+        Optional<EditUserForm> maybe = systemUserAdminService.loadEditFormForEmployee(employeeId);
+        if (maybe.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Employee not found");
+            return "redirect:/admin/users";
+        }
+
+        EditUserForm form = maybe.get();
+        // block editing the seeded system admin U000001
+        Optional<SystemUser> userOpt = systemUserAdminService.findUserByEmployeeId(employeeId);
+        if (userOpt.isPresent() && "U000001".equals(userOpt.get().getUsername())) {
+            redirectAttributes.addFlashAttribute("error", "Editing the system admin is not permitted");
+            return "redirect:/admin/users";
+        }
+
+        model.addAttribute("editUserForm", form);
+        return "admin/users/edit";
+    }
+
+    @PostMapping("/admin/users/edit")
+    public String submitEdit(@Valid @ModelAttribute("editUserForm") EditUserForm form,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) {
+        // explicit field-level validation for password length and confirmation so template shows errors next to fields
+        if (form.getPassword() != null && !form.getPassword().isBlank()) {
+            if (form.getPassword().length() < 8) {
+                if (!bindingResult.hasFieldErrors("password")) {
+                    bindingResult.rejectValue("password", "password.short", "Password must be at least 8 characters long");
+                }
+            }
+            if (form.getConfirmPassword() == null || form.getConfirmPassword().isBlank() || !form.getPassword().equals(form.getConfirmPassword())) {
+                if (!bindingResult.hasFieldErrors("confirmPassword")) {
+                    bindingResult.rejectValue("confirmPassword", "password.mismatch", "Passwords do not match");
+                }
+            }
+        }
+
+        if (bindingResult.hasErrors()) {
+            return "admin/users/edit";
+        }
+
+        // prevent editing seeded admin by employee id
+        Optional<SystemUser> userOpt = systemUserAdminService.findUserByEmployeeId(form.getEmployeeId());
+        if (userOpt.isPresent() && "U000001".equals(userOpt.get().getUsername())) {
+            redirectAttributes.addFlashAttribute("error", "Editing the system admin is not permitted");
+            return "redirect:/admin/users";
+        }
+
+        try {
+            SystemUser updated = systemUserAdminService.updateEmployeeAndUser(form);
+            redirectAttributes.addFlashAttribute("message", "Updated user " + updated.getUsername());
+            return "redirect:/admin/users";
+        } catch (Exception e) {
+            bindingResult.reject("editError", e.getMessage());
+            return "admin/users/edit";
+        }
     }
 
     @PostMapping("/admin/users")
@@ -67,5 +135,35 @@ public class AdminUserController {
         }
     }
 
+    @PostMapping("/admin/users/delete")
+    public String deleteUser(@ModelAttribute(value = "editUserForm", binding = false) EditUserForm form,
+                             @org.springframework.web.bind.annotation.RequestParam(value = "employeeId", required = false) Long employeeId,
+                             RedirectAttributes redirectAttributes) {
+        // allow employeeId to come either from the edit form model or directly as a request param
+        if (employeeId == null && form != null) {
+            employeeId = form.getEmployeeId();
+        }
+        if (employeeId == null) {
+            redirectAttributes.addFlashAttribute("error", "Employee id required");
+            return "redirect:/admin/users";
+        }
 
+        // protect seeded system admin
+        Optional<SystemUser> userOpt = systemUserAdminService.findUserByEmployeeId(employeeId);
+        if (userOpt.isPresent() && "U000001".equals(userOpt.get().getUsername())) {
+            redirectAttributes.addFlashAttribute("error", "Deleting the system admin is not permitted");
+            return "redirect:/admin/users";
+        }
+
+        try {
+            systemUserAdminService.deleteEmployeeAndAccount(employeeId);
+            redirectAttributes.addFlashAttribute("message", "Deleted employee and account");
+        } catch (DataIntegrityViolationException dive) {
+            redirectAttributes.addFlashAttribute("error", "Cannot delete employee because related records exist (timesheets, projects, etc.). Remove related records first.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Could not delete employee: " + e.getMessage());
+        }
+
+        return "redirect:/admin/users";
+    }
 }
