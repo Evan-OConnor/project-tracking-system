@@ -26,6 +26,9 @@ public class CreateUserForm {
     @NotBlank(message = "Confirm password is required")
     private String confirmPassword;
 
+    @NotBlank(message = "Role is required")
+    private String roleName = "STAFF";
+
     // Constructors
 
     public CreateUserForm() {
@@ -53,6 +56,10 @@ public class CreateUserForm {
         return confirmPassword;
     }
 
+    public String getRoleName() {
+        return roleName;
+    }
+
     // Setters
 
     public void setEmployeeName(String employeeName) {
@@ -73,6 +80,10 @@ public class CreateUserForm {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     @AssertTrue(message = "Passwords do not match")

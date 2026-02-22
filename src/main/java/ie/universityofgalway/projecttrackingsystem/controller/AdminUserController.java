@@ -25,20 +25,30 @@ public class AdminUserController {
     @GetMapping("/admin/users/new")
     public String newUserForm(Model model) {
         model.addAttribute("createUserForm", new CreateUserForm());
+        model.addAttribute("roles", java.util.List.of("STAFF", "ADMIN"));
         return "admin/users/new"; // create a Thymeleaf template at this path
     }
 
     @GetMapping("/admin/users")
-    public String usersRoot() {
-        // Temporary: redirect to the create form. Later this should show a list page.
-        return "redirect:/admin/users/new";
+    public String usersList(Model model) {
+        model.addAttribute("users", systemUserAdminService.listAllUsers());
+        return "admin/users/list";
     }
 
     @PostMapping("/admin/users")
     public String createUser(@Valid @ModelAttribute("createUserForm") CreateUserForm form,
                              BindingResult bindingResult,
+                             Model model,
                              RedirectAttributes redirectAttributes) {
+        if (form.getPassword() != null && form.getConfirmPassword() != null && !form.getPassword().equals(form.getConfirmPassword())) {
+            // only add the field error if one isn't already present
+            if (!bindingResult.hasFieldErrors("confirmPassword")) {
+                bindingResult.rejectValue("confirmPassword", "password.mismatch", "Passwords do not match");
+            }
+        }
+        // ensure roles are always present when rendering the form
         if (bindingResult.hasErrors()) {
+            model.addAttribute("roles", java.util.List.of("STAFF", "ADMIN"));
             return "admin/users/new";
         }
 
@@ -48,11 +58,14 @@ public class AdminUserController {
             return "redirect:/admin/users/new";
         } catch (IllegalArgumentException | IllegalStateException e) {
             bindingResult.reject("createUserError", e.getMessage());
+            model.addAttribute("roles", java.util.List.of("STAFF", "ADMIN"));
             return "admin/users/new";
         } catch (Exception e) {
             bindingResult.reject("createUserError", "Unexpected error: " + e.getMessage());
+            model.addAttribute("roles", java.util.List.of("STAFF", "ADMIN"));
             return "admin/users/new";
         }
     }
+
 
 }

@@ -12,6 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SystemUserAdminService {
 
@@ -51,9 +53,10 @@ public class SystemUserAdminService {
         newEmployee.setAddress(form.getAddress());
         Employee employee = employeeRepository.save(newEmployee);
 
-        // create user for the employee
-        SystemRole staffRole = roleRepository.findByName("STAFF")
-                .orElseThrow(() -> new IllegalStateException("Role not found"));
+        // create user for the employee - use role from form (fallback to STAFF)
+        String roleToUse = form.getRoleName();
+        SystemRole staffRole = roleRepository.findByName(roleToUse)
+                .orElseThrow(() -> new IllegalStateException("Role not found: " + roleToUse));
 
         String hashPassword = passwordEncoder.encode(form.getPassword());
 
@@ -79,5 +82,11 @@ public class SystemUserAdminService {
         userRepository.findByEmployeeId(employeeId).ifPresent(u -> userRepository.deleteByEmployeeId(employeeId));
         employeeRepository.findById(employeeId).ifPresent(e -> employeeRepository.deleteById(employeeId));
     }
+
+    @Transactional(readOnly = true)
+    public List<SystemUser> listAllUsers() {
+        return userRepository.findAll();
+    }
+
 
 }
