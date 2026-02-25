@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Users</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+          crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Users</h1>
+    <a class="btn btn-primary" th:href="@{/admin/users/new}">Create user</a>
+  </div>
+
+  <form class="mb-3" th:action="@{/admin/users}" method="get" role="search" style="max-width:640px;">
+    <div class="input-group">
+      <span class="input-group-text" id="search-addon" aria-hidden="true" style="padding:6px 10px;">
+        <!-- inline magnifying-glass SVG (small, no external dependency) -->
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+
+      <input class="form-control" type="search" name="q" placeholder="Search username or employee name" aria-label="Search users" th:value="${q}" />
+
+      <button class="btn btn-outline-primary" type="submit" aria-label="Submit search">Search</button>
+
+      <a class="btn btn-outline-dark" th:if="${q}" th:href="@{/admin/users}" aria-label="Clear search">Clear</a>
+    </div>
+    <div th:if="${q}" class="form-text text-muted mt-1">Showing results for: <strong th:text="${q}"></strong></div>
+  </form>
+
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Username</th>
+      <th>Employee</th>
+      <th>Role</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="u : ${users}">
+      <td th:text="${u.username}">U000000</td>
+      <td th:text="${u.employee.name}">Employee Name</td>
+      <td th:text="${u.role.name}">Role</td>
+      <td>
+        <span th:class="${u.active} ? 'badge bg-success' : 'badge bg-danger'" th:text="${u.active} ? 'ACTIVE' : 'INACTIVE'" role="status" aria-live="polite"></span>
+      </td>
+      <td>
+        <span th:if="${u.username == 'U000001'}" class="badge bg-info">System Admin</span>
+        <a th:if="${u.username != 'U000001'}" class="btn btn-secondary btn-sm" th:href="@{/admin/users/edit(employeeId=${u.employee.id})}">Edit</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+
+</body>
+</html>
