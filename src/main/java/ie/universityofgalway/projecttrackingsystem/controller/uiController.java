@@ -11,24 +11,9 @@ public class uiController {
         return "dashboard";
     }
 
-   /* @GetMapping("/projects")
-    public String projects() {
-        return "projects";
-    }*/
-
     @GetMapping("/search")
     public String search() {
         return "search";
-    }
-
-    @GetMapping("/clients")
-    public String clients() {
-        return "clients";
-    }
-
-    @GetMapping("/employees")
-    public String employees() {
-        return "employees";
     }
 
     @GetMapping("/timesheets")
@@ -39,16 +24,6 @@ public class uiController {
     @GetMapping("/expenses")
     public String expenses() {
         return "expenses";
-    }
-
-    @GetMapping("/invoices")
-    public String invoices() {
-        return "invoices";
-    }
-
-    @GetMapping("/reports")
-    public String reports() {
-        return "reports";
     }
 
 }

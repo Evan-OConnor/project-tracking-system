@@ -39,7 +39,7 @@ public class Receipt {
 
     // Constructors
 
-    protected Receipt() {
+    public Receipt() {
     }
 
     public Receipt(Invoice invoice, LocalDate dateReceived, BigDecimal discount, BigDecimal amountPaid) {

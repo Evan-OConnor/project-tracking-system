@@ -26,13 +26,12 @@ public class Contact {
     @Column(name = "comments", columnDefinition = "TEXT")
     private String comments;
 
-    // Constructors
-
+    // Required by JPA
     protected Contact() {
     }
 
     public Contact(String name) {
-        this.name = name;
+        setName(name); // enforce validation
     }
 
     // Getters
@@ -61,9 +60,12 @@ public class Contact {
         return comments;
     }
 
-    // Setters
+    // Setters with validation where needed
 
     public void setName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Contact name cannot be empty");
+        }
         this.name = name;
     }
 
@@ -78,7 +80,26 @@ public class Contact {
     public void setFax(String fax) {
         this.fax = fax;
     }
+
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    @Override
+    public String toString() {
+        return "Contact{id=" + id + ", name='" + name + "'}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Contact)) return false;
+        Contact contact = (Contact) o;
+        return id != null && id.equals(contact.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

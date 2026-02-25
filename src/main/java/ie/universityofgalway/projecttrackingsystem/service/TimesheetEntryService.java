@@ -5,65 +5,125 @@ import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import ie.universityofgalway.projecttrackingsystem.domain.core.TimesheetEntry;
 import ie.universityofgalway.projecttrackingsystem.domain.lookup.WorkDescription;
 import ie.universityofgalway.projecttrackingsystem.dto.TimesheetEntryForm;
+import ie.universityofgalway.projecttrackingsystem.dto.TimesheetEntryView;
+import ie.universityofgalway.projecttrackingsystem.repository.core.TimesheetEntryRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.core.EmployeeRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectRepository;
-import ie.universityofgalway.projecttrackingsystem.repository.core.TimesheetEntryRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.lookup.WorkDescriptionRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-public class TimesheetEntryService {
+public class TimesheetEntryService implements BaseService<TimesheetEntryView, TimesheetEntryForm> {
 
     private final TimesheetEntryRepository repository;
-    private final ProjectRepository projectRepository;
-    private final EmployeeRepository employeeRepository;
-    private final WorkDescriptionRepository workDescriptionRepository;
+    private final ProjectRepository projectRepo;
+    private final EmployeeRepository employeeRepo;
+    private final WorkDescriptionRepository workDescRepo;
 
-    public TimesheetEntryService(
-            TimesheetEntryRepository repository,
-            ProjectRepository projectRepository,
-            EmployeeRepository employeeRepository,
-            WorkDescriptionRepository workDescriptionRepository) {
-
+    public TimesheetEntryService(TimesheetEntryRepository repository,
+                                 ProjectRepository projectRepo,
+                                 EmployeeRepository employeeRepo,
+                                 WorkDescriptionRepository workDescRepo) {
         this.repository = repository;
-        this.projectRepository = projectRepository;
-        this.employeeRepository = employeeRepository;
-        this.workDescriptionRepository = workDescriptionRepository;
+        this.projectRepo = projectRepo;
+        this.employeeRepo = employeeRepo;
+        this.workDescRepo = workDescRepo;
     }
 
-    // LIST all entries
-    public List<TimesheetEntry> list() {
-        return repository.findAll();
+    @Override
+    public List<TimesheetEntryView> list() {
+        return repository.findAll().stream()
+                .map(this::toView)
+                .collect(Collectors.toList());
     }
 
-    // CREATE new entry
-    public void create(TimesheetEntryForm form) {
+    @Override
+    public TimesheetEntryView getById(Long id) {
+        TimesheetEntry entry = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Timesheet entry not found: " + id));
+        return toView(entry);
+    }
 
-        Project project = projectRepository.findById(form.getProjectId()).orElseThrow();
-        Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow();
-        WorkDescription description = workDescriptionRepository.findById(form.getWorkDescriptionId()).orElseThrow();
+    @Override
+    public TimesheetEntryForm getFormById(Long id) {
+        TimesheetEntry entry = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Timesheet entry not found: " + id));
+        return toForm(entry);
+    }
+
+    @Override
+    public TimesheetEntryView create(TimesheetEntryForm form) {
+        Project project = projectRepo.findById(form.getProjectId())
+                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + form.getProjectId()));
+        Employee employee = employeeRepo.findById(form.getEmployeeId())
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + form.getEmployeeId()));
+        WorkDescription workDesc = workDescRepo.findById(form.getWorkDescriptionId())
+                .orElseThrow(() -> new IllegalArgumentException("WorkDescription not found: " + form.getWorkDescriptionId()));
 
         TimesheetEntry entry = new TimesheetEntry(
-                project,
-                employee,
-                description,
-                form.getEntryDate(),
-                form.getHours()
+                project, employee, workDesc, form.getEntryDate(), form.getHours()
         );
-
         repository.save(entry);
+        return toView(entry);
     }
 
-    // LOAD lookups for form dropdowns
+    @Override
+    public TimesheetEntryView update(Long id, TimesheetEntryForm form) {
+        TimesheetEntry entry = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Timesheet entry not found: " + id));
+
+        Project project = projectRepo.findById(form.getProjectId())
+                .orElseThrow(() -> new IllegalArgumentException("Project not found: " + form.getProjectId()));
+        Employee employee = employeeRepo.findById(form.getEmployeeId())
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + form.getEmployeeId()));
+        WorkDescription workDesc = workDescRepo.findById(form.getWorkDescriptionId())
+                .orElseThrow(() -> new IllegalArgumentException("WorkDescription not found: " + form.getWorkDescriptionId()));
+
+        entry.setProject(project);
+        entry.setEmployee(employee);
+        entry.setWorkDescription(workDesc);
+        entry.setEntryDate(form.getEntryDate());
+        entry.setHours(form.getHours());
+
+        repository.save(entry);
+        return toView(entry);
+    }
+
+    @Override
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
+
+    private TimesheetEntryView toView(TimesheetEntry entry) {
+        return new TimesheetEntryView(
+                entry.getId(),
+                entry.getProject().getTitle(),
+                entry.getEmployee().getName(),
+                entry.getWorkDescription().getName(), // <-- fixed here
+                entry.getEntryDate(),
+                entry.getHours()
+        );
+    }
+
+    private TimesheetEntryForm toForm(TimesheetEntry entry) {
+        TimesheetEntryForm form = new TimesheetEntryForm();
+        form.setProjectId(entry.getProject().getId());
+        form.setEmployeeId(entry.getEmployee().getId());
+        form.setWorkDescriptionId(entry.getWorkDescription().getId());
+        form.setEntryDate(entry.getEntryDate());
+        form.setHours(entry.getHours());
+        return form;
+    }
+
     public Map<String, Object> getFormLookups() {
-        Map<String, Object> lookups = new HashMap<>();
-        lookups.put("projects", projectRepository.findAll());
-        lookups.put("employees", employeeRepository.findAll());
-        lookups.put("descriptions", workDescriptionRepository.findAll());
-        return lookups;
+        return Map.of(
+                "projects", projectRepo.findAll(),
+                "employees", employeeRepo.findAll(),
+                "workDescriptions", workDescRepo.findAll()
+        );
     }
 }

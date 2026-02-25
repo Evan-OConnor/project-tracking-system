@@ -35,8 +35,7 @@ public class InvoiceLineItem {
 
     // Constructors
 
-    protected InvoiceLineItem() {
-    }
+    public InvoiceLineItem() {}
 
     public InvoiceLineItem(Invoice invoice, String description, BigDecimal quantity, BigDecimal unitRate) {
         this.invoice = invoice;
@@ -45,7 +44,7 @@ public class InvoiceLineItem {
         this.unitRate = unitRate;
     }
 
-    // Getters
+    // Getters & Setters
 
     public Long getId() {
         return id;
@@ -55,41 +54,58 @@ public class InvoiceLineItem {
         return invoice;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public BigDecimal getQuantity() {
-        return quantity;
-    }
-
-    public BigDecimal getUnitRate() {
-        return unitRate;
-    }
-
-    // Setters
-
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public String getDetails() {
+        return details;
+    }
+
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public BigDecimal getQuantity() {
+        return quantity;
     }
 
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
+    public BigDecimal getUnitRate() {
+        return unitRate;
+    }
+
     public void setUnitRate(BigDecimal unitRate) {
         this.unitRate = unitRate;
+    }
+
+    // Helper methods for Invoice calculations
+
+    /** Net amount = quantity * unit rate */
+    public BigDecimal getNetAmount() {
+        if (quantity == null || unitRate == null) {
+            return BigDecimal.ZERO;
+        }
+        return unitRate.multiply(quantity);
+    }
+
+    /** VAT amount = net amount * invoice's VAT rate (if available) */
+    public BigDecimal getVatAmount() {
+        if (invoice == null || invoice.getVatRate() == null || invoice.getVatRate().getRatePercent() == null) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal rate = invoice.getVatRate().getRatePercent().divide(BigDecimal.valueOf(100));
+        return getNetAmount().multiply(rate);
     }
 }

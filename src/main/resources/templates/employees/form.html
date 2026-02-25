@@ -1,10 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <title th:text="${mode == 'edit'} ? 'Edit Employee' : 'Create Employee'">Employee Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-$END$
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4" style="max-width: 600px;">
+
+  <h1 class="mb-4" th:text="${mode == 'edit'} ? 'Edit Employee' : 'Create Employee'">
+    Employee Form
+  </h1>
+
+  <form th:action="${mode == 'edit'}
+                   ? @{/employees/{id}(id=${employeeForm.id})}
+                   : @{/employees}"
+        th:object="${employeeForm}"
+        method="post"
+        class="needs-validation"
+        novalidate>
+
+    <!-- CSRF Token -->
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-control" th:field="*{name}" required>
+      <div class="invalid-feedback">Name is required.</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Address</label>
+      <input type="text" class="form-control" th:field="*{address}" required>
+      <div class="invalid-feedback">Address is required.</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Hourly Rate (€)</label>
+      <input type="number" step="0.01" min="0" class="form-control" th:field="*{hourlyRate}" required>
+      <div class="invalid-feedback">Hourly rate is required and must be a positive number.</div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a class="btn btn-outline-secondary" th:href="@{/employees}">Cancel</a>
+      <button type="submit" class="btn btn-primary" th:text="${mode == 'edit'} ? 'Update' : 'Save'"></button>
+    </div>
+
+  </form>
+</div>
+
+<!-- Toast Container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="appToast" class="toast align-items-center text-white bg-success border-0">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/employees/list.js}"></script>
+
 </body>
 </html>

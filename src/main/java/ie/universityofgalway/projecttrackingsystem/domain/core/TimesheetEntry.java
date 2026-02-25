@@ -57,9 +57,7 @@ public class TimesheetEntry {
         return project;
     }
 
-    public Employee getEmployee() {
-        return employee;
-    }
+    public Employee getEmployee() {return employee;}
 
     public WorkDescription getWorkDescription() {
         return workDescription;

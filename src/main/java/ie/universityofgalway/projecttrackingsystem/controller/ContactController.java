@@ -2,29 +2,55 @@ package ie.universityofgalway.projecttrackingsystem.controller;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.Contact;
 import ie.universityofgalway.projecttrackingsystem.dto.ContactForm;
-import ie.universityofgalway.projecttrackingsystem.repository.core.ContactRepository;
+import ie.universityofgalway.projecttrackingsystem.service.ContactService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/contacts")
-public class ContactController {
+public class ContactController extends BaseController<Contact, ContactForm> {
 
-    private final ContactRepository contactRepository;
+    private final ContactService contactService;
 
-    public ContactController(ContactRepository contactRepository) {
-        this.contactRepository = contactRepository;
+    public ContactController(ContactService contactService) {
+        super(contactService);
+        this.contactService = contactService;
     }
 
-    // LIST
-    @GetMapping
-    public String list(Model model) {
-        model.addAttribute("contacts", contactRepository.findAll());
+
+    // BaseController
+
+    @Override
+    protected String getListView() {
         return "contacts/list";
     }
 
-    // NEW FORM
+    @Override
+    protected String getDetailsView() {
+        return "contacts/view";
+    }
+
+    @Override
+    protected String getBaseUrl() {
+        return "/contacts";
+    }
+
+    @Override
+    protected String getListAttributeName() {
+        return "contacts";
+    }
+
+    @Override
+    protected String getEntityAttributeName() {
+        return "contact";
+    }
+
+
+    // Create / Edit with Validation
+
     @GetMapping("/new")
     public String newForm(Model model) {
         model.addAttribute("contactForm", new ContactForm());
@@ -32,66 +58,40 @@ public class ContactController {
         return "contacts/form";
     }
 
-    // CREATE
     @PostMapping
-    public String create(@ModelAttribute ContactForm form) {
-        Contact c = new Contact(form.getName());
+    public String create(@Valid @ModelAttribute("contactForm") ContactForm form,
+                         BindingResult bindingResult,
+                         Model model) {
 
-        c.setAddress(form.getAddress());
-        c.setPhone(form.getPhone());
-        c.setFax(form.getFax());
-        c.setComments(form.getComments());
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("mode", "create");
+            return "contacts/form";
+        }
 
-        Contact saved = contactRepository.save(c);
+        Contact saved = contactService.create(form);
         return "redirect:/contacts/" + saved.getId();
     }
 
-    // VIEW
-    @GetMapping("/{id}")
-    public String view(@PathVariable Long id, Model model) {
-        Contact c = contactRepository.findById(id).orElseThrow();
-        model.addAttribute("contact", c);
-        return "contacts/view";
-    }
-
-    // EDIT FORM
-    @GetMapping("/{id}/edit")
+    @GetMapping("/{id:\\d+}/edit")
     public String editForm(@PathVariable Long id, Model model) {
-        Contact c = contactRepository.findById(id).orElseThrow();
-
-        ContactForm form = new ContactForm();
-        form.setId(c.getId());
-        form.setName(c.getName());
-        form.setAddress(c.getAddress());
-        form.setPhone(c.getPhone());
-        form.setFax(c.getFax());
-        form.setComments(c.getComments());
-
+        ContactForm form = contactService.getFormById(id);
         model.addAttribute("contactForm", form);
-        model.addAttribute("contactId", id);
         model.addAttribute("mode", "edit");
         return "contacts/form";
     }
 
-    // UPDATE
-    @PostMapping("/{id}")
-    public String update(@PathVariable Long id, @ModelAttribute ContactForm form) {
-        Contact c = contactRepository.findById(id).orElseThrow();
+    @PostMapping("/{id:\\d+}")
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("contactForm") ContactForm form,
+                         BindingResult bindingResult,
+                         Model model) {
 
-        c.setName(form.getName());
-        c.setAddress(form.getAddress());
-        c.setPhone(form.getPhone());
-        c.setFax(form.getFax());
-        c.setComments(form.getComments());
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("mode", "edit");
+            return "contacts/form";
+        }
 
-        contactRepository.save(c);
+        contactService.update(id, form);
         return "redirect:/contacts/" + id;
-    }
-
-    // DELETE
-    @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
-        contactRepository.deleteById(id);
-        return "redirect:/contacts";
     }
 }

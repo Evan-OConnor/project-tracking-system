@@ -5,6 +5,8 @@ import ie.universityofgalway.projecttrackingsystem.domain.lookup.ProjectStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "project")
@@ -35,6 +37,12 @@ public class Project {
     @JoinColumn(name = "insurance_company_contact_id")
     private Contact insuranceCompanyContact;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Invoice> invoices = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectReportDocument> projectReports = new ArrayList<>();
+
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
@@ -44,88 +52,66 @@ public class Project {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    // Constructors
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TimesheetEntry> timesheets = new ArrayList<>();
 
-    protected Project() {
-    }
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CostItem> costItems = new ArrayList<>();
 
-    public Project(ProjectCategory category, ProjectStatus status, Contact clientContact, LocalDate startDate, String title) {
-        this.category = category;
-        this.status = status;
-        this.clientContact = clientContact;
-        this.startDate = startDate;
-        this.title = title;
-    }
+    public Project() {}
 
-    // Getters
+// Getters
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public ProjectCategory getCategory() {
-        return category;
-    }
+    public ProjectCategory getCategory() { return category; }
 
-    public ProjectStatus getStatus() {
-        return status;
-    }
+    public ProjectStatus getStatus() { return status; }
 
-    public Contact getClientContact() {
-        return clientContact;
-    }
+    public Contact getClientContact() { return clientContact; }
 
-    public Contact getSolicitorContact() {
-        return solicitorContact;
-    }
+    public Contact getSolicitorContact() { return solicitorContact; }
 
-    public Contact getInsuranceCompanyContact() {
-        return insuranceCompanyContact;
-    }
+    public Contact getInsuranceCompanyContact() { return insuranceCompanyContact; }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
+    public LocalDate getStartDate() { return startDate; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() { return title; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
+
+    public List<Invoice> getInvoices() {return invoices;}
+
+    public List<ProjectReportDocument> getProjectReports() {return projectReports;}
+
+    public List<TimesheetEntry> getTimesheets() {return timesheets;}
+
+    public List<CostItem> getCostItems() {return costItems;}
 
     // Setters
 
-    public void setCategory(ProjectCategory category) {
-        this.category = category;
-    }
+    public void setCategory(ProjectCategory category) { this.category = category; }
 
-    public void setStatus(ProjectStatus status) {
-        this.status = status;
-    }
+    public void setStatus(ProjectStatus status) { this.status = status; }
 
-    public void setClientContact(Contact clientContact) {
-        this.clientContact = clientContact;
-    }
+    public void setClientContact(Contact clientContact) { this.clientContact = clientContact; }
 
-    public void setSolicitorContact(Contact solicitorContact) {
-        this.solicitorContact = solicitorContact;
-    }
+    public void setSolicitorContact(Contact solicitorContact) { this.solicitorContact = solicitorContact; }
 
-    public void setInsuranceCompanyContact(Contact insuranceCompanyContact) {
-        this.insuranceCompanyContact = insuranceCompanyContact;
-    }
+    public void setInsuranceCompanyContact(Contact insuranceCompanyContact) { this.insuranceCompanyContact = insuranceCompanyContact; }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public void setTitle(String title) { this.title = title; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public void setDescription(String description) { this.description = description; }
+
+    public void setInvoices(List<Invoice> invoices) {this.invoices = invoices;}
+
+    public void setProjectReports(List<ProjectReportDocument> projectReports) {this.projectReports = projectReports;}
+
+    public void setTimesheets(List<TimesheetEntry> timesheets) {this.timesheets = timesheets;}
+
+    public void setCostItems(List<CostItem> costItems) {this.costItems = costItems;}
+
 }
