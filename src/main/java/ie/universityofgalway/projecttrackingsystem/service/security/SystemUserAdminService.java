@@ -19,10 +19,13 @@ import java.util.List;
  * Service responsible for administrative operations around system users and the
  * underlying employee records. Encapsulates business rules such as:
  * - creating an Employee record and an associated SystemUser in a single transaction
- * - generating a username based on user id
+ * - generating a username based on employee_id (shared PK design: SystemUser.id = Employee.id)
  * - updating employee details and password for a user (password encoding delegated to PasswordEncoder)
  * - searching and listing users
  * - deleting the user account and associated employee
+ *
+ * Note: The SystemUser table uses employee_id as its primary key (@MapsId), ensuring
+ * a 1:1 relationship with Employee and consistent username generation (U000001 format).
  */
 @Service
 public class SystemUserAdminService {
@@ -48,8 +51,8 @@ public class SystemUserAdminService {
      * 1. Basic validation of required fields (password, employee name, hourly rate).
      * 2. Persist an Employee entity.
      * 3. Resolve the requested role and encode the provided password.
-     * 4. Persist a SystemUser; after the first save we have a generated id which is
-     *    used to generate a stable username of the form U000001.
+     * 4. Create a SystemUser with the employee_id as its primary key (shared PK design).
+     *    The username is generated from employee_id in the form U000001.
      *
      * Throws IllegalArgumentException for missing required fields and IllegalStateException
      * when a role cannot be found or when a DB constraint prevents creation.
@@ -84,14 +87,11 @@ public class SystemUserAdminService {
 
         SystemUser user = new SystemUser(employee, staffRole, hashPassword);
         user.setActive(true);
+        // Username is derived from employee_id (shared PK)
+        user.setUsername(String.format("U%06d", employee.getId()));
 
         try {
             user = userRepository.save(user);
-
-            // always generate username using the assigned id
-            user.setUsername(String.format("U%06d", user.getId()));
-            user = userRepository.save(user);
-
             return user;
         } catch (DataIntegrityViolationException dive) {
             throw new IllegalStateException("Could not create user", dive);
