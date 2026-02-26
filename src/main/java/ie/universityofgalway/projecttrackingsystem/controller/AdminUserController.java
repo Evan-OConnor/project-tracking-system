@@ -20,6 +20,12 @@ import java.util.Optional;
 @Controller
 public class AdminUserController {
 
+    /** Username of the seeded system admin (cannot be edited or deleted) */
+    private static final String SEEDED_ADMIN_USERNAME = "U000001";
+
+    /** Available roles for the role dropdown */
+    private static final java.util.List<String> AVAILABLE_ROLES = java.util.List.of("STAFF", "ADMIN");
+
     private final SystemUserAdminService systemUserAdminService;
 
     public AdminUserController(SystemUserAdminService systemUserAdminService) {
@@ -29,8 +35,8 @@ public class AdminUserController {
     @GetMapping("/admin/users/new")
     public String newUserForm(Model model) {
         model.addAttribute("createUserForm", new CreateUserForm());
-        model.addAttribute("roles", java.util.List.of("STAFF", "ADMIN"));
-        return "admin/users/new"; // create a Thymeleaf template at this path
+        model.addAttribute("roles", AVAILABLE_ROLES);
+        return "admin/users/new";
     }
 
     @GetMapping("/admin/users")
@@ -55,9 +61,9 @@ public class AdminUserController {
         }
 
         EditUserForm form = maybe.get();
-        // block editing the seeded system admin U000001
+        // block editing the seeded system admin
         Optional<SystemUser> userOpt = systemUserAdminService.findUserByEmployeeId(employeeId);
-        if (userOpt.isPresent() && "U000001".equals(userOpt.get().getUsername())) {
+        if (userOpt.isPresent() && SEEDED_ADMIN_USERNAME.equals(userOpt.get().getUsername())) {
             redirectAttributes.addFlashAttribute("error", "Editing the system admin is not permitted");
             return "redirect:/admin/users";
         }
@@ -90,7 +96,7 @@ public class AdminUserController {
 
         // prevent editing seeded admin by employee id
         Optional<SystemUser> userOpt = systemUserAdminService.findUserByEmployeeId(form.getEmployeeId());
-        if (userOpt.isPresent() && "U000001".equals(userOpt.get().getUsername())) {
+        if (userOpt.isPresent() && SEEDED_ADMIN_USERNAME.equals(userOpt.get().getUsername())) {
             redirectAttributes.addFlashAttribute("error", "Editing the system admin is not permitted");
             return "redirect:/admin/users";
         }
@@ -118,7 +124,7 @@ public class AdminUserController {
         }
         // ensure roles are always present when rendering the form
         if (bindingResult.hasErrors()) {
-            model.addAttribute("roles", java.util.List.of("STAFF", "ADMIN"));
+            model.addAttribute("roles", AVAILABLE_ROLES);
             return "admin/users/new";
         }
 
@@ -128,11 +134,11 @@ public class AdminUserController {
             return "redirect:/admin/users/new";
         } catch (IllegalArgumentException | IllegalStateException e) {
             bindingResult.reject("createUserError", e.getMessage());
-            model.addAttribute("roles", java.util.List.of("STAFF", "ADMIN"));
+            model.addAttribute("roles", AVAILABLE_ROLES);
             return "admin/users/new";
         } catch (Exception e) {
             bindingResult.reject("createUserError", "Unexpected error: " + e.getMessage());
-            model.addAttribute("roles", java.util.List.of("STAFF", "ADMIN"));
+            model.addAttribute("roles", AVAILABLE_ROLES);
             return "admin/users/new";
         }
     }
@@ -152,7 +158,7 @@ public class AdminUserController {
 
         // protect seeded system admin
         Optional<SystemUser> userOpt = systemUserAdminService.findUserByEmployeeId(employeeId);
-        if (userOpt.isPresent() && "U000001".equals(userOpt.get().getUsername())) {
+        if (userOpt.isPresent() && SEEDED_ADMIN_USERNAME.equals(userOpt.get().getUsername())) {
             redirectAttributes.addFlashAttribute("error", "Deleting the system admin is not permitted");
             return "redirect:/admin/users";
         }
