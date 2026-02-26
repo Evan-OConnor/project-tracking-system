@@ -12,7 +12,6 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Employees</h1>
-        <a class="btn btn-primary" th:href="@{/employees/new}">+ New Employee</a>
     </div>
 
     <!-- Search box -->
@@ -26,46 +25,20 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Address</th>
-                <th>Hourly Rate (€)</th>
-                <th class="text-end">Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="e : ${employees}">
                 <td th:text="${e.id}">1</td>
                 <td th:text="${e.name}">John Doe</td>
-                <td th:text="${e.address}">Galway</td>
-                <td th:text="${e.hourlyRate}">25.00</td>
-                <td class="text-end">
-                    <a class="btn btn-sm btn-outline-secondary"
-                       th:href="@{/employees/{id}(id=${e.id})}">View</a>
-                    <a class="btn btn-sm btn-outline-primary"
-                       th:href="@{/employees/{id}/edit(id=${e.id})}">Edit</a>
-                    <button type="button"
-                            class="btn btn-sm btn-outline-danger delete-btn"
-                            th:data-id="${e.id}">
-                        Delete
-                    </button>
-                </td>
             </tr>
             <tr th:if="${#lists.isEmpty(employees)}">
-                <td colspan="5" class="text-center text-muted">No employees yet.</td>
+                <td colspan="2" class="text-center text-muted">No employees found.</td>
             </tr>
             </tbody>
         </table>
     </div>
 
-</div>
-
-<!-- Toast Container -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="appToast" class="toast align-items-center text-white bg-success border-0">
-        <div class="d-flex">
-            <div class="toast-body" id="toastMessage"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

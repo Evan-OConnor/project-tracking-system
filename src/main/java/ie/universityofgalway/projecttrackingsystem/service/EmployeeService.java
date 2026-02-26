@@ -1,6 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.service;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.Employee;
+import ie.universityofgalway.projecttrackingsystem.dto.EmployeeView;
 import ie.universityofgalway.projecttrackingsystem.dto.EmployeeForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.EmployeeRepository;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class EmployeeService implements BaseService<Employee, EmployeeForm> {
+public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
@@ -16,24 +17,37 @@ public class EmployeeService implements BaseService<Employee, EmployeeForm> {
         this.employeeRepository = employeeRepository;
     }
 
-    @Override
-    public List<Employee> list() {
-        return employeeRepository.findAll();
+    public List<EmployeeView> searchSummaries(String query) {
+        return employeeRepository
+                .findByNameContainingIgnoreCase(query)
+                .stream()
+                .map(e -> new EmployeeView(
+                        e.getId(),
+                        e.getName()
+                ))
+                .toList();
     }
 
-    @Override
+    public List<EmployeeView> listSummaries() {
+        return employeeRepository.findAll()
+                .stream()
+                .map(e -> new EmployeeView(
+                        e.getId(),
+                        e.getName()
+                ))
+                .toList();
+    }
+
     public Employee getById(Long id) {
         return employeeRepository.findById(id).orElseThrow();
     }
 
-    @Override
     public Employee create(EmployeeForm form) {
         Employee e = new Employee(form.getName(), form.getHourlyRate());
         e.setAddress(form.getAddress());
         return employeeRepository.save(e);
     }
 
-    @Override
     public Employee update(Long id, EmployeeForm form) {
         Employee e = getById(id);
         e.setName(form.getName());
@@ -42,12 +56,10 @@ public class EmployeeService implements BaseService<Employee, EmployeeForm> {
         return employeeRepository.save(e);
     }
 
-    @Override
     public void delete(Long id) {
         employeeRepository.deleteById(id);
     }
 
-    @Override
     public EmployeeForm getFormById(Long id) {
         Employee e = getById(id);
         EmployeeForm form = new EmployeeForm();
