@@ -13,9 +13,7 @@ SELECT
 FROM system_role r
 WHERE r.name = 'ADMIN';
 
-SET @user_id := LAST_INSERT_ID();
-
--- 3) Generate username for system_user
+-- 3) Generate username for system_user (now uses employee_id as PK)
 UPDATE system_user
-SET username = CONCAT('U', LPAD(user_id, 6, '0'))
-WHERE user_id = @user_id;
+SET username = CONCAT('U', LPAD(employee_id, 6, '0'))
+WHERE employee_id = @employee_id;

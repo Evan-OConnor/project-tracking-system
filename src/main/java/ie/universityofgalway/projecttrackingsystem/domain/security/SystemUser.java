@@ -12,24 +12,18 @@ import java.time.LocalDateTime;
                 @UniqueConstraint(
                         name = "uk_system_user_username",
                         columnNames = "username"
-                ),
-                @UniqueConstraint(
-                        name = "uk_system_user_employee",
-                        columnNames = "employee_id"
                 )
-
         }
-
 )
 public class SystemUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "employee_id")
     private Long id;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "employee_id")
     private Employee employee;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
