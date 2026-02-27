@@ -64,6 +64,35 @@
     </tr>
     </tbody>
   </table>
+
+  <!-- Pagination controls -->
+  <nav th:if="${usersPage.totalPages > 1}" aria-label="User list pagination">
+    <ul class="pagination justify-content-center">
+      <!-- Previous button -->
+      <li class="page-item" th:classappend="${usersPage.first} ? 'disabled'">
+        <a class="page-link" th:href="@{/admin/users(q=${q}, page=${usersPage.number - 1})}" th:if="${!usersPage.first}">Previous</a>
+        <span class="page-link" th:if="${usersPage.first}">Previous</span>
+      </li>
+
+      <!-- Page numbers -->
+      <li class="page-item" th:each="i : ${#numbers.sequence(0, usersPage.totalPages - 1)}" th:classappend="${i == usersPage.number} ? 'active'">
+        <a class="page-link" th:href="@{/admin/users(q=${q}, page=${i})}" th:text="${i + 1}">1</a>
+      </li>
+
+      <!-- Next button -->
+      <li class="page-item" th:classappend="${usersPage.last} ? 'disabled'">
+        <a class="page-link" th:href="@{/admin/users(q=${q}, page=${usersPage.number + 1})}" th:if="${!usersPage.last}">Next</a>
+        <span class="page-link" th:if="${usersPage.last}">Next</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Page info -->
+  <div class="text-center text-muted mb-3" th:if="${usersPage.totalElements > 0}">
+    Showing <span th:text="${usersPage.number * usersPage.size + 1}">1</span> -
+    <span th:text="${usersPage.number * usersPage.size + usersPage.numberOfElements}">50</span>
+    of <span th:text="${usersPage.totalElements}">100</span> users
+  </div>
 </main>
 
 </body>

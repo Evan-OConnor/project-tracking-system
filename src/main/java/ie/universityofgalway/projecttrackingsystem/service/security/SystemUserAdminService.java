@@ -8,6 +8,8 @@ import ie.universityofgalway.projecttrackingsystem.dto.EditUserForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.EmployeeRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.security.SystemRoleRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.security.SystemUserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -125,6 +127,18 @@ public class SystemUserAdminService {
     public List<SystemUser> searchUsers(String query) {
         if (query == null || query.isBlank()) return listAllUsers();
         return userRepository.searchByUsernameOrEmployeeName(query.trim());
+    }
+
+    /**
+     * Search users with pagination support. Returns a Page of users matching the
+     * query, or all users if the query is blank.
+     */
+    @Transactional(readOnly = true)
+    public Page<SystemUser> searchUsers(String query, Pageable pageable) {
+        if (query == null || query.isBlank()) {
+            return userRepository.findAll(pageable);
+        }
+        return userRepository.searchByUsernameOrEmployeeName(query.trim(), pageable);
     }
 
     /**

@@ -19,6 +19,9 @@ import ie.universityofgalway.projecttrackingsystem.dto.EditUserForm;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 @Controller
 public class AdminUserController {
 
@@ -27,6 +30,9 @@ public class AdminUserController {
 
     /** Available roles for the role dropdown */
     private static final List<String> AVAILABLE_ROLES = List.of("STAFF", "ADMIN");
+
+    /** Number of users displayed per page */
+    private static final int PAGE_SIZE = 50;
 
     private final SystemUserAdminService systemUserAdminService;
 
@@ -42,8 +48,12 @@ public class AdminUserController {
     }
 
     @GetMapping("/admin/users")
-    public String usersList(@RequestParam(value = "q", required = false) String q, Model model) {
-        model.addAttribute("users", systemUserAdminService.searchUsers(q));
+    public String usersList(@RequestParam(value = "q", required = false) String q,
+                            @RequestParam(value = "page", defaultValue = "0") int page,
+                            Model model) {
+        Page<SystemUser> usersPage = systemUserAdminService.searchUsers(q, PageRequest.of(page, PAGE_SIZE));
+        model.addAttribute("usersPage", usersPage);
+        model.addAttribute("users", usersPage.getContent());
         model.addAttribute("q", q);
         model.addAttribute("seededAdminUsername", SEEDED_ADMIN_USERNAME);
         return "admin/users/list";
