@@ -58,8 +58,8 @@
         <span th:class="${u.active} ? 'badge bg-success' : 'badge bg-danger'" th:text="${u.active} ? 'ACTIVE' : 'INACTIVE'" role="status" aria-live="polite"></span>
       </td>
       <td>
-        <span th:if="${u.username == 'U000001'}" class="badge bg-info">System Admin</span>
-        <a th:if="${u.username != 'U000001'}" class="btn btn-secondary btn-sm" th:href="@{/admin/users/edit(employeeId=${u.employee.id})}">Edit</a>
+        <span th:if="${u.username == seededAdminUsername}" class="badge bg-info">System Admin</span>
+        <a th:if="${u.username != seededAdminUsername}" class="btn btn-secondary btn-sm" th:href="@{/admin/users/edit(employeeId=${u.employee.id})}">Edit</a>
       </td>
     </tr>
     </tbody>

@@ -15,6 +15,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import ie.universityofgalway.projecttrackingsystem.dto.EditUserForm;
+
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -24,7 +26,7 @@ public class AdminUserController {
     private static final String SEEDED_ADMIN_USERNAME = "U000001";
 
     /** Available roles for the role dropdown */
-    private static final java.util.List<String> AVAILABLE_ROLES = java.util.List.of("STAFF", "ADMIN");
+    private static final List<String> AVAILABLE_ROLES = List.of("STAFF", "ADMIN");
 
     private final SystemUserAdminService systemUserAdminService;
 
@@ -43,6 +45,7 @@ public class AdminUserController {
     public String usersList(@RequestParam(value = "q", required = false) String q, Model model) {
         model.addAttribute("users", systemUserAdminService.searchUsers(q));
         model.addAttribute("q", q);
+        model.addAttribute("seededAdminUsername", SEEDED_ADMIN_USERNAME);
         return "admin/users/list";
     }
 
@@ -145,7 +148,7 @@ public class AdminUserController {
 
     @PostMapping("/admin/users/delete")
     public String deleteUser(@ModelAttribute(value = "editUserForm", binding = false) EditUserForm form,
-                             @org.springframework.web.bind.annotation.RequestParam(value = "employeeId", required = false) Long employeeId,
+                             @RequestParam(value = "employeeId", required = false) Long employeeId,
                              RedirectAttributes redirectAttributes) {
         // allow employeeId to come either from the edit form model or directly as a request param
         if (employeeId == null && form != null) {
