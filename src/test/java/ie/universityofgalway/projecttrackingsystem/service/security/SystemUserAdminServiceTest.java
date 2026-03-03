@@ -194,6 +194,22 @@ class SystemUserAdminServiceTest {
         assertTrue(ex.getMessage().contains("Could not create user"));
     }
 
+    @Test
+    void createEmployeeAndSystemUser_passwordsDontMatch_throwsException() {
+        CreateUserForm form = new CreateUserForm();
+        form.setEmployeeName("Jane Doe");
+        form.setHourlyRate(new BigDecimal("25.00"));
+        form.setPassword("password123");
+        form.setConfirmPassword("different");
+        form.setRoleName("STAFF");
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> service.createEmployeeAndSystemUser(form));
+
+        assertEquals("Passwords do not match", ex.getMessage());
+        verifyNoInteractions(employeeRepository);
+    }
+
     //  --- deleteEmployeeAndAccount ---
 
     @Test
@@ -438,5 +454,25 @@ class SystemUserAdminServiceTest {
 
         assertThrows(IllegalStateException.class,
                 () -> service.updateEmployeeAndUser(form));
+    }
+
+    @Test
+    void updateEmployeeAndUser_passwordsDontMatch_throwsException() throws Exception {
+        SystemUser existingUser = new SystemUser(savedEmployee, staffRole, "OLD_HASH");
+        setId(existingUser, 42L);
+
+        EditUserForm form = new EditUserForm();
+        form.setEmployeeId(42L);
+        form.setEmployeeName("Jane Doe");
+        form.setHourlyRate(new BigDecimal("25.00"));
+        form.setPassword("newPassword1");
+        form.setConfirmPassword("differentPassword");
+        form.setActive(true);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> service.updateEmployeeAndUser(form));
+
+        assertEquals("Passwords do not match", ex.getMessage());
+        verifyNoInteractions(employeeRepository);
     }
 }
