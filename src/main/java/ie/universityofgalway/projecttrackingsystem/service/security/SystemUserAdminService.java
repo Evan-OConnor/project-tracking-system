@@ -67,6 +67,11 @@ public class SystemUserAdminService {
             throw new IllegalArgumentException("Password is required");
         }
 
+        // confirm password must match
+        if (form.getConfirmPassword() == null || !form.getPassword().equals(form.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
         if (form.getEmployeeName() == null || form.getEmployeeName().isBlank()) {
             throw new IllegalArgumentException("Employee name is required");
         }
@@ -174,6 +179,13 @@ public class SystemUserAdminService {
      */
     @Transactional
     public SystemUser updateEmployeeAndUser(EditUserForm form) {
+        // if a new password is provided, confirm it first to avoid partial updates
+        if (form.getPassword() != null && !form.getPassword().isBlank()) {
+            if (form.getConfirmPassword() == null || !form.getPassword().equals(form.getConfirmPassword())) {
+                throw new IllegalArgumentException("Passwords do not match");
+            }
+        }
+
         Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + form.getEmployeeId()));
         employee.setName(form.getEmployeeName());
         employee.setHourlyRate(form.getHourlyRate());
