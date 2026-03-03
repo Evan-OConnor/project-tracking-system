@@ -24,7 +24,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/error", "/error/**").permitAll()
+                        // allow access to error pages and static assets without authentication
+                        .requestMatchers(
+                                "/error", "/error/**",
+                                "/css/**", "/js/**", "/images/**"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
