@@ -27,6 +27,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link SystemUserAdminService}.
+ *
+ * Verifies business logic for user administration, including:
+ * - Employee + SystemUser creation
+ * - Username generation
+ * - Password encoding and confirmation validation
+ * - Update behaviour (including optional password changes)
+ * - Deletion of linked employee and account
+ * - Search and retrieval operations
+ *
+ * Ensures validation rules and repository interactions behave as expected.
+ */
+
 @ExtendWith(MockitoExtension.class)
 class SystemUserAdminServiceTest {
 
