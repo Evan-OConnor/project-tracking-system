@@ -3,6 +3,7 @@ package ie.universityofgalway.projecttrackingsystem.service;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Contact;
 import ie.universityofgalway.projecttrackingsystem.dto.ContactForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.ContactRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,12 +17,18 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         this.contactRepository = contactRepository;
     }
 
-    // CRUD methods
+    // ===============================
+    // LIST
+    // ===============================
 
     @Override
     public List<Contact> list() {
         return contactRepository.findAll();
     }
+
+    // ===============================
+    // GET BY ID
+    // ===============================
 
     @Override
     public Contact getById(Long id) {
@@ -30,36 +37,74 @@ public class ContactService implements BaseService<Contact, ContactForm> {
                         new IllegalArgumentException("Contact not found with id: " + id));
     }
 
+    // ===============================
+    // DELETE
+    // ===============================
+
     @Override
     public void delete(Long id) {
-        Contact contact = getById(id);  // ensure it exists
+        Contact contact = getById(id);
         contactRepository.delete(contact);
     }
 
-
-    // Create & Update
+    // ===============================
+    // CREATE
+    // ===============================
 
     @Override
     public Contact create(ContactForm form) {
+
         Contact contact = new Contact(form.getName());
-        applyFormData(contact, form);
+
+        updateEntity(contact, form);
+
         return contactRepository.save(contact);
     }
+
+    // ===============================
+    // UPDATE
+    // ===============================
 
     @Override
     public Contact update(Long id, ContactForm form) {
+
         Contact contact = getById(id);
-        applyFormData(contact, form);
+
+        updateEntity(contact, form);
+
         return contactRepository.save(contact);
     }
 
-    // Load form for editing
+    // ===============================
+    // GET FORM BY ID
+    // ===============================
 
     @Override
     public ContactForm getFormById(Long id) {
+
         Contact contact = getById(id);
 
+        return mapToForm(contact);
+    }
+
+    // ===============================
+    // REQUIRED BY BASESERVICE
+    // ===============================
+
+    @Override
+    public void updateEntity(Contact contact, ContactForm form) {
+        contact.setName(form.getName());
+        contact.setAddress(form.getAddress());
+        contact.setPhone(form.getPhone());
+        contact.setFax(form.getFax());
+        contact.setComments(form.getComments());
+    }
+
+    @Override
+    public ContactForm mapToForm(Contact contact) {
+
         ContactForm form = new ContactForm();
+
         form.setId(contact.getId());
         form.setName(contact.getName());
         form.setAddress(contact.getAddress());
@@ -68,15 +113,5 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         form.setComments(contact.getComments());
 
         return form;
-    }
-
-    // Helper method
-
-    private void applyFormData(Contact contact, ContactForm form) {
-        contact.setName(form.getName());
-        contact.setAddress(form.getAddress());
-        contact.setPhone(form.getPhone());
-        contact.setFax(form.getFax());
-        contact.setComments(form.getComments());
     }
 }

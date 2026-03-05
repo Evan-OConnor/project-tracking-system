@@ -23,16 +23,17 @@ CREATE TABLE project_status (
 
 
 CREATE TABLE vat_rate (
-    vat_rate_id BIGINT NOT NULL AUTO_INCREMENT,
 
-    rate_percent DECIMAL(5,2) NOT NULL,
+                          vat_rate_id BIGINT NOT NULL AUTO_INCREMENT,
+                          rate_percent DECIMAL(5,2) NOT NULL,
 
-    CONSTRAINT pk_vat_rate PRIMARY KEY(vat_rate_id),
+                          CONSTRAINT pk_vat_rate PRIMARY KEY (vat_rate_id),
+                          CONSTRAINT uk_vat_rate_percent UNIQUE (rate_percent),
+                          CONSTRAINT ck_vat_rate_percent_range
+                              CHECK (rate_percent >= 0 AND rate_percent <= 100)
 
-    CONSTRAINT uk_vat_rate_percent UNIQUE (rate_percent),
-
-    CONSTRAINT ck_vat_rate_percent_range CHECK (rate_percent >= 0 AND rate_percent <= 100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 CREATE TABLE work_description (
@@ -155,17 +156,21 @@ CREATE TABLE cost_item (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE invoice (
-    invoice_id BIGINT NOT NULL AUTO_INCREMENT,
+                         invoice_id BIGINT NOT NULL AUTO_INCREMENT,
 
-    project_id BIGINT NOT NULL,
-    vat_rate_id BIGINT NOT NULL,
+                         project_id BIGINT NOT NULL,
+                         invoice_date DATE NOT NULL,
+                         invoice_number VARCHAR(50) NOT NULL,
 
-    invoice_date DATE NOT NULL,
+                         CONSTRAINT pk_invoice PRIMARY KEY (invoice_id),
 
-    CONSTRAINT pk_invoice PRIMARY KEY (invoice_id),
+                         CONSTRAINT fk_invoice_project
+                             FOREIGN KEY (project_id)
+                                 REFERENCES project(project_id),
 
-    CONSTRAINT fk_invoice_project FOREIGN KEY (project_id) REFERENCES project(project_id),
-    CONSTRAINT fk_invoice_vat_rate FOREIGN KEY (vat_rate_id) REFERENCES vat_rate(vat_rate_id)
+                         CONSTRAINT uk_invoice_number
+                             UNIQUE (invoice_number)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE invoice_line_item (
@@ -187,23 +192,36 @@ CREATE TABLE invoice_line_item (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE receipt (
-    receipt_id BIGINT NOT NULL AUTO_INCREMENT,
+                         receipt_id BIGINT NOT NULL AUTO_INCREMENT,
 
-    invoice_id BIGINT NOT NULL,
+                         invoice_id BIGINT NOT NULL,
 
-    date_received DATE NOT NULL,
-    discount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    amount_paid DECIMAL(10,2) NOT NULL,
+                         receipt_number VARCHAR(50) NOT NULL,
+                         payment_method VARCHAR(50) NOT NULL,
 
-    CONSTRAINT pk_receipt PRIMARY KEY (receipt_id),
+                         date_received DATE NOT NULL,
+                         discount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                         amount_paid DECIMAL(10,2) NOT NULL,
 
-    CONSTRAINT fk_receipt_invoice FOREIGN KEY (invoice_id) REFERENCES invoice(invoice_id) ON DELETE CASCADE,
+                         CONSTRAINT pk_receipt PRIMARY KEY (receipt_id),
 
-    CONSTRAINT uk_receipt_invoice UNIQUE (invoice_id),
+                         CONSTRAINT fk_receipt_invoice
+                             FOREIGN KEY (invoice_id)
+                                 REFERENCES invoice(invoice_id)
+                                 ON DELETE CASCADE,
 
-    CONSTRAINT ck_receipt_discount_nonnegative CHECK (discount >= 0),
-    CONSTRAINT ck_receipt_amount_paid_positive CHECK (amount_paid > 0),
-    CONSTRAINT ck_receipt_discount_less_than_amount_paid CHECK (discount <= amount_paid)
+                         CONSTRAINT uk_receipt_invoice UNIQUE (invoice_id),
+                         CONSTRAINT uk_receipt_number UNIQUE (receipt_number),
+
+                         CONSTRAINT ck_receipt_discount_nonnegative
+                             CHECK (discount >= 0),
+
+                         CONSTRAINT ck_receipt_amount_paid_positive
+                             CHECK (amount_paid > 0),
+
+                         CONSTRAINT ck_receipt_discount_less_than_amount_paid
+                             CHECK (discount <= amount_paid)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE project_report_document (

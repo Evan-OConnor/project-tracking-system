@@ -8,6 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.math.BigDecimal;
+
 @Controller
 @RequestMapping("/receipts")
 public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
@@ -45,71 +48,102 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
         return "receipt";
     }
 
+    // =====================================================
+    // INVOICES DROPDOWN
+    // =====================================================
+
     @ModelAttribute("invoices")
     public Object getInvoices() {
         return invoiceRepository.findAll();
     }
 
+    // =====================================================
     // CREATE FORM
+    // =====================================================
+
     @GetMapping("/new")
     public String newReceipt(Model model) {
+
         ReceiptForm form = new ReceiptForm();
+        form.setDateReceived(LocalDate.now());
+        form.setDiscount(BigDecimal.ZERO);
+        form.setAmountPaid(BigDecimal.ZERO);
+
         model.addAttribute(getEntityAttributeName(), form);
+
         return getDetailsView();
     }
 
+    // =====================================================
     // CREATE
+    // =====================================================
+
     @PostMapping
     public String createReceipt(@ModelAttribute("receipt") ReceiptForm form) {
+
         service.create(form);
+
         return "redirect:" + getBaseUrl();
     }
 
+    // =====================================================
     // EDIT FORM
+    // =====================================================
+
     @GetMapping("/{id}/edit")
     public String editReceipt(@PathVariable Long id, Model model) {
+
         ReceiptForm form = service.getFormById(id);
+
         model.addAttribute(getEntityAttributeName(), form);
+
         return getDetailsView();
     }
 
+    // =====================================================
     // UPDATE
+    // =====================================================
+
     @PostMapping("/{id}/edit")
     public String updateReceipt(@PathVariable Long id,
                                 @ModelAttribute("receipt") ReceiptForm form) {
+
         service.update(id, form);
+
         return "redirect:" + getBaseUrl();
     }
 
-    // DELETE
-    @PostMapping("/{id}/delete")
-    public String deleteReceipt(@PathVariable Long id) {
-        service.delete(id);
-        return "redirect:" + getBaseUrl();
-    }
-
+    // =====================================================
     // QUICK CREATE FROM INVOICE
+    // =====================================================
+
     @PostMapping("/createFromInvoice")
     public String createReceiptFromInvoice(@RequestParam("invoiceId") Long invoiceId) {
+
         ReceiptForm form = new ReceiptForm();
+
         form.setInvoiceId(invoiceId);
-        form.setDateReceived(java.time.LocalDate.now());
-        form.setAmountPaid(java.math.BigDecimal.ZERO);
-        form.setDiscount(java.math.BigDecimal.ZERO);
+        form.setDateReceived(LocalDate.now());
+        form.setDiscount(BigDecimal.ZERO);
+        form.setAmountPaid(BigDecimal.ZERO);
+        form.setPaymentMethod("Bank Transfer");
 
         service.create(form);
+
         return "redirect:" + getBaseUrl();
     }
 
+    // =====================================================
     // PRINT RECEIPT
+    // =====================================================
+
     @GetMapping("/{id}/print")
     public String printReceipt(@PathVariable Long id, Model model) {
+
         Receipt receipt = service.getById(id);
+
         model.addAttribute("receipt", receipt);
-        model.addAttribute("invoiceSubtotal", receipt.getInvoice().getNetTotal());
-        model.addAttribute("invoiceVat", receipt.getInvoice().getVatTotal());
-        model.addAttribute("invoiceGross", receipt.getInvoice().getGrossTotal());
-        model.addAttribute("invoiceOutstanding", receipt.getInvoice().getOutstandingAmount());
+
         return "receipts/print";
     }
 }

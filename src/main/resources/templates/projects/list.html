@@ -42,7 +42,7 @@
                     <span class="badge text-bg-secondary" th:text="${p.status}">Open</span>
                 </td>
                 <td th:text="${p.category}">Category</td>
-                <td th:text="${p.clientContact}">Client Name</td>
+                <td th:text="${p.clientContact?.name}">Client Name</td>
                 <td th:text="${p.startDate}">2026-02-04</td>
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-secondary"

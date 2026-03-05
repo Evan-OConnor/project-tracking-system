@@ -10,6 +10,7 @@ import java.util.List;
 @Repository
 public interface CostItemRepository extends JpaRepository<CostItem, Long> {
 
-    // Find all cost items for a project with a specific type (OUTLAY or EXPENSE)
     List<CostItem> findByProjectAndType(Project project, CostItem.Type type);
+
+    List<CostItem> findByProjectAndInvoiceIsNull(Project project);
 }

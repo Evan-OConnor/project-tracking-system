@@ -47,12 +47,24 @@
 
     <!-- CLIENT CONTACT -->
     <div class="mb-3">
-      <label class="form-label">Client <span class="text-danger">*</span></label>
-      <input class="form-control" list="clients-list" th:field="*{clientContactId}" required>
+      <label class="form-label">
+        Client <span class="text-danger">*</span>
+      </label>
+
+      <input class="form-control"
+             list="clients-list"
+             th:field="*{clientContactName}"
+             required>
+
       <datalist id="clients-list">
-        <option th:each="c : ${contacts}" th:value="${c.id}" th:text="${c.name}"></option>
+        <option th:each="c : ${contacts}"
+                th:value="${c.name}">
+        </option>
       </datalist>
-      <div class="form-text">Client is required for every project.</div>
+
+      <div class="form-text">
+        Client is required for every project.
+      </div>
     </div>
 
     <!-- OPTIONAL CONTACTS -->

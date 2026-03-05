@@ -1,5 +1,6 @@
 package ie.universityofgalway.projecttrackingsystem.domain.core;
 
+import ie.universityofgalway.projecttrackingsystem.domain.lookup.VatRate;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 
@@ -18,6 +19,10 @@ public class InvoiceLineItem {
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "vat_rate_id", nullable = false)
+    private VatRate vatRate;
+
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
@@ -32,80 +37,50 @@ public class InvoiceLineItem {
     @Column(name = "unit_rate", nullable = false, precision = 10, scale = 2)
     private BigDecimal unitRate;
 
-
     // Constructors
 
-    public InvoiceLineItem() {}
+    protected InvoiceLineItem() {
+    }
 
-    public InvoiceLineItem(Invoice invoice, String description, BigDecimal quantity, BigDecimal unitRate) {
+    public InvoiceLineItem(Invoice invoice,
+                           VatRate vatRate,
+                           String description,
+                           BigDecimal quantity,
+                           BigDecimal unitRate) {
         this.invoice = invoice;
+        this.vatRate = vatRate;
         this.description = description;
         this.quantity = quantity;
         this.unitRate = unitRate;
     }
 
-    // Getters & Setters
+    // Getters
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public Invoice getInvoice() {
-        return invoice;
-    }
+    public Invoice getInvoice() { return invoice; }
 
-    public void setInvoice(Invoice invoice) {
-        this.invoice = invoice;
-    }
+    public VatRate getVatRate() { return vatRate; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getDetails() { return details; }
 
-    public String getDetails() {
-        return details;
-    }
+    public BigDecimal getQuantity() { return quantity; }
 
-    public void setDetails(String details) {
-        this.details = details;
-    }
+    public BigDecimal getUnitRate() { return unitRate; }
 
-    public BigDecimal getQuantity() {
-        return quantity;
-    }
+    // Setters
 
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
-    }
+    public void setInvoice(Invoice invoice) { this.invoice = invoice; }
 
-    public BigDecimal getUnitRate() {
-        return unitRate;
-    }
+    public void setVatRate(VatRate vatRate) { this.vatRate = vatRate; }
 
-    public void setUnitRate(BigDecimal unitRate) {
-        this.unitRate = unitRate;
-    }
+    public void setDescription(String description) { this.description = description; }
 
-    // Helper methods for Invoice calculations
+    public void setDetails(String details) { this.details = details; }
 
-    /** Net amount = quantity * unit rate */
-    public BigDecimal getNetAmount() {
-        if (quantity == null || unitRate == null) {
-            return BigDecimal.ZERO;
-        }
-        return unitRate.multiply(quantity);
-    }
+    public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
 
-    /** VAT amount = net amount * invoice's VAT rate (if available) */
-    public BigDecimal getVatAmount() {
-        if (invoice == null || invoice.getVatRate() == null || invoice.getVatRate().getRatePercent() == null) {
-            return BigDecimal.ZERO;
-        }
-        BigDecimal rate = invoice.getVatRate().getRatePercent().divide(BigDecimal.valueOf(100));
-        return getNetAmount().multiply(rate);
-    }
+    public void setUnitRate(BigDecimal unitRate) { this.unitRate = unitRate; }
 }

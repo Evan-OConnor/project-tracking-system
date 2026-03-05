@@ -1,6 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.domain.core;
 
 import jakarta.persistence.*;
+import ie.universityofgalway.projecttrackingsystem.domain.core.Invoice;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -30,6 +31,11 @@ public class CostItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_contact_id")
     private Contact supplierContact;
+
+    // Invoices
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_id")
+    private Invoice invoice;
 
     @NotNull
     @Column(name = "cost_date", nullable = false)
@@ -131,6 +137,8 @@ public class CostItem {
         return supplierContact != null ? supplierContact.getName() : null;
     }
 
+    public Invoice getInvoice() {return invoice;}
+
     // --------------------
     // Setters
     // --------------------
@@ -154,4 +162,8 @@ public class CostItem {
     }
 
     public void setType(Type type) { this.type = type; }
+
+    public void setInvoice(Invoice invoice) {this.invoice = invoice;}
+
+    public boolean isUnbilled() {return this.invoice == null;}
 }

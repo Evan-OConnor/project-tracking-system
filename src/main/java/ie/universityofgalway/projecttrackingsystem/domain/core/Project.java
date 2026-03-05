@@ -55,6 +55,12 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TimesheetEntry> timesheets = new ArrayList<>();
 
+    public List<TimesheetEntry> getUnbilledTimesheets() {
+        return timesheets.stream()
+                .filter(TimesheetEntry::isUnbilled)
+                .toList();
+    }
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CostItem> costItems = new ArrayList<>();
 

@@ -10,15 +10,17 @@ public class TimesheetEntryView {
     private String workDescription;
     private LocalDate entryDate;
     private BigDecimal hours;
+    private BigDecimal charge;
 
     public TimesheetEntryView(Long id, String projectTitle, String employeeName,
-                              String workDescription, LocalDate entryDate, BigDecimal hours) {
+                              String workDescription, LocalDate entryDate, BigDecimal hours, BigDecimal charge) {
         this.id = id;
         this.projectTitle = projectTitle;
         this.employeeName = employeeName;
         this.workDescription = workDescription;
         this.entryDate = entryDate;
         this.hours = hours;
+        this.charge = charge;
     }
 
     public Long getId() { return id; }
@@ -27,4 +29,5 @@ public class TimesheetEntryView {
     public String getWorkDescription() { return workDescription; }
     public LocalDate getEntryDate() { return entryDate; }
     public BigDecimal getHours() { return hours; }
+    public BigDecimal getCharge() {return charge;}
 }

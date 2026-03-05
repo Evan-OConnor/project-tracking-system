@@ -28,6 +28,7 @@
                 <th>Description</th>
                 <th>Date</th>
                 <th>Hours</th>
+                <th>Charge</th>
                 <th class="text-end">Actions</th>
             </tr>
             </thead>
@@ -38,6 +39,7 @@
                 <td th:text="${entry.workDescription}">Work Description</td>
                 <td th:text="${entry.entryDate.format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd'))}">Date</td>
                 <td th:text="${entry.hours}">Hours</td>
+                <td th:text="${entry.charge}">Charge</td>
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-secondary" th:href="@{/timesheet-entries/{id}(id=${entry.id})}">View</a>
                     <a class="btn btn-sm btn-outline-primary" th:href="@{/timesheet-entries/{id}/edit(id=${entry.id})}">Edit</a>

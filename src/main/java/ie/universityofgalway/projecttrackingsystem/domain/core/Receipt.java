@@ -26,6 +26,9 @@ public class Receipt {
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
 
+    @Column(name = "receipt_number", nullable = false, unique = true)
+    private String receiptNumber;
+
     @Column(name = "date_received", nullable = false)
     private LocalDate dateReceived;
 
@@ -37,19 +40,34 @@ public class Receipt {
     @Column(name = "amount_paid", nullable = false, precision = 10, scale = 2)
     private BigDecimal amountPaid;
 
-    // Constructors
+    @Column(name = "payment_method", nullable = false, length = 50)
+    private String paymentMethod;
 
-    public Receipt() {
+    // =========================
+    // Constructors
+    // =========================
+
+    protected Receipt() {
     }
 
-    public Receipt(Invoice invoice, LocalDate dateReceived, BigDecimal discount, BigDecimal amountPaid) {
+    public Receipt(Invoice invoice,
+                   String receiptNumber,
+                   LocalDate dateReceived,
+                   BigDecimal discount,
+                   BigDecimal amountPaid,
+                   String paymentMethod) {
+
         this.invoice = invoice;
+        this.receiptNumber = receiptNumber;
         this.dateReceived = dateReceived;
         this.discount = discount;
         this.amountPaid = amountPaid;
+        this.paymentMethod = paymentMethod;
     }
 
+    // =========================
     // Getters
+    // =========================
 
     public Long getId() {
         return id;
@@ -57,6 +75,10 @@ public class Receipt {
 
     public Invoice getInvoice() {
         return invoice;
+    }
+
+    public String getReceiptNumber() {
+        return receiptNumber;
     }
 
     public LocalDate getDateReceived() {
@@ -71,10 +93,20 @@ public class Receipt {
         return amountPaid;
     }
 
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    // =========================
     // Setters
+    // =========================
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
+    }
+
+    public void setReceiptNumber(String receiptNumber) {
+        this.receiptNumber = receiptNumber;
     }
 
     public void setDateReceived(LocalDate dateReceived) {
@@ -87,5 +119,9 @@ public class Receipt {
 
     public void setAmountPaid(BigDecimal amountPaid) {
         this.amountPaid = amountPaid;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

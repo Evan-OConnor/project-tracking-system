@@ -9,6 +9,7 @@ import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectReposi
 import ie.universityofgalway.projecttrackingsystem.repository.core.ContactRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.lookup.ProjectCategoryRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.lookup.ProjectStatusRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -26,76 +27,159 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
                           ProjectCategoryRepository categoryRepository,
                           ProjectStatusRepository statusRepository,
                           ContactRepository contactRepository) {
+
         this.projectRepository = projectRepository;
         this.categoryRepository = categoryRepository;
         this.statusRepository = statusRepository;
         this.contactRepository = contactRepository;
     }
 
+    // ===============================
+    // LIST
+    // ===============================
+
     @Override
     public List<Project> list() {
         return projectRepository.findAll();
     }
 
+    // ===============================
+    // GET BY ID
+    // ===============================
+
     @Override
     public Project getById(Long id) {
         return projectRepository.findWithCostItemsById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("Project not found"));
     }
+
+    // ===============================
+    // GET FORM BY ID
+    // ===============================
 
     @Override
     public ProjectForm getFormById(Long id) {
-        Project project = projectRepository.findById(id).orElseThrow();
-        ProjectForm form = new ProjectForm();
-        form.setCategoryId(project.getCategory().getId());
-        form.setStatusId(project.getStatus().getId());
-        form.setClientContactId(project.getClientContact().getId());
-        form.setSolicitorContactId(project.getSolicitorContact() != null ? project.getSolicitorContact().getId() : null);
-        form.setInsuranceCompanyContactId(project.getInsuranceCompanyContact() != null ? project.getInsuranceCompanyContact().getId() : null);
-        form.setTitle(project.getTitle());
-        form.setDescription(project.getDescription());
-        form.setStartDate(project.getStartDate());
-        return form;
+
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        return mapToForm(project);
     }
+
+    // ===============================
+    // CREATE
+    // ===============================
 
     @Override
     public Project create(ProjectForm form) {
+
         Project project = new Project();
-        mapFormToProject(project, form);
+
+        updateEntity(project, form);
+
         return projectRepository.save(project);
     }
 
+    // ===============================
+    // UPDATE
+    // ===============================
+
     @Override
     public Project update(Long id, ProjectForm form) {
-        Project project = projectRepository.findById(id).orElseThrow();
-        mapFormToProject(project, form);
+
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        updateEntity(project, form);
+
         return projectRepository.save(project);
     }
+
+    // ===============================
+    // DELETE
+    // ===============================
 
     @Override
     public void delete(Long id) {
         projectRepository.deleteById(id);
     }
 
-    private void mapFormToProject(Project project, ProjectForm form) {
-        project.setCategory(categoryRepository.findById(form.getCategoryId()).orElseThrow());
-        project.setStatus(statusRepository.findById(form.getStatusId()).orElseThrow());
-        project.setClientContact(contactRepository.findById(form.getClientContactId()).orElseThrow());
+    // ===============================
+    // UPDATE ENTITY FROM FORM
+    // ===============================
+
+    @Override
+    public void updateEntity(Project project, ProjectForm form) {
+
+        project.setCategory(categoryRepository.findById(form.getCategoryId())
+                .orElseThrow());
+
+        project.setStatus(statusRepository.findById(form.getStatusId())
+                .orElseThrow());
+
+        Contact client = contactRepository
+                .findByNameIgnoreCase(form.getClientContactName())
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Client not found: " + form.getClientContactName()
+                        )
+                );
+
+        project.setClientContact(client);
+
         project.setSolicitorContact(form.getSolicitorContactId() != null
                 ? contactRepository.findById(form.getSolicitorContactId()).orElse(null)
                 : null);
+
         project.setInsuranceCompanyContact(form.getInsuranceCompanyContactId() != null
                 ? contactRepository.findById(form.getInsuranceCompanyContactId()).orElse(null)
                 : null);
+
         project.setTitle(form.getTitle());
         project.setDescription(form.getDescription());
         project.setStartDate(form.getStartDate());
     }
 
+    // ===============================
+    // MAP ENTITY → FORM
+    // ===============================
+
+    @Override
+    public ProjectForm mapToForm(Project project) {
+
+        ProjectForm form = new ProjectForm();
+
+        form.setCategoryId(project.getCategory().getId());
+        form.setStatusId(project.getStatus().getId());
+        form.setClientContactName(project.getClientContact().getName());
+
+        form.setSolicitorContactId(
+                project.getSolicitorContact() != null
+                        ? project.getSolicitorContact().getId()
+                        : null
+        );
+
+        form.setInsuranceCompanyContactId(
+                project.getInsuranceCompanyContact() != null
+                        ? project.getInsuranceCompanyContact().getId()
+                        : null
+        );
+
+        form.setTitle(project.getTitle());
+        form.setDescription(project.getDescription());
+        form.setStartDate(project.getStartDate());
+
+        return form;
+    }
+
+    // ===============================
+    // LOAD LOOKUPS FOR FORMS
+    // ===============================
+
     public void loadFormLookups(Model model) {
+
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("statuses", statusRepository.findAll());
         model.addAttribute("contacts", contactRepository.findAll());
     }
-
 }

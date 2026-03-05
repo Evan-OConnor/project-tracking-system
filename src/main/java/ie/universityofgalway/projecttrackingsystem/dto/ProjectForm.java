@@ -1,11 +1,12 @@
 package ie.universityofgalway.projecttrackingsystem.dto;
+import ie.universityofgalway.projecttrackingsystem.domain.core.Contact;
 
 import java.time.LocalDate;
 
 public class ProjectForm {
     private Long categoryId;
     private Long statusId;
-    private Long clientContactId;
+    private String clientContactName;
     private Long solicitorContactId;
     private Long insuranceCompanyContactId;
     private String title;
@@ -22,8 +23,8 @@ public class ProjectForm {
     public Long getStatusId() { return statusId; }
     public void setStatusId(Long statusId) { this.statusId = statusId; }
 
-    public Long getClientContactId() { return clientContactId; }
-    public void setClientContactId(Long clientContactId) { this.clientContactId = clientContactId; }
+    public String getClientContactName() {return clientContactName;}
+    public void setClientContactName(String clientContactName) {this.clientContactName = clientContactName;}
 
     public Long getSolicitorContactId() { return solicitorContactId; }
     public void setSolicitorContactId(Long solicitorContactId) { this.solicitorContactId = solicitorContactId; }

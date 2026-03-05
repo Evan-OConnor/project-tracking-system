@@ -1,146 +1,221 @@
 package ie.universityofgalway.projecttrackingsystem.service;
 
-import ie.universityofgalway.projecttrackingsystem.domain.core.Invoice;
-import ie.universityofgalway.projecttrackingsystem.domain.core.Receipt;
-import ie.universityofgalway.projecttrackingsystem.domain.core.InvoiceLineItem;
-import ie.universityofgalway.projecttrackingsystem.dto.InvoiceForm;
-import ie.universityofgalway.projecttrackingsystem.dto.InvoiceLineItemForm;
-import ie.universityofgalway.projecttrackingsystem.dto.ReceiptForm;
-import ie.universityofgalway.projecttrackingsystem.repository.core.InvoiceRepository;
-import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectRepository;
+import ie.universityofgalway.projecttrackingsystem.domain.core.*;
+import ie.universityofgalway.projecttrackingsystem.domain.lookup.VatRate;
+import ie.universityofgalway.projecttrackingsystem.dto.InvoiceDTO;
+import ie.universityofgalway.projecttrackingsystem.dto.InvoiceLineItemDTO;
+import ie.universityofgalway.projecttrackingsystem.repository.core.*;
 import ie.universityofgalway.projecttrackingsystem.repository.lookup.VatRateRepository;
-import org.springframework.stereotype.Service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class InvoiceService implements BaseService<Invoice, InvoiceForm> {
+@Transactional
+public class InvoiceService {
 
-    private final InvoiceRepository invoiceRepository;
-    private final ProjectRepository projectRepository;
-    private final VatRateRepository vatRateRepository;
+    private final InvoiceRepository invoiceRepo;
+    private final TimesheetEntryRepository timesheetRepo;
+    private final CostItemRepository costItemRepo;
+    private final InvoiceLineItemRepository lineItemRepo;
+    private final ProjectRepository projectRepo;
+    private final VatRateRepository vatRateRepo;
 
-    public InvoiceService(InvoiceRepository invoiceRepository,
-                          ProjectRepository projectRepository,
-                          VatRateRepository vatRateRepository) {
-        this.invoiceRepository = invoiceRepository;
-        this.projectRepository = projectRepository;
-        this.vatRateRepository = vatRateRepository;
+    public InvoiceService(InvoiceRepository invoiceRepo,
+                          TimesheetEntryRepository timesheetRepo,
+                          CostItemRepository costItemRepo,
+                          InvoiceLineItemRepository lineItemRepo,
+                          ProjectRepository projectRepo,
+                          VatRateRepository vatRateRepo) {
+
+        this.invoiceRepo = invoiceRepo;
+        this.timesheetRepo = timesheetRepo;
+        this.costItemRepo = costItemRepo;
+        this.lineItemRepo = lineItemRepo;
+        this.projectRepo = projectRepo;
+        this.vatRateRepo = vatRateRepo;
     }
 
-    @Override
-    public List<Invoice> list() {
-        return invoiceRepository.findAll();
-    }
+    // =====================================================
+    // GENERATE INVOICE
+    // =====================================================
+    public InvoiceDTO generateInvoice(Long projectId) {
 
-    @Override
-    public Invoice getById(Long id) {
-        return invoiceRepository.findById(id).orElseThrow();
-    }
+        Project project = projectRepo.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
 
-    @Override
-    public InvoiceForm getFormById(Long id) {
-        Invoice invoice = getById(id);
-        InvoiceForm form = new InvoiceForm();
-        form.setId(invoice.getId());
-        form.setProjectId(invoice.getProject().getId());
-        form.setVatRateId(invoice.getVatRate().getId());
-        form.setInvoiceDate(invoice.getInvoiceDate());
+        List<TimesheetEntry> timesheets =
+                timesheetRepo.findByProjectAndInvoiceIsNull(project);
 
-        // Map line items to DTO
-        for (InvoiceLineItem item : invoice.getItems()) {
-            InvoiceLineItemForm lineItemForm = new InvoiceLineItemForm();
-            lineItemForm.setDescription(item.getDescription());
-            lineItemForm.setDetails(item.getDetails());
-            lineItemForm.setQuantity(item.getQuantity());
-            lineItemForm.setUnitRate(item.getUnitRate());
-            lineItemForm.setTotal(item.getNetAmount()); // entity net amount
-            form.getItems().add(lineItemForm);
+        List<CostItem> costs =
+                costItemRepo.findByProjectAndInvoiceIsNull(project);
+
+        // 🚨 Prevent empty invoice creation
+        if (timesheets.isEmpty() && costs.isEmpty()) {
+            throw new IllegalStateException(
+                    "No unbilled items available for this project."
+            );
         }
 
-        // Populate totals from entity
-        form.setSubtotal(invoice.getNetTotal());
-        form.setTotalIncludingVat(invoice.getVatTotal());
+        VatRate standardVat = vatRateRepo
+                .findByRatePercent(new BigDecimal("23.00"))
+                .orElseThrow(() ->
+                        new RuntimeException("23% VAT rate not configured in database"));
 
-        // Map receipt entity to ReceiptForm if exists
-        if (invoice.getReceipt() != null) {
-            ReceiptForm receiptForm = new ReceiptForm();
-            receiptForm.setId(invoice.getReceipt().getId());
-            receiptForm.setInvoiceId(invoice.getId());
-            receiptForm.setDateReceived(invoice.getReceipt().getDateReceived());
-            receiptForm.setAmountPaid(invoice.getReceipt().getAmountPaid());
-            receiptForm.setDiscount(invoice.getReceipt().getDiscount());
-            form.setReceipt(receiptForm);
+        String invoiceNumber = generateInvoiceNumber();
+
+        Invoice invoice = new Invoice(
+                project,
+                LocalDate.now(),
+                invoiceNumber
+        );
+
+        invoiceRepo.save(invoice);
+
+        // ============================
+        // PROFESSIONAL FEES
+        // ============================
+
+        for (TimesheetEntry entry : timesheets) {
+
+            InvoiceLineItem line = new InvoiceLineItem(
+                    invoice,
+                    standardVat,
+                    "Professional Services - " + entry.getEmployee().getName(),
+                    entry.getHours(),
+                    entry.getEmployee().getHourlyRate()
+            );
+
+            lineItemRepo.save(line);
+            entry.setInvoice(invoice);
         }
 
-        if (invoice.getReceipt() != null) {
-            Receipt receipt = invoice.getReceipt();
-            ReceiptForm receiptForm = new ReceiptForm();
-            receiptForm.setId(receipt.getId());
-            receiptForm.setInvoiceId(invoice.getId());
-            receiptForm.setDateReceived(receipt.getDateReceived());
-            receiptForm.setDiscount(receipt.getDiscount());
-            receiptForm.setAmountPaid(receipt.getAmountPaid());
+        // ============================
+        // EXPENSES
+        // ============================
 
-            form.setReceipt(receiptForm);
+        for (CostItem cost : costs) {
+
+            InvoiceLineItem line = new InvoiceLineItem(
+                    invoice,
+                    standardVat,
+                    cost.getDescription(),
+                    BigDecimal.ONE,
+                    cost.getCostAmount()
+            );
+
+            lineItemRepo.save(line);
+            cost.setInvoice(invoice);
         }
 
-        return form;
+        return mapToDTO(invoice);
     }
 
-
-    @Override
-    public Invoice create(InvoiceForm form) {
-        Invoice invoice = new Invoice();
-        invoice.setProject(projectRepository.findById(form.getProjectId()).orElseThrow());
-        invoice.setVatRate(vatRateRepository.findById(form.getVatRateId()).orElseThrow());
-        invoice.setInvoiceDate(form.getInvoiceDate());
-
-        // Map line items
-        List<InvoiceLineItem> items = form.getItems().stream()
-                .map(itemForm -> {
-                    InvoiceLineItem item = new InvoiceLineItem();
-                    item.setDescription(itemForm.getDescription());
-                    item.setDetails(itemForm.getDetails());
-                    item.setQuantity(itemForm.getQuantity());
-                    item.setUnitRate(itemForm.getUnitRate());
-                    item.setInvoice(invoice); // link to parent
-                    return item;
-                })
+    // =====================================================
+    // LIST ALL INVOICES
+    // =====================================================
+    public List<InvoiceDTO> getAllInvoices() {
+        return invoiceRepo.findAll()
+                .stream()
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
-        invoice.setItems(items);
-
-        return invoiceRepository.save(invoice);
     }
 
-    @Override
-    public Invoice update(Long id, InvoiceForm form) {
-        Invoice invoice = getById(id);
-        invoice.setProject(projectRepository.findById(form.getProjectId()).orElseThrow());
-        invoice.setVatRate(vatRateRepository.findById(form.getVatRateId()).orElseThrow());
-        invoice.setInvoiceDate(form.getInvoiceDate());
-
-        // Replace line items
-        invoice.getItems().clear();
-        List<InvoiceLineItem> items = form.getItems().stream()
-                .map(itemForm -> {
-                    InvoiceLineItem item = new InvoiceLineItem();
-                    item.setDescription(itemForm.getDescription());
-                    item.setDetails(itemForm.getDetails());
-                    item.setQuantity(itemForm.getQuantity());
-                    item.setUnitRate(itemForm.getUnitRate());
-                    item.setInvoice(invoice);
-                    return item;
-                })
-                .collect(Collectors.toList());
-        invoice.getItems().addAll(items);
-
-        return invoiceRepository.save(invoice);
+    // =====================================================
+    // GET SINGLE INVOICE
+    // =====================================================
+    public InvoiceDTO getInvoiceById(Long id) {
+        Invoice invoice = invoiceRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+        return mapToDTO(invoice);
     }
 
-    @Override
-    public void delete(Long id) {
-        invoiceRepository.deleteById(id);
+    // =====================================================
+    // SUPPORT METHODS
+    // =====================================================
+    public List<Project> getAllProjects() {
+        return projectRepo.findAll();
+    }
+
+    public List<VatRate> getAllVatRates() {
+        return vatRateRepo.findAll();
+    }
+
+    private String generateInvoiceNumber() {
+        long count = invoiceRepo.count() + 1;
+        return String.format("INV-%05d", count);
+    }
+
+    // =====================================================
+    // ENTITY → DTO (VAT PER LINE CALCULATION)
+    // =====================================================
+    private InvoiceDTO mapToDTO(Invoice invoice) {
+
+        List<InvoiceLineItem> lines =
+                lineItemRepo.findByInvoice(invoice);
+
+        BigDecimal subtotal = BigDecimal.ZERO;
+        BigDecimal vatAmount = BigDecimal.ZERO;
+
+        for (InvoiceLineItem line : lines) {
+
+            BigDecimal net = line.getQuantity()
+                    .multiply(line.getUnitRate());
+
+            BigDecimal vat = net
+                    .multiply(line.getVatRate().getRateDecimal());
+
+            subtotal = subtotal.add(net);
+            vatAmount = vatAmount.add(vat);
+        }
+
+        subtotal = subtotal.setScale(2, RoundingMode.HALF_UP);
+        vatAmount = vatAmount.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal total = subtotal.add(vatAmount)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        List<InvoiceLineItemDTO> items =
+                lines.stream()
+                        .map(line -> {
+
+                            BigDecimal net = line.getQuantity()
+                                    .multiply(line.getUnitRate())
+                                    .setScale(2, RoundingMode.HALF_UP);
+
+                            BigDecimal vat = net
+                                    .multiply(line.getVatRate().getRateDecimal())
+                                    .setScale(2, RoundingMode.HALF_UP);
+
+                            BigDecimal gross = net.add(vat)
+                                    .setScale(2, RoundingMode.HALF_UP);
+
+                            return new InvoiceLineItemDTO(
+                                    line.getDescription(),
+                                    line.getQuantity(),
+                                    line.getUnitRate(),
+                                    net,
+                                    line.getVatRate().getRatePercent(),
+                                    vat,
+                                    gross
+                            );
+                        })
+                        .collect(Collectors.toList());
+
+        return new InvoiceDTO(
+                invoice.getId(),
+                invoice.getInvoiceNumber(),
+                invoice.getProject().getTitle(),
+                invoice.getInvoiceDate(),
+                items,
+                subtotal,
+                vatAmount,
+                total
+        );
     }
 }

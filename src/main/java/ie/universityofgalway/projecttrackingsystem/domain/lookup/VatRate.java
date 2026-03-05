@@ -36,6 +36,10 @@ public class VatRate {
         return ratePercent;
     }
 
+    public BigDecimal getRateDecimal() {
+        return ratePercent.divide(BigDecimal.valueOf(100));
+    }
+
     public void setRatePercent(BigDecimal ratePercent) {
         this.ratePercent = ratePercent;
     }
