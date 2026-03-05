@@ -31,9 +31,8 @@ import static org.mockito.Mockito.*;
  * Unit tests for {@link SystemUserAdminService}.
  *
  * Verifies business logic for user administration, including:
- * - Employee + SystemUser creation
- * - Username generation
- * - Password encoding and confirmation validation
+ * - Employee + SystemUser creation and username generation
+ * - Password encoding and confirm-password validation
  * - Update behaviour (including optional password changes)
  * - Deletion of linked employee and account
  * - Search and retrieval operations
@@ -62,8 +61,7 @@ class SystemUserAdminServiceTest {
     private SystemRole staffRole;
     private Employee savedEmployee;
 
-    // Set private id field via reflection
-
+    // Helper to set private id field via reflection
     private void setId(Object entity, Long value) throws Exception {
         Field field = entity.getClass().getDeclaredField("id");
         field.setAccessible(true);
@@ -79,7 +77,7 @@ class SystemUserAdminServiceTest {
         setId(savedEmployee, 42L);
     }
 
-    //  --- createEmployeeAndSystemUser ---
+    // --- createEmployeeAndSystemUser: creation and validation tests ---
 
     @Test
     void createEmployeeAndSystemUser_happyPath_savesEmployeeAndUser() {
@@ -224,7 +222,7 @@ class SystemUserAdminServiceTest {
         verifyNoInteractions(employeeRepository);
     }
 
-    //  --- deleteEmployeeAndAccount ---
+    // --- deleteEmployeeAndAccount: deletion behaviour tests ---
 
     @Test
     void deleteEmployeeAndAccount_existingUser_deletesBoth() throws Exception {
@@ -251,7 +249,7 @@ class SystemUserAdminServiceTest {
         verify(employeeRepository, never()).deleteById(anyLong());
     }
 
-    //  --- listAllUsers ---
+    // --- listAllUsers: retrieval tests ---
 
     @Test
     void listAllUsers_returnsAll() throws Exception {
@@ -271,7 +269,7 @@ class SystemUserAdminServiceTest {
         verify(userRepository).findAll();
     }
 
-    //  --- searchUsers ---
+    // --- searchUsers: query behaviour tests ---
 
     @Test
     void searchUsers_withQuery_callsSearchRepo() {
@@ -304,7 +302,7 @@ class SystemUserAdminServiceTest {
         verify(userRepository).findAll();
     }
 
-    //  --- findUsersByEmployeeId ---
+    // --- findUserByEmployeeId: lookup tests ---
 
     @Test
     void findUserByEmployeeId_existing_returnsUser() throws Exception {
@@ -328,7 +326,7 @@ class SystemUserAdminServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // loadEditFormForEmployee
+    // --- loadEditFormForEmployee: edit form population tests ---
 
     @Test
     void loadEditFormForEmployee_existing_returnsPopulatedForm() throws Exception {
@@ -360,7 +358,7 @@ class SystemUserAdminServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // updateEmployeeAndUser
+    // --- updateEmployeeAndUser: update and password handling tests ---
 
     @Test
     void updateEmployeeAndUser_withNewPassword_encodesAndSaves() throws Exception {
