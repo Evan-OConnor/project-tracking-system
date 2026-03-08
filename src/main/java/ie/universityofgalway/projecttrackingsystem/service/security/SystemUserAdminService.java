@@ -8,6 +8,8 @@ import ie.universityofgalway.projecttrackingsystem.dto.EditUserForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.EmployeeRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.security.SystemRoleRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.security.SystemUserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,6 +65,11 @@ public class SystemUserAdminService {
         // validate password, employee name, hourly rate
         if (form.getPassword() == null || form.getPassword().isBlank()) {
             throw new IllegalArgumentException("Password is required");
+        }
+
+        // confirm password must match
+        if (form.getConfirmPassword() == null || !form.getPassword().equals(form.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
         }
 
         if (form.getEmployeeName() == null || form.getEmployeeName().isBlank()) {
@@ -128,6 +135,18 @@ public class SystemUserAdminService {
     }
 
     /**
+     * Search users with pagination support. Returns a Page of users matching the
+     * query, or all users if the query is blank.
+     */
+    @Transactional(readOnly = true)
+    public Page<SystemUser> searchUsers(String query, Pageable pageable) {
+        if (query == null || query.isBlank()) {
+            return userRepository.findAll(pageable);
+        }
+        return userRepository.searchByUsernameOrEmployeeName(query.trim(), pageable);
+    }
+
+    /**
      * Lookup a SystemUser by Employee id.
      */
     @Transactional(readOnly = true)
@@ -160,6 +179,13 @@ public class SystemUserAdminService {
      */
     @Transactional
     public SystemUser updateEmployeeAndUser(EditUserForm form) {
+        // if a new password is provided, confirm it first to avoid partial updates
+        if (form.getPassword() != null && !form.getPassword().isBlank()) {
+            if (form.getConfirmPassword() == null || !form.getPassword().equals(form.getConfirmPassword())) {
+                throw new IllegalArgumentException("Passwords do not match");
+            }
+        }
+
         Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + form.getEmployeeId()));
         employee.setName(form.getEmployeeName());
         employee.setHourlyRate(form.getHourlyRate());
