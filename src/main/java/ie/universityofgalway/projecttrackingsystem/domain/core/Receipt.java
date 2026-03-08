@@ -43,9 +43,7 @@ public class Receipt {
     @Column(name = "payment_method", nullable = false, length = 50)
     private String paymentMethod;
 
-    // =========================
     // Constructors
-    // =========================
 
     protected Receipt() {
     }
@@ -65,63 +63,35 @@ public class Receipt {
         this.paymentMethod = paymentMethod;
     }
 
-    // =========================
     // Getters
-    // =========================
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() {return id;}
 
-    public Invoice getInvoice() {
-        return invoice;
-    }
+    public Invoice getInvoice() {return invoice;}
 
-    public String getReceiptNumber() {
-        return receiptNumber;
-    }
+    public String getReceiptNumber() {return receiptNumber;}
 
-    public LocalDate getDateReceived() {
-        return dateReceived;
-    }
+    public LocalDate getDateReceived() {return dateReceived;}
 
-    public BigDecimal getDiscount() {
-        return discount;
-    }
+    public BigDecimal getDiscount() {return discount;}
 
-    public BigDecimal getAmountPaid() {
-        return amountPaid;
-    }
+    public BigDecimal getAmountPaid() {return amountPaid;}
 
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
+    public String getPaymentMethod() {return paymentMethod;}
 
-    // =========================
+
     // Setters
-    // =========================
 
-    public void setInvoice(Invoice invoice) {
-        this.invoice = invoice;
-    }
+    public void setInvoice(Invoice invoice) {this.invoice = invoice;}
 
-    public void setReceiptNumber(String receiptNumber) {
-        this.receiptNumber = receiptNumber;
-    }
+    public void setReceiptNumber(String receiptNumber) {this.receiptNumber = receiptNumber;}
 
-    public void setDateReceived(LocalDate dateReceived) {
-        this.dateReceived = dateReceived;
-    }
+    public void setDateReceived(LocalDate dateReceived) {this.dateReceived = dateReceived;}
 
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
-    }
+    public void setDiscount(BigDecimal discount) {this.discount = discount;}
 
-    public void setAmountPaid(BigDecimal amountPaid) {
-        this.amountPaid = amountPaid;
-    }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
+    public void setAmountPaid(BigDecimal amountPaid) {this.amountPaid = amountPaid;}
+
+    public void setPaymentMethod(String paymentMethod) {this.paymentMethod = paymentMethod;}
 }

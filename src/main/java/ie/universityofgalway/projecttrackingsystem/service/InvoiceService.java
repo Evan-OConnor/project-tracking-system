@@ -42,9 +42,7 @@ public class InvoiceService {
         this.vatRateRepo = vatRateRepo;
     }
 
-    // =====================================================
     // GENERATE INVOICE
-    // =====================================================
     public InvoiceDTO generateInvoice(Long projectId) {
 
         Project project = projectRepo.findById(projectId)
@@ -56,7 +54,7 @@ public class InvoiceService {
         List<CostItem> costs =
                 costItemRepo.findByProjectAndInvoiceIsNull(project);
 
-        // 🚨 Prevent empty invoice creation
+        // Prevent empty invoice creation
         if (timesheets.isEmpty() && costs.isEmpty()) {
             throw new IllegalStateException(
                     "No unbilled items available for this project."
@@ -78,9 +76,7 @@ public class InvoiceService {
 
         invoiceRepo.save(invoice);
 
-        // ============================
         // PROFESSIONAL FEES
-        // ============================
 
         for (TimesheetEntry entry : timesheets) {
 
@@ -96,9 +92,7 @@ public class InvoiceService {
             entry.setInvoice(invoice);
         }
 
-        // ============================
         // EXPENSES
-        // ============================
 
         for (CostItem cost : costs) {
 
@@ -117,9 +111,7 @@ public class InvoiceService {
         return mapToDTO(invoice);
     }
 
-    // =====================================================
     // LIST ALL INVOICES
-    // =====================================================
     public List<InvoiceDTO> getAllInvoices() {
         return invoiceRepo.findAll()
                 .stream()
@@ -127,18 +119,14 @@ public class InvoiceService {
                 .collect(Collectors.toList());
     }
 
-    // =====================================================
     // GET SINGLE INVOICE
-    // =====================================================
     public InvoiceDTO getInvoiceById(Long id) {
         Invoice invoice = invoiceRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
         return mapToDTO(invoice);
     }
 
-    // =====================================================
     // SUPPORT METHODS
-    // =====================================================
     public List<Project> getAllProjects() {
         return projectRepo.findAll();
     }
@@ -152,9 +140,7 @@ public class InvoiceService {
         return String.format("INV-%05d", count);
     }
 
-    // =====================================================
     // ENTITY → DTO (VAT PER LINE CALCULATION)
-    // =====================================================
     private InvoiceDTO mapToDTO(Invoice invoice) {
 
         List<InvoiceLineItem> lines =

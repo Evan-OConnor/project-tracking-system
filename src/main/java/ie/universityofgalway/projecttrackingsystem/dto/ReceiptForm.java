@@ -18,63 +18,33 @@ public class ReceiptForm {
 
     private String paymentMethod;
 
-    // =========================
     // Getters & Setters
-    // =========================
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() {return id;}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setId(Long id) {this.id = id;}
 
-    public Long getInvoiceId() {
-        return invoiceId;
-    }
+    public Long getInvoiceId() {return invoiceId;}
 
-    public void setInvoiceId(Long invoiceId) {
-        this.invoiceId = invoiceId;
-    }
+    public void setInvoiceId(Long invoiceId) {this.invoiceId = invoiceId;}
 
-    public String getReceiptNumber() {
-        return receiptNumber;
-    }
+    public String getReceiptNumber() {return receiptNumber;}
 
-    public void setReceiptNumber(String receiptNumber) {
-        this.receiptNumber = receiptNumber;
-    }
+    public void setReceiptNumber(String receiptNumber) {this.receiptNumber = receiptNumber;}
 
-    public LocalDate getDateReceived() {
-        return dateReceived;
-    }
+    public LocalDate getDateReceived() {return dateReceived;}
 
-    public void setDateReceived(LocalDate dateReceived) {
-        this.dateReceived = dateReceived;
-    }
+    public void setDateReceived(LocalDate dateReceived) {this.dateReceived = dateReceived;}
 
-    public BigDecimal getDiscount() {
-        return discount;
-    }
+    public BigDecimal getDiscount() {return discount;}
 
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
-    }
+    public void setDiscount(BigDecimal discount) {this.discount = discount;}
 
-    public BigDecimal getAmountPaid() {
-        return amountPaid;
-    }
+    public BigDecimal getAmountPaid() {return amountPaid;}
 
-    public void setAmountPaid(BigDecimal amountPaid) {
-        this.amountPaid = amountPaid;
-    }
+    public void setAmountPaid(BigDecimal amountPaid) {this.amountPaid = amountPaid;}
 
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
+    public String getPaymentMethod() {return paymentMethod;}
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
+    public void setPaymentMethod(String paymentMethod) {this.paymentMethod = paymentMethod;}
 }

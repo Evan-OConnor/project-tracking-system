@@ -19,27 +19,21 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
-    // ===============================
     // LIST INVOICES
-    // ===============================
     @GetMapping
     public String listInvoices(Model model) {
         model.addAttribute("invoices", invoiceService.getAllInvoices());
         return "invoice/list";
     }
 
-    // ===============================
     // VIEW INVOICE
-    // ===============================
     @GetMapping("/{id}")
     public String viewInvoice(@PathVariable Long id, Model model) {
         model.addAttribute("invoice", invoiceService.getInvoiceById(id));
         return "invoice/view";
     }
 
-    // ===============================
     // SHOW GENERATE PAGE
-    // ===============================
     @GetMapping("/generate")
     public String showGeneratePage(Model model) {
         model.addAttribute("projects", invoiceService.getAllProjects());
@@ -47,9 +41,8 @@ public class InvoiceController {
         return "invoice/generate";
     }
 
-    // ===============================
-    // GENERATE INVOICE (POST)
-    // ===============================
+
+    // GENERATE INVOICE
     @PostMapping("/generate")
     public String generateInvoice(@RequestParam Long projectId,
                                   RedirectAttributes redirectAttributes) {

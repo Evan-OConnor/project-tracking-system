@@ -85,10 +85,7 @@ public class TimesheetEntry {
 
     public Invoice getInvoice() { return invoice; }
 
-    // ============================
     // Setters
-    // ============================
-
     public void setProject(Project project) {
         this.project = project;
     }
@@ -113,16 +110,14 @@ public class TimesheetEntry {
         this.invoice = invoice;
     }
 
-    // ============================
-    // Business Logic
-    // ============================
+    // Business Rules
 
-    /** Unbilled if no invoice linked */
+    // Unbilled if no invoice linked //
     public boolean isUnbilled() {
         return this.invoice == null;
     }
 
-    /** Net charge = hours × employee hourly rate */
+    //Net charge = hours × employee hourly rate //
     public BigDecimal getNetAmount() {
         if (hours == null || employee == null || employee.getHourlyRate() == null) {
             return BigDecimal.ZERO;

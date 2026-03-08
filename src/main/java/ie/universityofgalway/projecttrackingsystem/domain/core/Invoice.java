@@ -23,9 +23,7 @@ public class Invoice {
     @Column(name = "invoice_number", nullable = false, unique = true)
     private String invoiceNumber;
 
-    // ============================
     // Constructors
-    // ============================
 
     protected Invoice() {
     }
@@ -39,9 +37,7 @@ public class Invoice {
         this.invoiceNumber = invoiceNumber;
     }
 
-    // ============================
     // Getters
-    // ============================
 
     public Long getId() {
         return id;
@@ -59,9 +55,7 @@ public class Invoice {
         return invoiceNumber;
     }
 
-    // ============================
     // Setters
-    // ============================
 
     public void setProject(Project project) {
         this.project = project;

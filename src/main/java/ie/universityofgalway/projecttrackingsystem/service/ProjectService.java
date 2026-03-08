@@ -34,18 +34,14 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         this.contactRepository = contactRepository;
     }
 
-    // ===============================
     // LIST
-    // ===============================
 
     @Override
     public List<Project> list() {
         return projectRepository.findAll();
     }
 
-    // ===============================
     // GET BY ID
-    // ===============================
 
     @Override
     public Project getById(Long id) {
@@ -53,9 +49,7 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
     }
 
-    // ===============================
     // GET FORM BY ID
-    // ===============================
 
     @Override
     public ProjectForm getFormById(Long id) {
@@ -66,9 +60,7 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         return mapToForm(project);
     }
 
-    // ===============================
     // CREATE
-    // ===============================
 
     @Override
     public Project create(ProjectForm form) {
@@ -80,9 +72,7 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         return projectRepository.save(project);
     }
 
-    // ===============================
     // UPDATE
-    // ===============================
 
     @Override
     public Project update(Long id, ProjectForm form) {
@@ -95,18 +85,14 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         return projectRepository.save(project);
     }
 
-    // ===============================
     // DELETE
-    // ===============================
 
     @Override
     public void delete(Long id) {
         projectRepository.deleteById(id);
     }
 
-    // ===============================
     // UPDATE ENTITY FROM FORM
-    // ===============================
 
     @Override
     public void updateEntity(Project project, ProjectForm form) {
@@ -140,9 +126,7 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         project.setStartDate(form.getStartDate());
     }
 
-    // ===============================
     // MAP ENTITY → FORM
-    // ===============================
 
     @Override
     public ProjectForm mapToForm(Project project) {
@@ -172,9 +156,7 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         return form;
     }
 
-    // ===============================
     // LOAD LOOKUPS FOR FORMS
-    // ===============================
 
     public void loadFormLookups(Model model) {
 

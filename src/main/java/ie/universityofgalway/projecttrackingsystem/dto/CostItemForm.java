@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class CostItemForm {
 
-    private Long id; // Optional, used for updates
+    private Long id;
 
     @NotNull(message = "Project is required")
     private Long projectId;

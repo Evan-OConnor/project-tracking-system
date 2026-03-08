@@ -17,18 +17,14 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         this.contactRepository = contactRepository;
     }
 
-    // ===============================
     // LIST
-    // ===============================
 
     @Override
     public List<Contact> list() {
         return contactRepository.findAll();
     }
 
-    // ===============================
     // GET BY ID
-    // ===============================
 
     @Override
     public Contact getById(Long id) {
@@ -37,9 +33,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
                         new IllegalArgumentException("Contact not found with id: " + id));
     }
 
-    // ===============================
     // DELETE
-    // ===============================
 
     @Override
     public void delete(Long id) {
@@ -47,9 +41,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         contactRepository.delete(contact);
     }
 
-    // ===============================
     // CREATE
-    // ===============================
 
     @Override
     public Contact create(ContactForm form) {
@@ -61,9 +53,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         return contactRepository.save(contact);
     }
 
-    // ===============================
     // UPDATE
-    // ===============================
 
     @Override
     public Contact update(Long id, ContactForm form) {
@@ -75,9 +65,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         return contactRepository.save(contact);
     }
 
-    // ===============================
     // GET FORM BY ID
-    // ===============================
 
     @Override
     public ContactForm getFormById(Long id) {
@@ -86,10 +74,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
 
         return mapToForm(contact);
     }
-
-    // ===============================
     // REQUIRED BY BASESERVICE
-    // ===============================
 
     @Override
     public void updateEntity(Contact contact, ContactForm form) {

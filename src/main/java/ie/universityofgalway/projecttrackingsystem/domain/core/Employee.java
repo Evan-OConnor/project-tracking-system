@@ -40,7 +40,6 @@ public class Employee {
 
     // Getters
 
-
     public Long getId() {return id;}
 
     public String getName() {return name;}
@@ -75,6 +74,5 @@ public class Employee {
 
     @Override
     public String toString() {
-        return name; // helpful for Thymeleaf templates
-    }
+        return name;}
 }

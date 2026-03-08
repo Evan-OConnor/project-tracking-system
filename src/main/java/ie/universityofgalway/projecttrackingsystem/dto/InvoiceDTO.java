@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * DTO representing a full invoice including VAT breakdown.
- */
 public class InvoiceDTO {
 
     private final Long invoiceId;

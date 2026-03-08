@@ -29,18 +29,14 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         this.contactRepository = contactRepository;
     }
 
-    // ===============================
     // LIST
-    // ===============================
 
     @Override
     public List<CostItem> list() {
         return costItemRepository.findAll();
     }
 
-    // ===============================
     // GET BY ID
-    // ===============================
 
     @Override
     public CostItem getById(Long id) {
@@ -48,36 +44,30 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
                 .orElseThrow(() -> new RuntimeException("Cost item not found"));
     }
 
-    // ===============================
+
     // CREATE
-    // ===============================
 
     @Override
     public CostItem create(CostItemForm form) {
         return saveInternal(form, null);
     }
 
-    // ===============================
+
     // UPDATE
-    // ===============================
 
     @Override
     public CostItem update(Long id, CostItemForm form) {
         return saveInternal(form, id);
     }
 
-    // ===============================
+
     // DELETE
-    // ===============================
 
     @Override
     public void delete(Long id) {
         costItemRepository.deleteById(id);
     }
-
-    // ===============================
     // GET FORM
-    // ===============================
 
     @Override
     public CostItemForm getFormById(Long id) {
@@ -87,9 +77,8 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         return mapToForm(costItem);
     }
 
-    // ===============================
+
     // REQUIRED BY BASESERVICE
-    // ===============================
 
     @Override
     public void updateEntity(CostItem entity, CostItemForm form) {
@@ -142,9 +131,7 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         return form;
     }
 
-    // ===============================
-    // INTERNAL SAVE LOGIC
-    // ===============================
+    // INTERNAL SAVE
 
     private CostItem saveInternal(CostItemForm form, Long id) {
 
@@ -193,9 +180,7 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         return costItemRepository.save(costItem);
     }
 
-    // ===============================
     // FORM DROPDOWNS
-    // ===============================
 
     public Map<String, Object> getDropdowns() {
 

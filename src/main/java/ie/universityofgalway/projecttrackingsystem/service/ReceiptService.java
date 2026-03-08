@@ -96,9 +96,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         receiptRepository.deleteById(id);
     }
 
-    // ===============================
     // REQUIRED BY BaseService
-    // ===============================
 
     @Override
     public void updateEntity(Receipt receipt, ReceiptForm form) {

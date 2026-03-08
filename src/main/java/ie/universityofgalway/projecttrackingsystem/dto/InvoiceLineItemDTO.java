@@ -2,9 +2,7 @@ package ie.universityofgalway.projecttrackingsystem.dto;
 
 import java.math.BigDecimal;
 
-/**
- * DTO representing an invoice line item with VAT breakdown.
- */
+
 public class InvoiceLineItemDTO {
 
     private final String description;

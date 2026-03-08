@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public class TimesheetEntryForm {
 
-    private Long id; // For updates
+    private Long id;
 
     @NotNull(message = "Project is required")
     private Long projectId;

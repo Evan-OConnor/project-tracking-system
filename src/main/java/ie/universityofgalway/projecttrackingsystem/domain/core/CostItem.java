@@ -22,7 +22,7 @@ public class CostItem {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    // Every cost item must have an associated employee (per brief)
+    // Every cost item must have an associated employee
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
@@ -60,7 +60,6 @@ public class CostItem {
         EXPENSE
     }
 
-    // Protected constructor for JPA
     protected CostItem() {}
 
     // Main constructor
@@ -83,7 +82,7 @@ public class CostItem {
         validateBusinessRules();
     }
 
-    // 🔥 Business Rule Enforcement
+    // Business Rule
     @PrePersist
     @PreUpdate
     private void validateBusinessRules() {
@@ -113,9 +112,7 @@ public class CostItem {
         }
     }
 
-    // --------------------
     // Getters
-    // --------------------
 
     public Long getId() { return id; }
 
@@ -139,9 +136,7 @@ public class CostItem {
 
     public Invoice getInvoice() {return invoice;}
 
-    // --------------------
     // Setters
-    // --------------------
 
     public void setProject(Project project) { this.project = project; }
 

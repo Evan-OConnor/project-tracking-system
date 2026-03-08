@@ -26,7 +26,6 @@ public class Contact {
     @Column(name = "comments", columnDefinition = "TEXT")
     private String comments;
 
-    // Required by JPA
     protected Contact() {
     }
 
