@@ -13,6 +13,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+
+/**
+ * Central Spring Security configuration for the application.
+ *
+ * Responsibilities:
+ * - define a {@link PasswordEncoder} bean to hash and verify passwords,
+ * - define the {@link SecurityFilterChain} which manages request authorisation,
+ *   login, logout and access-denied behaviour.
+ *
+ * Notes:
+ * - Static resources and error pages are permitted to all users.
+ * - URLs under /admin/** require the ADMIN role to access.
+ */
 public class SecurityConfig {
 
     @Bean
