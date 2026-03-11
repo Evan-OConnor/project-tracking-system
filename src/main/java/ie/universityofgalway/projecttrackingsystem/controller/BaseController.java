@@ -28,8 +28,27 @@ public abstract class BaseController<T, F> {
 
     // DELETE
     @PostMapping("/{id:\\d+}/delete")
-    public String delete(@PathVariable Long id) {
-        service.delete(id);
+    public String delete(@PathVariable Long id,
+                         org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+
+        try {
+
+            service.delete(id);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Record deleted successfully."
+            );
+
+        } catch (IllegalStateException ex) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    ex.getMessage()
+            );
+
+        }
+
         return "redirect:" + getBaseUrl();
     }
 

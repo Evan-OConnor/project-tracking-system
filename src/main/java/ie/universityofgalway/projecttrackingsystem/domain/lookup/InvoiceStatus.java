@@ -1,8 +1,10 @@
 package ie.universityofgalway.projecttrackingsystem.domain.lookup;
 
 public enum InvoiceStatus {
-    GENERATED,
-    PARTIALLY_PAID,
-    PAID,
-    VOID
+
+    GENERATED,       // Invoice created but not paid
+    PARTIALLY_PAID,  // Some payment received
+    PAID,            // Fully paid
+    VOID             // Cancelled / invalid
+
 }

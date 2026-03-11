@@ -2,13 +2,12 @@ package ie.universityofgalway.projecttrackingsystem.service;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Contact;
-import ie.universityofgalway.projecttrackingsystem.domain.lookup.ProjectCategory;
-import ie.universityofgalway.projecttrackingsystem.domain.lookup.ProjectStatus;
 import ie.universityofgalway.projecttrackingsystem.dto.ProjectForm;
-import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectRepository;
-import ie.universityofgalway.projecttrackingsystem.repository.core.ContactRepository;
+import ie.universityofgalway.projecttrackingsystem.dto.ProjectSearchCriteria;
+import ie.universityofgalway.projecttrackingsystem.repository.core.*;
 import ie.universityofgalway.projecttrackingsystem.repository.lookup.ProjectCategoryRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.lookup.ProjectStatusRepository;
+import ie.universityofgalway.projecttrackingsystem.specification.ProjectSpecification;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -23,26 +22,39 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
     private final ProjectStatusRepository statusRepository;
     private final ContactRepository contactRepository;
 
+    private final TimesheetEntryRepository timesheetRepository;
+    private final CostItemRepository costItemRepository;
+    private final InvoiceRepository invoiceRepository;
+
     public ProjectService(ProjectRepository projectRepository,
                           ProjectCategoryRepository categoryRepository,
                           ProjectStatusRepository statusRepository,
-                          ContactRepository contactRepository) {
+                          ContactRepository contactRepository,
+                          TimesheetEntryRepository timesheetRepository,
+                          CostItemRepository costItemRepository,
+                          InvoiceRepository invoiceRepository) {
 
         this.projectRepository = projectRepository;
         this.categoryRepository = categoryRepository;
         this.statusRepository = statusRepository;
         this.contactRepository = contactRepository;
+        this.timesheetRepository = timesheetRepository;
+        this.costItemRepository = costItemRepository;
+        this.invoiceRepository = invoiceRepository;
     }
 
     // LIST
-
     @Override
     public List<Project> list() {
         return projectRepository.findAll();
     }
 
-    // GET BY ID
+    // ADVANCED SEARCH
+    public List<Project> searchProjects(ProjectSearchCriteria criteria) {
+        return projectRepository.findAll(ProjectSpecification.search(criteria));
+    }
 
+    // GET BY ID
     @Override
     public Project getById(Long id) {
         return projectRepository.findWithCostItemsById(id)
@@ -50,7 +62,6 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
     }
 
     // GET FORM BY ID
-
     @Override
     public ProjectForm getFormById(Long id) {
 
@@ -61,7 +72,6 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
     }
 
     // CREATE
-
     @Override
     public Project create(ProjectForm form) {
 
@@ -73,7 +83,6 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
     }
 
     // UPDATE
-
     @Override
     public Project update(Long id, ProjectForm form) {
 
@@ -86,40 +95,64 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
     }
 
     // DELETE
-
     @Override
     public void delete(Long id) {
-        projectRepository.deleteById(id);
+
+        if (invoiceRepository.existsByProjectId(id)) {
+            throw new IllegalStateException(
+                    "Cannot delete project because invoices exist."
+            );
+        }
+
+        if (costItemRepository.existsByProjectId(id)) {
+            throw new IllegalStateException(
+                    "Cannot delete project because expenses or outlays exist."
+            );
+        }
+
+        if (timesheetRepository.existsByProjectId(id)) {
+            throw new IllegalStateException(
+                    "Cannot delete project because timesheet entries exist."
+            );
+        }
+
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        projectRepository.delete(project);
     }
 
     // UPDATE ENTITY FROM FORM
-
     @Override
     public void updateEntity(Project project, ProjectForm form) {
 
-        project.setCategory(categoryRepository.findById(form.getCategoryId())
-                .orElseThrow());
-
-        project.setStatus(statusRepository.findById(form.getStatusId())
-                .orElseThrow());
+        project.setCategory(categoryRepository.findById(form.getCategoryId()).orElseThrow());
+        project.setStatus(statusRepository.findById(form.getStatusId()).orElseThrow());
 
         Contact client = contactRepository
                 .findByNameIgnoreCase(form.getClientContactName())
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Client not found: " + form.getClientContactName()
-                        )
-                );
+                        new IllegalArgumentException("Client not found: " + form.getClientContactName()));
 
         project.setClientContact(client);
 
-        project.setSolicitorContact(form.getSolicitorContactId() != null
-                ? contactRepository.findById(form.getSolicitorContactId()).orElse(null)
-                : null);
+        Contact solicitor = null;
+        if (form.getSolicitorContactName() != null && !form.getSolicitorContactName().isBlank()) {
+            solicitor = contactRepository
+                    .findByNameIgnoreCase(form.getSolicitorContactName())
+                    .orElse(null);
+        }
 
-        project.setInsuranceCompanyContact(form.getInsuranceCompanyContactId() != null
-                ? contactRepository.findById(form.getInsuranceCompanyContactId()).orElse(null)
-                : null);
+        project.setSolicitorContact(solicitor);
+
+        Contact insurer = null;
+        if (form.getInsuranceCompanyContactName() != null && !form.getInsuranceCompanyContactName().isBlank()) {
+            insurer = contactRepository
+                    .findByNameIgnoreCase(form.getInsuranceCompanyContactName())
+                    .orElse(null);
+        }
+
+        project.setInsuranceCompanyContact(insurer);
 
         project.setTitle(form.getTitle());
         project.setDescription(form.getDescription());
@@ -127,7 +160,6 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
     }
 
     // MAP ENTITY → FORM
-
     @Override
     public ProjectForm mapToForm(Project project) {
 
@@ -135,17 +167,18 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
 
         form.setCategoryId(project.getCategory().getId());
         form.setStatusId(project.getStatus().getId());
+
         form.setClientContactName(project.getClientContact().getName());
 
-        form.setSolicitorContactId(
+        form.setSolicitorContactName(
                 project.getSolicitorContact() != null
-                        ? project.getSolicitorContact().getId()
+                        ? project.getSolicitorContact().getName()
                         : null
         );
 
-        form.setInsuranceCompanyContactId(
+        form.setInsuranceCompanyContactName(
                 project.getInsuranceCompanyContact() != null
-                        ? project.getInsuranceCompanyContact().getId()
+                        ? project.getInsuranceCompanyContact().getName()
                         : null
         );
 
@@ -156,8 +189,7 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         return form;
     }
 
-    // LOAD LOOKUPS FOR FORMS
-
+    // LOAD LOOKUPS
     public void loadFormLookups(Model model) {
 
         model.addAttribute("categories", categoryRepository.findAll());

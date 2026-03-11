@@ -3,6 +3,7 @@ package ie.universityofgalway.projecttrackingsystem.service;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Contact;
 import ie.universityofgalway.projecttrackingsystem.dto.ContactForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.ContactRepository;
+import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -12,9 +13,12 @@ import java.util.List;
 public class ContactService implements BaseService<Contact, ContactForm> {
 
     private final ContactRepository contactRepository;
+    private final ProjectRepository projectRepository;
 
-    public ContactService(ContactRepository contactRepository) {
+    public ContactService(ContactRepository contactRepository,
+                          ProjectRepository projectRepository) {
         this.contactRepository = contactRepository;
+        this.projectRepository = projectRepository;
     }
 
     // LIST
@@ -37,7 +41,18 @@ public class ContactService implements BaseService<Contact, ContactForm> {
 
     @Override
     public void delete(Long id) {
+
         Contact contact = getById(id);
+
+        if (projectRepository.existsByClientContactId(id) ||
+                projectRepository.existsBySolicitorContactId(id) ||
+                projectRepository.existsByInsuranceCompanyContactId(id)) {
+
+            throw new IllegalStateException(
+                    "Cannot delete contact because it is used in a project."
+            );
+        }
+
         contactRepository.delete(contact);
     }
 
@@ -74,6 +89,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
 
         return mapToForm(contact);
     }
+
     // REQUIRED BY BASESERVICE
 
     @Override

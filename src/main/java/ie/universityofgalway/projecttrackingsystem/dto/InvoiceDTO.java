@@ -1,5 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.dto;
 
+import ie.universityofgalway.projecttrackingsystem.domain.lookup.InvoiceStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -11,6 +13,8 @@ public class InvoiceDTO {
     private final String projectName;
     private final LocalDate invoiceDate;
 
+    private final InvoiceStatus status;
+
     private final List<InvoiceLineItemDTO> lineItems;
 
     private final BigDecimal subtotal;     // Sum of net amounts
@@ -21,6 +25,7 @@ public class InvoiceDTO {
                       String invoiceNumber,
                       String projectName,
                       LocalDate invoiceDate,
+                      InvoiceStatus status,
                       List<InvoiceLineItemDTO> lineItems,
                       BigDecimal subtotal,
                       BigDecimal vatAmount,
@@ -30,6 +35,7 @@ public class InvoiceDTO {
         this.invoiceNumber = invoiceNumber;
         this.projectName = projectName;
         this.invoiceDate = invoiceDate;
+        this.status = status;
         this.lineItems = lineItems;
         this.subtotal = subtotal;
         this.vatAmount = vatAmount;
@@ -50,6 +56,10 @@ public class InvoiceDTO {
 
     public LocalDate getInvoiceDate() {
         return invoiceDate;
+    }
+
+    public InvoiceStatus getStatus() {
+        return status;
     }
 
     public List<InvoiceLineItemDTO> getLineItems() {

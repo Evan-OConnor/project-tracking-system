@@ -1,85 +1,161 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 
+    <meta charset="UTF-8">
     <title>Receipt</title>
 
     <style>
 
         body {
-            font-family: Arial;
+            font-family: Arial, Helvetica, sans-serif;
             margin: 40px;
+            color: #333;
         }
 
         .receipt-box {
             border: 1px solid #ccc;
-            padding: 30px;
-            max-width: 700px;
+            padding: 35px;
+            max-width: 750px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .title {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #777;
+        }
+
+        hr {
+            margin: 20px 0;
+        }
+
+        .details p {
+            margin: 6px 0;
         }
 
         table {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 25px;
+            border-collapse: collapse;
         }
 
         td {
-            padding: 6px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
         }
 
-        .total {
+        .label {
             font-weight: bold;
+        }
+
+        .amount {
+            text-align: right;
+        }
+
+        .total-row {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .total-row td {
+            border-top: 2px solid #333;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Hide buttons when printing */
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+
+        .actions {
+            margin-bottom: 20px;
         }
 
     </style>
 
 </head>
 
-<body onload="window.print()">
+<body>
+
+<div class="actions no-print">
+    <button onclick="window.print()">Print</button>
+    <button onclick="window.close()">Close</button>
+</div>
 
 <div class="receipt-box">
 
-    <div class="title">Payment Receipt</div>
+    <div class="header">
+        <div>
+            <div class="title">Payment Receipt</div>
+            <div class="subtitle">Official Payment Confirmation</div>
+        </div>
+    </div>
 
     <hr>
 
-    <p>
-        <strong>Receipt Number:</strong>
-        <span th:text="${receipt.receiptNumber}"></span>
-    </p>
+    <div class="details">
 
-    <p>
-        <strong>Invoice Number:</strong>
-        <span th:text="${receipt.invoice.invoiceNumber}"></span>
-    </p>
+        <p>
+            <span class="label">Receipt Number:</span>
+            <span th:text="${receipt.receiptNumber}"></span>
+        </p>
 
-    <p>
-        <strong>Date Received:</strong>
-        <span th:text="${receipt.dateReceived}"></span>
-    </p>
+        <p>
+            <span class="label">Invoice Number:</span>
+            <span th:text="${receipt.invoice.invoiceNumber}"></span>
+        </p>
 
-    <p>
-        <strong>Payment Method:</strong>
-        <span th:text="${receipt.paymentMethod}"></span>
-    </p>
+        <p>
+            <span class="label">Date Received:</span>
+            <span th:text="${receipt.dateReceived}"></span>
+        </p>
+
+        <p>
+            <span class="label">Payment Method:</span>
+            <span th:text="${receipt.paymentMethod}"></span>
+        </p>
+
+    </div>
 
     <table>
 
         <tr>
             <td>Discount</td>
-            <td th:text="${receipt.discount}"></td>
+            <td class="amount"
+                th:text="'€' + ${#numbers.formatDecimal(receipt.discount,1,'COMMA',2,'POINT')}">
+            </td>
         </tr>
 
-        <tr class="total">
+        <tr class="total-row">
             <td>Amount Paid</td>
-            <td th:text="${receipt.amountPaid}"></td>
+            <td class="amount"
+                th:text="'€' + ${#numbers.formatDecimal(receipt.amountPaid,1,'COMMA',2,'POINT')}">
+            </td>
         </tr>
 
     </table>
+
+    <div class="footer">
+        Thank you for your payment.
+    </div>
 
 </div>
 

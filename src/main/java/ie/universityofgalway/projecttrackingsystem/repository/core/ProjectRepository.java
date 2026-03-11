@@ -3,13 +3,20 @@ package ie.universityofgalway.projecttrackingsystem.repository.core;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface ProjectRepository extends JpaRepository<Project, Long> {
+public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpecificationExecutor<Project> {
 
     @EntityGraph(attributePaths = {"costItems"})
     Optional<Project> findWithCostItemsById(Long id);
+
+    // Used by ContactService
+    boolean existsByClientContactId(Long contactId);
+    boolean existsBySolicitorContactId(Long contactId);
+    boolean existsByInsuranceCompanyContactId(Long contactId);
+
 }

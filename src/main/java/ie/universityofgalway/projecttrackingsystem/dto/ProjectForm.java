@@ -1,43 +1,108 @@
 package ie.universityofgalway.projecttrackingsystem.dto;
-import ie.universityofgalway.projecttrackingsystem.domain.core.Contact;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 public class ProjectForm {
+
+    @NotNull(message = "Category is required")
     private Long categoryId;
+
+    @NotNull(message = "Status is required")
     private Long statusId;
+
+    @NotBlank(message = "Client name is required")
     private String clientContactName;
-    private Long solicitorContactId;
-    private Long insuranceCompanyContactId;
+
+    private String solicitorContactName;
+
+    private String insuranceCompanyContactName;
+
+    @NotBlank(message = "Project title is required")
+    @Size(max = 255, message = "Title must be less than 255 characters")
     private String title;
+
+    @Size(max = 1000, message = "Description must be less than 1000 characters")
     private String description;
+
+    @NotNull(message = "Start date is required")
     private LocalDate startDate;
 
     public ProjectForm() {
     }
 
-    // Getters & Setters
-    public Long getCategoryId() { return categoryId; }
-    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+    // Category
+    public Long getCategoryId() {
+        return categoryId;
+    }
 
-    public Long getStatusId() { return statusId; }
-    public void setStatusId(Long statusId) { this.statusId = statusId; }
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
 
-    public String getClientContactName() {return clientContactName;}
-    public void setClientContactName(String clientContactName) {this.clientContactName = clientContactName;}
+    // Status
+    public Long getStatusId() {
+        return statusId;
+    }
 
-    public Long getSolicitorContactId() { return solicitorContactId; }
-    public void setSolicitorContactId(Long solicitorContactId) { this.solicitorContactId = solicitorContactId; }
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
 
-    public Long getInsuranceCompanyContactId() { return insuranceCompanyContactId; }
-    public void setInsuranceCompanyContactId(Long insuranceCompanyContactId) { this.insuranceCompanyContactId = insuranceCompanyContactId; }
+    // Client
+    public String getClientContactName() {
+        return clientContactName;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setClientContactName(String clientContactName) {
+        this.clientContactName = clientContactName;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    // Solicitor
+    public String getSolicitorContactName() {
+        return solicitorContactName;
+    }
 
-    public LocalDate getStartDate() { return startDate; }
-    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
+    public void setSolicitorContactName(String solicitorContactName) {
+        this.solicitorContactName = solicitorContactName;
+    }
+
+    // Insurance Company
+    public String getInsuranceCompanyContactName() {
+        return insuranceCompanyContactName;
+    }
+
+    public void setInsuranceCompanyContactName(String insuranceCompanyContactName) {
+        this.insuranceCompanyContactName = insuranceCompanyContactName;
+    }
+
+    // Title
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    // Description
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    // Start Date
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
 }

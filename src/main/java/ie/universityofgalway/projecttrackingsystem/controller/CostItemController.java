@@ -67,19 +67,6 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
         return "costitems/form";
     }
 
-    // DELETE
-    @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id, Model model) {
-
-        try {
-            costItemService.delete(id);
-        } catch (IllegalStateException ex) {
-            model.addAttribute("deleteError", ex.getMessage());
-            return getListView();
-        }
-
-        return "redirect:/cost-items";
-    }
 
     @Override
     protected String getListView() {

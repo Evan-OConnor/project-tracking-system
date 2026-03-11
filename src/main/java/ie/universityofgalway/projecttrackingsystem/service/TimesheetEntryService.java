@@ -39,7 +39,6 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     }
 
     // LIST
-
     @Override
     public List<TimesheetEntryView> list() {
         return repository.findAll()
@@ -49,7 +48,6 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     }
 
     // GET BY ID
-
     @Override
     public TimesheetEntryView getById(Long id) {
 
@@ -60,7 +58,6 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     }
 
     // GET FORM
-
     @Override
     public TimesheetEntryForm getFormById(Long id) {
 
@@ -71,7 +68,6 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     }
 
     // CREATE
-
     @Override
     public TimesheetEntryView create(TimesheetEntryForm form) {
 
@@ -98,7 +94,6 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     }
 
     // UPDATE
-
     @Override
     public TimesheetEntryView update(Long id, TimesheetEntryForm form) {
 
@@ -121,14 +116,20 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     }
 
     // DELETE
-
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+
+        TimesheetEntry entry = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Timesheet entry not found"));
+
+        if (entry.getInvoice() != null) {
+            throw new IllegalStateException("Cannot delete a billed timesheet entry.");
+        }
+
+        repository.delete(entry);
     }
 
     // REQUIRED BY BASESERVICE
-
     @Override
     public void updateEntity(TimesheetEntryView entity, TimesheetEntryForm form) {
         // Not required for this service
@@ -142,9 +143,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     // ENTITY → VIEW
     private TimesheetEntryView toView(TimesheetEntry entry) {
 
-        BigDecimal rate = entry.getEmployee().getHourlyRate();
-
-        BigDecimal charge = rate.multiply(entry.getHours())
+        BigDecimal charge = entry.getNetAmount()
                 .setScale(2, RoundingMode.HALF_UP);
 
         return new TimesheetEntryView(
@@ -162,6 +161,8 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     private TimesheetEntryForm toForm(TimesheetEntry entry) {
 
         TimesheetEntryForm form = new TimesheetEntryForm();
+
+        form.setId(entry.getId());
 
         form.setProjectId(entry.getProject().getId());
         form.setEmployeeId(entry.getEmployee().getId());

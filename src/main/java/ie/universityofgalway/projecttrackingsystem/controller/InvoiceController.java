@@ -41,30 +41,55 @@ public class InvoiceController {
         return "invoice/generate";
     }
 
-
     // GENERATE INVOICE
     @PostMapping("/generate")
     public String generateInvoice(@RequestParam Long projectId,
                                   RedirectAttributes redirectAttributes) {
 
         try {
-            invoiceService.generateInvoice(projectId);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Invoice generated successfully.");
+
+            InvoiceDTO invoice = invoiceService.generateInvoice(projectId);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Invoice generated successfully."
+            );
+
+            return "redirect:/invoices/" + invoice.getInvoiceId();
+
         } catch (IllegalStateException ex) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    ex.getMessage()
+            );
+
+            return "redirect:/invoices/generate";
+        }
+    }
+
+    @PostMapping("/line-items/{id}/discount")
+    public String updateDiscount(@PathVariable Long id,
+                                 @RequestParam BigDecimal discountPercent,
+                                 RedirectAttributes redirectAttributes) {
+
+        try {
+            invoiceService.updateLineItemDiscount(id, discountPercent);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Discount updated successfully.");
+        } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("errorMessage",
                     ex.getMessage());
         }
 
-        return "redirect:/invoices/generate";
+        return "redirect:/invoices";
     }
 
+    // API: GET TOTAL AMOUNT
     @GetMapping("/api/{id}/total")
     @ResponseBody
     public BigDecimal getInvoiceTotal(@PathVariable Long id) {
-
         InvoiceDTO invoice = invoiceService.getInvoiceById(id);
-
         return invoice.getGrossTotal();
     }
 }

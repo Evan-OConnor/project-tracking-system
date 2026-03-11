@@ -13,12 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class InvoiceService {
+
+    private static final BigDecimal DEFAULT_VAT_RATE = new BigDecimal("23.00");
+    private static final BigDecimal ONE_HUNDRED = new BigDecimal("100");
 
     private final InvoiceRepository invoiceRepo;
     private final TimesheetEntryRepository timesheetRepo;
@@ -54,18 +57,13 @@ public class InvoiceService {
         List<CostItem> costs =
                 costItemRepo.findByProjectAndInvoiceIsNull(project);
 
-        // Prevent empty invoice creation
         if (timesheets.isEmpty() && costs.isEmpty()) {
             throw new IllegalStateException(
                     "No unbilled items available for this project."
             );
         }
 
-        VatRate standardVat = vatRateRepo
-                .findByRatePercent(new BigDecimal("23.00"))
-                .orElseThrow(() ->
-                        new RuntimeException("23% VAT rate not configured in database"));
-
+        VatRate standardVat = getDefaultVatRate();
         String invoiceNumber = generateInvoiceNumber();
 
         Invoice invoice = new Invoice(
@@ -77,7 +75,6 @@ public class InvoiceService {
         invoiceRepo.save(invoice);
 
         // PROFESSIONAL FEES
-
         for (TimesheetEntry entry : timesheets) {
 
             InvoiceLineItem line = new InvoiceLineItem(
@@ -93,7 +90,6 @@ public class InvoiceService {
         }
 
         // EXPENSES
-
         for (CostItem cost : costs) {
 
             InvoiceLineItem line = new InvoiceLineItem(
@@ -111,22 +107,43 @@ public class InvoiceService {
         return mapToDTO(invoice);
     }
 
+    // UPDATE DISCOUNT
+    public void updateLineItemDiscount(Long lineItemId, BigDecimal discountPercent) {
+
+        InvoiceLineItem lineItem = lineItemRepo.findById(lineItemId)
+                .orElseThrow(() -> new RuntimeException("Line item not found"));
+
+        if (discountPercent.compareTo(BigDecimal.ZERO) < 0 ||
+                discountPercent.compareTo(ONE_HUNDRED) > 0) {
+            throw new IllegalArgumentException("Discount must be between 0 and 100");
+        }
+
+        lineItem.setDiscountPercent(discountPercent);
+    }
+
     // LIST ALL INVOICES
     public List<InvoiceDTO> getAllInvoices() {
-        return invoiceRepo.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+
+        List<InvoiceDTO> result = new ArrayList<>();
+
+        for (Invoice invoice : invoiceRepo.findAll()) {
+            result.add(mapToDTO(invoice));
+        }
+
+        return result;
     }
 
     // GET SINGLE INVOICE
     public InvoiceDTO getInvoiceById(Long id) {
+
         Invoice invoice = invoiceRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
+
         return mapToDTO(invoice);
     }
 
     // SUPPORT METHODS
+
     public List<Project> getAllProjects() {
         return projectRepo.findAll();
     }
@@ -136,15 +153,28 @@ public class InvoiceService {
     }
 
     private String generateInvoiceNumber() {
-        long count = invoiceRepo.count() + 1;
-        return String.format("INV-%05d", count);
+
+        Invoice lastInvoice = invoiceRepo.findTopByOrderByIdDesc();
+
+        long nextNumber = (lastInvoice == null) ? 1 : lastInvoice.getId() + 1;
+
+        return String.format("INV-%05d", nextNumber);
     }
 
-    // ENTITY → DTO (VAT PER LINE CALCULATION)
+    private VatRate getDefaultVatRate() {
+
+        return vatRateRepo.findByRatePercent(DEFAULT_VAT_RATE)
+                .orElseThrow(() ->
+                        new RuntimeException("Default VAT rate not configured in database"));
+    }
+
+    // ENTITY → DTO WITH DISCOUNT + VAT CALCULATION
     private InvoiceDTO mapToDTO(Invoice invoice) {
 
         List<InvoiceLineItem> lines =
                 lineItemRepo.findByInvoice(invoice);
+
+        List<InvoiceLineItemDTO> items = new ArrayList<>();
 
         BigDecimal subtotal = BigDecimal.ZERO;
         BigDecimal vatAmount = BigDecimal.ZERO;
@@ -152,52 +182,55 @@ public class InvoiceService {
         for (InvoiceLineItem line : lines) {
 
             BigDecimal net = line.getQuantity()
-                    .multiply(line.getUnitRate());
+                    .multiply(line.getUnitRate())
+                    .setScale(2, RoundingMode.HALF_UP);
 
-            BigDecimal vat = net
-                    .multiply(line.getVatRate().getRateDecimal());
+            BigDecimal discountPercent = line.getDiscountPercent() == null
+                    ? BigDecimal.ZERO
+                    : line.getDiscountPercent();
 
-            subtotal = subtotal.add(net);
+            BigDecimal discountAmount = net
+                    .multiply(discountPercent)
+                    .divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP);
+
+            BigDecimal discountedNet = net.subtract(discountAmount);
+
+            BigDecimal vat = discountedNet
+                    .multiply(line.getVatRate().getRateDecimal())
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            BigDecimal gross = discountedNet.add(vat)
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            subtotal = subtotal.add(discountedNet);
             vatAmount = vatAmount.add(vat);
+
+            items.add(new InvoiceLineItemDTO(
+                    line.getId(),
+                    line.getDescription(),
+                    line.getQuantity(),
+                    line.getUnitRate(),
+                    net,
+                    discountPercent,
+                    discountAmount,
+                    line.getVatRate().getRatePercent(),
+                    vat,
+                    gross
+            ));
         }
 
         subtotal = subtotal.setScale(2, RoundingMode.HALF_UP);
         vatAmount = vatAmount.setScale(2, RoundingMode.HALF_UP);
+
         BigDecimal total = subtotal.add(vatAmount)
                 .setScale(2, RoundingMode.HALF_UP);
-
-        List<InvoiceLineItemDTO> items =
-                lines.stream()
-                        .map(line -> {
-
-                            BigDecimal net = line.getQuantity()
-                                    .multiply(line.getUnitRate())
-                                    .setScale(2, RoundingMode.HALF_UP);
-
-                            BigDecimal vat = net
-                                    .multiply(line.getVatRate().getRateDecimal())
-                                    .setScale(2, RoundingMode.HALF_UP);
-
-                            BigDecimal gross = net.add(vat)
-                                    .setScale(2, RoundingMode.HALF_UP);
-
-                            return new InvoiceLineItemDTO(
-                                    line.getDescription(),
-                                    line.getQuantity(),
-                                    line.getUnitRate(),
-                                    net,
-                                    line.getVatRate().getRatePercent(),
-                                    vat,
-                                    gross
-                            );
-                        })
-                        .collect(Collectors.toList());
 
         return new InvoiceDTO(
                 invoice.getId(),
                 invoice.getInvoiceNumber(),
                 invoice.getProject().getTitle(),
                 invoice.getInvoiceDate(),
+                invoice.getStatus(),
                 items,
                 subtotal,
                 vatAmount,
