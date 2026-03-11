@@ -210,17 +210,13 @@ CREATE TABLE receipt (
                                  REFERENCES invoice(invoice_id)
                                  ON DELETE CASCADE,
 
-                         CONSTRAINT uk_receipt_invoice UNIQUE (invoice_id),
                          CONSTRAINT uk_receipt_number UNIQUE (receipt_number),
 
                          CONSTRAINT ck_receipt_discount_nonnegative
                              CHECK (discount >= 0),
 
                          CONSTRAINT ck_receipt_amount_paid_positive
-                             CHECK (amount_paid > 0),
-
-                         CONSTRAINT ck_receipt_discount_less_than_amount_paid
-                             CHECK (discount <= amount_paid)
+                             CHECK (amount_paid > 0)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
