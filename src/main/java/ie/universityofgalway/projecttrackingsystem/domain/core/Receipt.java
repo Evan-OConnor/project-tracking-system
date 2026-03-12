@@ -8,13 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(
-        name = "receipt",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_receipt_invoice",
-                columnNames = "invoice_id"
-        )
-)
+@Table(name = "receipt")
 public class Receipt {
 
     @Id
@@ -22,7 +16,7 @@ public class Receipt {
     @Column(name = "receipt_id")
     private Long id;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
 
