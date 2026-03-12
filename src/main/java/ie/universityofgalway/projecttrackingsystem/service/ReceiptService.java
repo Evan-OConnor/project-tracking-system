@@ -170,8 +170,12 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
     // HELPERS
 
     private String generateReceiptNumber() {
-        long count = receiptRepository.count() + 1;
-        return String.format("RCPT-%05d", count);
+
+        Receipt lastReceipt = receiptRepository.findTopByOrderByIdDesc();
+
+        long nextNumber = (lastReceipt == null) ? 1 : lastReceipt.getId() + 1;
+
+        return String.format("RCPT-%05d", nextNumber);
     }
 
     private void validateAmounts(ReceiptForm form) {

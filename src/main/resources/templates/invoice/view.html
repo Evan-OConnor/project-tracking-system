@@ -81,7 +81,6 @@
                     <th>Qty</th>
                     <th>Rate</th>
                     <th class="text-end">Net</th>
-                    <th class="text-end">Discount %</th>
                     <th class="text-end">VAT %</th>
                     <th class="text-end">VAT</th>
                     <th class="text-end">Gross</th>
@@ -102,36 +101,6 @@
                         th:text="'€' + ${#numbers.formatDecimal(item.netAmount,1,'COMMA',2,'POINT')}">
                     </td>
 
-                    <!-- EDITABLE DISCOUNT -->
-
-                    <td class="text-end">
-
-                        <form th:action="@{/invoices/line-items/{id}/discount(id=${item.id})}"
-                              method="post"
-                              class="d-flex justify-content-end align-items-center">
-
-                            <input type="hidden"
-                                   th:name="${_csrf.parameterName}"
-                                   th:value="${_csrf.token}" />
-
-                            <input type="number"
-                                   name="discountPercent"
-                                   step="0.01"
-                                   min="0"
-                                   max="100"
-                                   class="form-control form-control-sm me-2 text-end"
-                                   style="width:80px"
-                                   th:value="${item.discountPercent}">
-
-                            <button type="submit"
-                                    class="btn btn-sm btn-outline-primary">
-                                Save
-                            </button>
-
-                        </form>
-
-                    </td>
-
                     <td class="text-end"
                         th:text="${item.vatRatePercent + '%'}">
                     </td>
@@ -148,7 +117,7 @@
 
                 <tr th:if="${#lists.isEmpty(invoice.lineItems)}">
 
-                    <td colspan="8"
+                    <td colspan="7"
                         class="text-center text-muted py-4">
                         No line items found.
                     </td>

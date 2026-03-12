@@ -2,6 +2,8 @@ package ie.universityofgalway.projecttrackingsystem.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -18,6 +20,9 @@ public class TimesheetEntryForm {
     @NotNull(message = "Work description is required")
     private Long workDescriptionId;
 
+    @Size(max = 255, message = "Other description must be less than 255 characters")
+    private String otherDescription;
+
     @NotNull(message = "Entry date is required")
     private LocalDate entryDate;
 
@@ -26,6 +31,7 @@ public class TimesheetEntryForm {
     private BigDecimal hours;
 
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -56,6 +62,14 @@ public class TimesheetEntryForm {
 
     public void setWorkDescriptionId(Long workDescriptionId) {
         this.workDescriptionId = workDescriptionId;
+    }
+
+    public String getOtherDescription() {
+        return otherDescription;
+    }
+
+    public void setOtherDescription(String otherDescription) {
+        this.otherDescription = otherDescription;
     }
 
     public LocalDate getEntryDate() {

@@ -38,11 +38,6 @@ public class InvoiceLineItem {
     @Column(name = "unit_rate", nullable = false, precision = 10, scale = 2)
     private BigDecimal unitRate;
 
-    // NEW: Discount percentage
-    @DecimalMin(value = "0.0")
-    @Column(name = "discount_percent", precision = 5, scale = 2)
-    private BigDecimal discountPercent = BigDecimal.ZERO;
-
     // Constructors
 
     protected InvoiceLineItem() {
@@ -58,21 +53,6 @@ public class InvoiceLineItem {
         this.description = description;
         this.quantity = quantity;
         this.unitRate = unitRate;
-        this.discountPercent = BigDecimal.ZERO;
-    }
-
-    public InvoiceLineItem(Invoice invoice,
-                           VatRate vatRate,
-                           String description,
-                           BigDecimal quantity,
-                           BigDecimal unitRate,
-                           BigDecimal discountPercent) {
-        this.invoice = invoice;
-        this.vatRate = vatRate;
-        this.description = description;
-        this.quantity = quantity;
-        this.unitRate = unitRate;
-        this.discountPercent = discountPercent;
     }
 
     // Getters
@@ -105,10 +85,6 @@ public class InvoiceLineItem {
         return unitRate;
     }
 
-    public BigDecimal getDiscountPercent() {
-        return discountPercent;
-    }
-
     // Setters
 
     public void setInvoice(Invoice invoice) {
@@ -133,9 +109,5 @@ public class InvoiceLineItem {
 
     public void setUnitRate(BigDecimal unitRate) {
         this.unitRate = unitRate;
-    }
-
-    public void setDiscountPercent(BigDecimal discountPercent) {
-        this.discountPercent = discountPercent;
     }
 }

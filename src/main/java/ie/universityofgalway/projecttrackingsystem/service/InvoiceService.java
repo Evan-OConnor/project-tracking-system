@@ -21,7 +21,6 @@ import java.util.List;
 public class InvoiceService {
 
     private static final BigDecimal DEFAULT_VAT_RATE = new BigDecimal("23.00");
-    private static final BigDecimal ONE_HUNDRED = new BigDecimal("100");
 
     private final InvoiceRepository invoiceRepo;
     private final TimesheetEntryRepository timesheetRepo;
@@ -107,20 +106,6 @@ public class InvoiceService {
         return mapToDTO(invoice);
     }
 
-    // UPDATE DISCOUNT
-    public void updateLineItemDiscount(Long lineItemId, BigDecimal discountPercent) {
-
-        InvoiceLineItem lineItem = lineItemRepo.findById(lineItemId)
-                .orElseThrow(() -> new RuntimeException("Line item not found"));
-
-        if (discountPercent.compareTo(BigDecimal.ZERO) < 0 ||
-                discountPercent.compareTo(ONE_HUNDRED) > 0) {
-            throw new IllegalArgumentException("Discount must be between 0 and 100");
-        }
-
-        lineItem.setDiscountPercent(discountPercent);
-    }
-
     // LIST ALL INVOICES
     public List<InvoiceDTO> getAllInvoices() {
 
@@ -168,7 +153,7 @@ public class InvoiceService {
                         new RuntimeException("Default VAT rate not configured in database"));
     }
 
-    // ENTITY → DTO WITH DISCOUNT + VAT CALCULATION
+    // ENTITY → DTO WITH VAT CALCULATION
     private InvoiceDTO mapToDTO(Invoice invoice) {
 
         List<InvoiceLineItem> lines =
@@ -185,24 +170,14 @@ public class InvoiceService {
                     .multiply(line.getUnitRate())
                     .setScale(2, RoundingMode.HALF_UP);
 
-            BigDecimal discountPercent = line.getDiscountPercent() == null
-                    ? BigDecimal.ZERO
-                    : line.getDiscountPercent();
-
-            BigDecimal discountAmount = net
-                    .multiply(discountPercent)
-                    .divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP);
-
-            BigDecimal discountedNet = net.subtract(discountAmount);
-
-            BigDecimal vat = discountedNet
+            BigDecimal vat = net
                     .multiply(line.getVatRate().getRateDecimal())
                     .setScale(2, RoundingMode.HALF_UP);
 
-            BigDecimal gross = discountedNet.add(vat)
+            BigDecimal gross = net.add(vat)
                     .setScale(2, RoundingMode.HALF_UP);
 
-            subtotal = subtotal.add(discountedNet);
+            subtotal = subtotal.add(net);
             vatAmount = vatAmount.add(vat);
 
             items.add(new InvoiceLineItemDTO(
@@ -211,8 +186,6 @@ public class InvoiceService {
                     line.getQuantity(),
                     line.getUnitRate(),
                     net,
-                    discountPercent,
-                    discountAmount,
                     line.getVatRate().getRatePercent(),
                     vat,
                     gross

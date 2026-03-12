@@ -3,6 +3,7 @@ package ie.universityofgalway.projecttrackingsystem.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
@@ -15,10 +16,13 @@ public class ProjectForm {
     private Long statusId;
 
     @NotBlank(message = "Client name is required")
+    @Size(max = 255, message = "Client name must be less than 255 characters")
     private String clientContactName;
 
+    @Size(max = 255, message = "Solicitor name must be less than 255 characters")
     private String solicitorContactName;
 
+    @Size(max = 255, message = "Insurance company name must be less than 255 characters")
     private String insuranceCompanyContactName;
 
     @NotBlank(message = "Project title is required")
@@ -29,6 +33,7 @@ public class ProjectForm {
     private String description;
 
     @NotNull(message = "Start date is required")
+    @PastOrPresent(message = "Start date cannot be in the future")
     private LocalDate startDate;
 
     public ProjectForm() {
@@ -58,7 +63,7 @@ public class ProjectForm {
     }
 
     public void setClientContactName(String clientContactName) {
-        this.clientContactName = clientContactName;
+        this.clientContactName = trim(clientContactName);
     }
 
     // Solicitor
@@ -67,7 +72,7 @@ public class ProjectForm {
     }
 
     public void setSolicitorContactName(String solicitorContactName) {
-        this.solicitorContactName = solicitorContactName;
+        this.solicitorContactName = trim(solicitorContactName);
     }
 
     // Insurance Company
@@ -76,7 +81,7 @@ public class ProjectForm {
     }
 
     public void setInsuranceCompanyContactName(String insuranceCompanyContactName) {
-        this.insuranceCompanyContactName = insuranceCompanyContactName;
+        this.insuranceCompanyContactName = trim(insuranceCompanyContactName);
     }
 
     // Title
@@ -85,7 +90,7 @@ public class ProjectForm {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = trim(title);
     }
 
     // Description
@@ -94,7 +99,7 @@ public class ProjectForm {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = trim(description);
     }
 
     // Start Date
@@ -104,5 +109,13 @@ public class ProjectForm {
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
+    }
+
+    // ------------------------------------------------
+    // Utility
+    // ------------------------------------------------
+
+    private String trim(String value) {
+        return value == null ? null : value.trim();
     }
 }

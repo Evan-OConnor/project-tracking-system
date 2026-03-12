@@ -6,20 +6,29 @@ document.addEventListener("DOMContentLoaded", function () {
     const discountField = document.querySelector("[name='discount']");
     const amountPaidField = document.querySelector("[name='amountPaid']");
 
-    function updateInvoiceTotal() {
+    function loadInvoicePaymentInfo() {
 
         const invoiceId = invoiceSelect.value;
 
         if (!invoiceId) return;
 
-        fetch(`/invoices/api/${invoiceId}/total`)
+        fetch(`/invoices/api/${invoiceId}/payment-info`)
             .then(response => response.json())
-            .then(total => {
+            .then(data => {
+
+                const total = parseFloat(data.total || 0);
+                const discount = parseFloat(data.discount || 0);
 
                 totalField.value = total.toFixed(2);
 
-                updateOutstanding();
+                if (discountField) {
+                    discountField.value = discount.toFixed(2);
+                }
 
+                updateOutstanding();
+            })
+            .catch(err => {
+                console.error("Error loading invoice payment info:", err);
             });
     }
 
@@ -28,15 +37,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const total = parseFloat(totalField.value || 0);
         const discount = parseFloat(discountField.value || 0);
 
-        const outstanding = total - discount;
+        let outstanding = total - discount;
+
+        if (outstanding < 0) {
+            outstanding = 0;
+        }
 
         outstandingField.value = outstanding.toFixed(2);
 
-        amountPaidField.value = outstanding.toFixed(2);
+        if (amountPaidField) {
+            amountPaidField.value = outstanding.toFixed(2);
+        }
     }
 
     if (invoiceSelect) {
-        invoiceSelect.addEventListener("change", updateInvoiceTotal);
+        invoiceSelect.addEventListener("change", loadInvoicePaymentInfo);
     }
 
     if (discountField) {

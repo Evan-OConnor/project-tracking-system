@@ -2,10 +2,12 @@ package ie.universityofgalway.projecttrackingsystem.controller;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import ie.universityofgalway.projecttrackingsystem.domain.core.CostItem;
+import ie.universityofgalway.projecttrackingsystem.domain.core.Receipt;
 import ie.universityofgalway.projecttrackingsystem.dto.ProjectForm;
 import ie.universityofgalway.projecttrackingsystem.dto.ProjectSearchCriteria;
 import ie.universityofgalway.projecttrackingsystem.dto.TimesheetEntryView;
 import ie.universityofgalway.projecttrackingsystem.repository.core.CostItemRepository;
+import ie.universityofgalway.projecttrackingsystem.repository.core.ReceiptRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.core.TimesheetEntryRepository;
 import ie.universityofgalway.projecttrackingsystem.service.ProjectService;
 import ie.universityofgalway.projecttrackingsystem.service.TimesheetEntryService;
@@ -29,54 +31,98 @@ public class ProjectController extends BaseController<Project, ProjectForm> {
     private final TimesheetEntryService timesheetService;
     private final CostItemRepository costItemRepository;
     private final TimesheetEntryRepository timesheetRepository;
+    private final ReceiptRepository receiptRepository;
 
     public ProjectController(ProjectService projectService,
                              TimesheetEntryService timesheetService,
                              CostItemRepository costItemRepository,
-                             TimesheetEntryRepository timesheetRepository) {
+                             TimesheetEntryRepository timesheetRepository,
+                             ReceiptRepository receiptRepository) {
+
         super(projectService);
+
         this.projectService = projectService;
         this.timesheetService = timesheetService;
         this.costItemRepository = costItemRepository;
         this.timesheetRepository = timesheetRepository;
+        this.receiptRepository = receiptRepository;
     }
 
+    // ------------------------------------------------
     // NEW FORM
+    // ------------------------------------------------
+
     @GetMapping("/new")
     public String newForm(Model model) {
+
         model.addAttribute("projectForm", new ProjectForm());
         model.addAttribute("mode", "new");
+
         projectService.loadFormLookups(model);
+
         return "projects/form";
     }
 
+    // ------------------------------------------------
     // CREATE
+    // ------------------------------------------------
+
     @PostMapping
-    public String create(@Valid @ModelAttribute ProjectForm form,
+    public String create(@Valid @ModelAttribute("projectForm") ProjectForm form,
                          BindingResult bindingResult,
-                         Model model) {
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
+
             model.addAttribute("mode", "new");
             projectService.loadFormLookups(model);
+
             return "projects/form";
         }
 
-        Project saved = projectService.create(form);
-        return "redirect:/projects/" + saved.getId();
+        try {
+
+            Project saved = projectService.create(form);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Project created successfully."
+            );
+
+            return "redirect:/projects/" + saved.getId();
+
+        } catch (IllegalArgumentException ex) {
+
+            bindingResult.reject("error.project", ex.getMessage());
+
+            model.addAttribute("mode", "new");
+            projectService.loadFormLookups(model);
+
+            return "projects/form";
+        }
     }
 
+    // ------------------------------------------------
     // EDIT FORM
+    // ------------------------------------------------
+
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+
         model.addAttribute("projectForm", projectService.getFormById(id));
         model.addAttribute("mode", "edit");
         model.addAttribute("projectId", id);
+
         projectService.loadFormLookups(model);
+
         return "projects/form";
     }
 
+    // ------------------------------------------------
     // VIEW PROJECT
+    // ------------------------------------------------
+
     @Override
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
@@ -96,14 +142,31 @@ public class ProjectController extends BaseController<Project, ProjectForm> {
         BigDecimal outlayTotal = costItemRepository.sumOutlaysByProjectId(id);
         BigDecimal expenseTotal = costItemRepository.sumExpensesByProjectId(id);
 
+        if (outlayTotal == null) outlayTotal = BigDecimal.ZERO;
+        if (expenseTotal == null) expenseTotal = BigDecimal.ZERO;
+
         List<TimesheetEntryView> timesheets =
                 timesheetService.findByProjectId(id);
 
         BigDecimal labourTotal = timesheetRepository.sumChargesByProjectId(id);
 
+        if (labourTotal == null) labourTotal = BigDecimal.ZERO;
+
         BigDecimal totalExVat = outlayTotal
                 .add(expenseTotal)
                 .add(labourTotal);
+
+        // -------------------------------
+        // RECEIPTS
+        // -------------------------------
+
+        List<Receipt> receipts = receiptRepository.findByInvoiceProjectId(id);
+
+        BigDecimal receiptsTotal = receipts.stream()
+                .map(Receipt::getAmountPaid)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // -------------------------------
 
         model.addAttribute("project", project);
         model.addAttribute("outlays", outlays);
@@ -114,34 +177,66 @@ public class ProjectController extends BaseController<Project, ProjectForm> {
         model.addAttribute("labourTotal", labourTotal);
         model.addAttribute("totalExVat", totalExVat);
 
+        model.addAttribute("receipts", receipts);
+        model.addAttribute("receiptsTotal", receiptsTotal);
+
         return "projects/view";
     }
 
+    // ------------------------------------------------
     // UPDATE
+    // ------------------------------------------------
+
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute ProjectForm form,
+                         @Valid @ModelAttribute("projectForm") ProjectForm form,
                          BindingResult bindingResult,
-                         Model model) {
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
+
             model.addAttribute("mode", "edit");
             model.addAttribute("projectId", id);
             projectService.loadFormLookups(model);
+
             return "projects/form";
         }
 
-        projectService.update(id, form);
-        return "redirect:/projects/" + id;
+        try {
+
+            projectService.update(id, form);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Project updated successfully."
+            );
+
+            return "redirect:/projects/" + id;
+
+        } catch (IllegalArgumentException ex) {
+
+            bindingResult.reject("error.project", ex.getMessage());
+
+            model.addAttribute("mode", "edit");
+            model.addAttribute("projectId", id);
+            projectService.loadFormLookups(model);
+
+            return "projects/form";
+        }
     }
 
+    // ------------------------------------------------
     // DELETE
+    // ------------------------------------------------
+
     @Override
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id,
                          RedirectAttributes redirectAttributes) {
 
         try {
+
             projectService.delete(id);
 
             redirectAttributes.addFlashAttribute(
@@ -160,7 +255,10 @@ public class ProjectController extends BaseController<Project, ProjectForm> {
         return "redirect:/projects";
     }
 
+    // ------------------------------------------------
     // LIST PROJECTS
+    // ------------------------------------------------
+
     @Override
     @GetMapping
     public String list(Model model) {
@@ -177,7 +275,10 @@ public class ProjectController extends BaseController<Project, ProjectForm> {
         return "projects/list";
     }
 
+    // ------------------------------------------------
     // SEARCH PROJECTS
+    // ------------------------------------------------
+
     @GetMapping("/search")
     public String searchProjects(@ModelAttribute ProjectSearchCriteria criteria,
                                  Model model) {

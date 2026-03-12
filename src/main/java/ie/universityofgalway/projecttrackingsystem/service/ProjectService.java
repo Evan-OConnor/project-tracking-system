@@ -43,35 +43,53 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         this.invoiceRepository = invoiceRepository;
     }
 
+    // ------------------------------------------------
     // LIST
+    // ------------------------------------------------
+
     @Override
     public List<Project> list() {
         return projectRepository.findAll();
     }
 
+    // ------------------------------------------------
     // ADVANCED SEARCH
+    // ------------------------------------------------
+
     public List<Project> searchProjects(ProjectSearchCriteria criteria) {
         return projectRepository.findAll(ProjectSpecification.search(criteria));
     }
 
+    // ------------------------------------------------
     // GET BY ID
+    // ------------------------------------------------
+
     @Override
     public Project getById(Long id) {
+
         return projectRepository.findWithCostItemsById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Project not found with id: " + id));
     }
 
+    // ------------------------------------------------
     // GET FORM BY ID
+    // ------------------------------------------------
+
     @Override
     public ProjectForm getFormById(Long id) {
 
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Project not found with id: " + id));
 
         return mapToForm(project);
     }
 
+    // ------------------------------------------------
     // CREATE
+    // ------------------------------------------------
+
     @Override
     public Project create(ProjectForm form) {
 
@@ -82,61 +100,79 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         return projectRepository.save(project);
     }
 
+    // ------------------------------------------------
     // UPDATE
+    // ------------------------------------------------
+
     @Override
     public Project update(Long id, ProjectForm form) {
 
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Project not found with id: " + id));
 
         updateEntity(project, form);
 
         return projectRepository.save(project);
     }
 
+    // ------------------------------------------------
     // DELETE
+    // ------------------------------------------------
+
     @Override
     public void delete(Long id) {
 
         if (invoiceRepository.existsByProjectId(id)) {
             throw new IllegalStateException(
-                    "Cannot delete project because invoices exist."
-            );
+                    "Cannot delete project because invoices exist.");
         }
 
         if (costItemRepository.existsByProjectId(id)) {
             throw new IllegalStateException(
-                    "Cannot delete project because expenses or outlays exist."
-            );
+                    "Cannot delete project because expenses or outlays exist.");
         }
 
         if (timesheetRepository.existsByProjectId(id)) {
             throw new IllegalStateException(
-                    "Cannot delete project because timesheet entries exist."
-            );
+                    "Cannot delete project because timesheet entries exist.");
         }
 
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Project not found with id: " + id));
 
         projectRepository.delete(project);
     }
 
+    // ------------------------------------------------
     // UPDATE ENTITY FROM FORM
+    // ------------------------------------------------
+
     @Override
     public void updateEntity(Project project, ProjectForm form) {
 
-        project.setCategory(categoryRepository.findById(form.getCategoryId()).orElseThrow());
-        project.setStatus(statusRepository.findById(form.getStatusId()).orElseThrow());
+        project.setCategory(
+                categoryRepository.findById(form.getCategoryId())
+                        .orElseThrow(() ->
+                                new IllegalArgumentException("Invalid project category"))
+        );
+
+        project.setStatus(
+                statusRepository.findById(form.getStatusId())
+                        .orElseThrow(() ->
+                                new IllegalArgumentException("Invalid project status"))
+        );
 
         Contact client = contactRepository
                 .findByNameIgnoreCase(form.getClientContactName())
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Client not found: " + form.getClientContactName()));
+                        new IllegalArgumentException("Client must exist. Please create the contact first."));
 
         project.setClientContact(client);
 
         Contact solicitor = null;
+
         if (form.getSolicitorContactName() != null && !form.getSolicitorContactName().isBlank()) {
             solicitor = contactRepository
                     .findByNameIgnoreCase(form.getSolicitorContactName())
@@ -146,6 +182,7 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         project.setSolicitorContact(solicitor);
 
         Contact insurer = null;
+
         if (form.getInsuranceCompanyContactName() != null && !form.getInsuranceCompanyContactName().isBlank()) {
             insurer = contactRepository
                     .findByNameIgnoreCase(form.getInsuranceCompanyContactName())
@@ -159,7 +196,10 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
         project.setStartDate(form.getStartDate());
     }
 
+    // ------------------------------------------------
     // MAP ENTITY → FORM
+    // ------------------------------------------------
+
     @Override
     public ProjectForm mapToForm(Project project) {
 
@@ -190,6 +230,7 @@ public class ProjectService implements BaseService<Project, ProjectForm> {
     }
 
     // LOAD LOOKUPS
+
     public void loadFormLookups(Model model) {
 
         model.addAttribute("categories", categoryRepository.findAll());

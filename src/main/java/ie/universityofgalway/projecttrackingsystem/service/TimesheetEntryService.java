@@ -77,8 +77,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         Employee employee = employeeRepo.findById(form.getEmployeeId())
                 .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
 
-        WorkDescription workDesc = workDescRepo.findById(form.getWorkDescriptionId())
-                .orElseThrow(() -> new IllegalArgumentException("Work description not found"));
+        WorkDescription workDesc = resolveWorkDescription(form);
 
         TimesheetEntry entry = new TimesheetEntry(
                 project,
@@ -102,7 +101,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
 
         Project project = projectRepo.findById(form.getProjectId()).orElseThrow();
         Employee employee = employeeRepo.findById(form.getEmployeeId()).orElseThrow();
-        WorkDescription workDesc = workDescRepo.findById(form.getWorkDescriptionId()).orElseThrow();
+        WorkDescription workDesc = resolveWorkDescription(form);
 
         entry.setProject(project);
         entry.setEmployee(employee);
@@ -129,10 +128,27 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         repository.delete(entry);
     }
 
+    // Resolve "Other" Work Description
+    private WorkDescription resolveWorkDescription(TimesheetEntryForm form) {
+
+        WorkDescription selected = workDescRepo.findById(form.getWorkDescriptionId())
+                .orElseThrow(() -> new IllegalArgumentException("Work description not found"));
+
+        if ("Other".equalsIgnoreCase(selected.getName())
+                && form.getOtherDescription() != null
+                && !form.getOtherDescription().isBlank()) {
+
+            return workDescRepo.findByName(form.getOtherDescription())
+                    .orElseGet(() -> workDescRepo.save(new WorkDescription(form.getOtherDescription())));
+        }
+
+        return selected;
+    }
+
     // REQUIRED BY BASESERVICE
     @Override
     public void updateEntity(TimesheetEntryView entity, TimesheetEntryForm form) {
-        // Not required for this service
+        // Not required
     }
 
     @Override
@@ -163,7 +179,6 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         TimesheetEntryForm form = new TimesheetEntryForm();
 
         form.setId(entry.getId());
-
         form.setProjectId(entry.getProject().getId());
         form.setEmployeeId(entry.getEmployee().getId());
         form.setWorkDescriptionId(entry.getWorkDescription().getId());
