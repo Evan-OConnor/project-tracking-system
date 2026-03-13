@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDateTime;
+
 /**
  * Custom error controller that routes to appropriate error pages based on HTTP status code.
  * Replaces the default Spring Boot Whitelabel Error Page.
@@ -30,7 +32,7 @@ public class CustomErrorController implements ErrorController {
             model.addAttribute("status", statusCode);
             model.addAttribute("error", error != null ? error : "An error occurred");
             model.addAttribute("path", path);
-            model.addAttribute("timestamp", java.time.LocalDateTime.now());
+            model.addAttribute("timestamp", LocalDateTime.now());
 
             if (statusCode == HttpStatus.NOT_FOUND.value()) {
                 return "error/404";
@@ -46,7 +48,7 @@ public class CustomErrorController implements ErrorController {
             // If anything goes wrong in error handling, return generic error page
             model.addAttribute("status", 500);
             model.addAttribute("error", "An unexpected error occurred");
-            model.addAttribute("timestamp", java.time.LocalDateTime.now());
+            model.addAttribute("timestamp", LocalDateTime.now());
             return "error";
         }
     }
@@ -58,7 +60,7 @@ public class CustomErrorController implements ErrorController {
     public String accessDenied(Model model) {
         model.addAttribute("status", 403);
         model.addAttribute("error", "Access Denied");
-        model.addAttribute("timestamp", java.time.LocalDateTime.now());
+        model.addAttribute("timestamp", LocalDateTime.now());
         return "error/403";
     }
 
@@ -66,7 +68,7 @@ public class CustomErrorController implements ErrorController {
     public String notFound(Model model) {
         model.addAttribute("status", 404);
         model.addAttribute("error", "Page Not Found");
-        model.addAttribute("timestamp", java.time.LocalDateTime.now());
+        model.addAttribute("timestamp", LocalDateTime.now());
         return "error/404";
     }
 
@@ -74,7 +76,7 @@ public class CustomErrorController implements ErrorController {
     public String serverError(Model model) {
         model.addAttribute("status", 500);
         model.addAttribute("error", "Internal Server Error");
-        model.addAttribute("timestamp", java.time.LocalDateTime.now());
+        model.addAttribute("timestamp", LocalDateTime.now());
         return "error/500";
     }
 }
