@@ -30,58 +30,59 @@ public class TimesheetEntryForm {
     @PositiveOrZero(message = "Hours must be zero or positive")
     private BigDecimal hours;
 
-    // Getters and Setters
+    // Getters
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
-    }
-
     public Long getEmployeeId() {
         return employeeId;
-    }
-
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
     }
 
     public Long getWorkDescriptionId() {
         return workDescriptionId;
     }
 
-    public void setWorkDescriptionId(Long workDescriptionId) {
-        this.workDescriptionId = workDescriptionId;
-    }
-
     public String getOtherDescription() {
         return otherDescription;
-    }
-
-    public void setOtherDescription(String otherDescription) {
-        this.otherDescription = otherDescription;
     }
 
     public LocalDate getEntryDate() {
         return entryDate;
     }
 
-    public void setEntryDate(LocalDate entryDate) {
-        this.entryDate = entryDate;
-    }
-
     public BigDecimal getHours() {
         return hours;
+    }
+
+    // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public void setWorkDescriptionId(Long workDescriptionId) {
+        this.workDescriptionId = workDescriptionId;
+    }
+
+    public void setOtherDescription(String otherDescription) {
+        this.otherDescription = otherDescription;
+    }
+
+    public void setEntryDate(LocalDate entryDate) {
+        this.entryDate = entryDate;
     }
 
     public void setHours(BigDecimal hours) {

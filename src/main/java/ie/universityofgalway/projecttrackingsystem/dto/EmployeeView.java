@@ -9,6 +9,8 @@ public class EmployeeView {
         this.name = name;
     }
 
+
+    // Getters
     public Long getId() { return id; }
     public String getName() { return name; }
 }

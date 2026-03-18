@@ -40,15 +40,15 @@ public class Employee {
 
     // Getters
 
-    public Long getId() {return id;}
+    public Long getId() { return id; }
 
-    public String getName() {return name;}
+    public String getName() { return name; }
 
-    public String getAddress() {return address;}
+    public String getAddress() { return address; }
 
-    public BigDecimal getHourlyRate() {return hourlyRate;}
+    public BigDecimal getHourlyRate() { return hourlyRate; }
 
-    public List<TimesheetEntry> getTimesheetEntries() {return timesheetEntries;}
+    public List<TimesheetEntry> getTimesheetEntries() { return timesheetEntries; }
 
     /**
      * Helper method to get all unique projects this employee has worked on
@@ -62,17 +62,18 @@ public class Employee {
 
     // Setters
 
-    public void setName(String name) {this.name = name;}
+    public void setName(String name) { this.name = name; }
 
-    public void setAddress(String address) {this.address = address;}
+    public void setAddress(String address) { this.address = address; }
 
-    public void setHourlyRate(BigDecimal hourlyRate) {this.hourlyRate = hourlyRate;}
+    public void setHourlyRate(BigDecimal hourlyRate) { this.hourlyRate = hourlyRate; }
 
-    public void setTimesheetEntries(List<TimesheetEntry> timesheetEntries) {this.timesheetEntries = timesheetEntries;}
+    public void setTimesheetEntries(List<TimesheetEntry> timesheetEntries) { this.timesheetEntries = timesheetEntries; }
 
     // Utility
 
     @Override
     public String toString() {
-        return name;}
+        return name;
+    }
 }

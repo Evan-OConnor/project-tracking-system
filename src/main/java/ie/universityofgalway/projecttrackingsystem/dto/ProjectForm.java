@@ -39,82 +39,72 @@ public class ProjectForm {
     public ProjectForm() {
     }
 
-    // Category
+
+    // Getters
     public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    // Status
     public Long getStatusId() {
         return statusId;
+    }
+
+    public String getClientContactName() {
+        return clientContactName;
+    }
+
+    public String getSolicitorContactName() {
+        return solicitorContactName;
+    }
+
+    public String getInsuranceCompanyContactName() {
+        return insuranceCompanyContactName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+
+
+    // Setters
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public void setStatusId(Long statusId) {
         this.statusId = statusId;
     }
 
-    // Client
-    public String getClientContactName() {
-        return clientContactName;
-    }
-
     public void setClientContactName(String clientContactName) {
         this.clientContactName = trim(clientContactName);
     }
 
-    // Solicitor
-    public String getSolicitorContactName() {
-        return solicitorContactName;
-    }
+    public void setSolicitorContactName(String solicitorContactName) {this.solicitorContactName = trim(solicitorContactName);}
 
-    public void setSolicitorContactName(String solicitorContactName) {
-        this.solicitorContactName = trim(solicitorContactName);
-    }
-
-    // Insurance Company
-    public String getInsuranceCompanyContactName() {
-        return insuranceCompanyContactName;
-    }
-
-    public void setInsuranceCompanyContactName(String insuranceCompanyContactName) {
-        this.insuranceCompanyContactName = trim(insuranceCompanyContactName);
-    }
-
-    // Title
-    public String getTitle() {
-        return title;
-    }
+    public void setInsuranceCompanyContactName(String insuranceCompanyContactName) {this.insuranceCompanyContactName = trim(insuranceCompanyContactName);}
 
     public void setTitle(String title) {
         this.title = trim(title);
-    }
-
-    // Description
-    public String getDescription() {
-        return description;
     }
 
     public void setDescription(String description) {
         this.description = trim(description);
     }
 
-    // Start Date
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    // ------------------------------------------------
     // Utility
-    // ------------------------------------------------
-
     private String trim(String value) {
         return value == null ? null : value.trim();
     }

@@ -15,6 +15,7 @@ public class TimesheetEntryController extends BaseController<TimesheetEntryView,
 
     private final TimesheetEntryService timesheetEntryService;
 
+    // Constructor
     public TimesheetEntryController(TimesheetEntryService timesheetEntryService) {
         super(timesheetEntryService);
         this.timesheetEntryService = timesheetEntryService;
@@ -45,7 +46,7 @@ public class TimesheetEntryController extends BaseController<TimesheetEntryView,
         return "entry";
     }
 
-    // CREATE FORM
+    // Create New Form
     @GetMapping("/new")
     public String createForm(Model model) {
         model.addAttribute("form", new TimesheetEntryForm());
@@ -54,7 +55,7 @@ public class TimesheetEntryController extends BaseController<TimesheetEntryView,
         return "timesheet/form";
     }
 
-    // HANDLE CREATE
+    // Handle Create
     @PostMapping
     public String create(@Valid @ModelAttribute("form") TimesheetEntryForm form,
                          BindingResult result,
@@ -70,7 +71,7 @@ public class TimesheetEntryController extends BaseController<TimesheetEntryView,
         return "redirect:/timesheet-entries";
     }
 
-    // EDIT FORM
+    // Edit Form
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         TimesheetEntryForm form = timesheetEntryService.getFormById(id);
@@ -82,7 +83,7 @@ public class TimesheetEntryController extends BaseController<TimesheetEntryView,
         return "timesheet/form";
     }
 
-    // HANDLE UPDATE
+    // Handle Update
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("form") TimesheetEntryForm form,

@@ -4,15 +4,11 @@ import java.math.BigDecimal;
 
 public class InvoiceLineItemDTO {
 
-    // Identifier
     private final Long id;
-
-    // Item details
     private final String description;
     private final BigDecimal quantity;
     private final BigDecimal unitRate;
 
-    // Calculated amounts
     private final BigDecimal netAmount;       // Quantity × Unit Rate
     private final BigDecimal vatRatePercent;  // VAT percentage (e.g. 23.00)
     private final BigDecimal vatAmount;       // VAT value

@@ -21,6 +21,16 @@
 
             <h2 class="mb-4">Generate Invoice</h2>
 
+            <!-- SUCCESS MESSAGE -->
+            <div th:if="${successMessage}" class="alert alert-success">
+                <span th:text="${successMessage}"></span>
+            </div>
+
+            <!-- ERROR MESSAGE -->
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <span th:text="${errorMessage}"></span>
+            </div>
+
             <form method="post" th:action="@{/invoices/generate}">
 
                 <!-- CSRF Token -->
@@ -61,30 +71,11 @@
                 </div>
 
                 <!-- GENERATE BUTTON -->
-
-                <div class="d-grid">
+                <div class="d-grid mt-3">
                     <button type="submit"
                             class="btn btn-primary">
                         Generate Invoice
                     </button>
-                </div>
-
-                <!-- SUCCESS MESSAGE -->
-
-                <div th:if="${successMessage}"
-                     class="alert alert-success mt-3">
-
-                    <span th:text="${successMessage}"></span>
-
-                </div>
-
-                <!-- ERROR MESSAGE -->
-
-                <div th:if="${errorMessage}"
-                     class="alert alert-danger mt-3">
-
-                    <span th:text="${errorMessage}"></span>
-
                 </div>
 
             </form>

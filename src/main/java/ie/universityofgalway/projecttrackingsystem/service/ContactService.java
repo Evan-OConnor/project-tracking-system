@@ -15,21 +15,20 @@ public class ContactService implements BaseService<Contact, ContactForm> {
     private final ContactRepository contactRepository;
     private final ProjectRepository projectRepository;
 
+    // Constructor
     public ContactService(ContactRepository contactRepository,
                           ProjectRepository projectRepository) {
         this.contactRepository = contactRepository;
         this.projectRepository = projectRepository;
     }
 
-    // LIST
-
+    // List  - All contacts from database
     @Override
     public List<Contact> list() {
         return contactRepository.findAll();
     }
 
-    // GET BY ID
-
+    // View one contact - Get by id
     @Override
     public Contact getById(Long id) {
         return contactRepository.findById(id)
@@ -37,8 +36,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
                         new IllegalArgumentException("Contact not found with id: " + id));
     }
 
-    // DELETE
-
+    // Delete
     @Override
     public void delete(Long id) {
 
@@ -56,8 +54,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         contactRepository.delete(contact);
     }
 
-    // CREATE
-
+    // Create
     @Override
     public Contact create(ContactForm form) {
 
@@ -68,8 +65,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         return contactRepository.save(contact);
     }
 
-    // UPDATE
-
+    // Update
     @Override
     public Contact update(Long id, ContactForm form) {
 
@@ -80,8 +76,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         return contactRepository.save(contact);
     }
 
-    // GET FORM BY ID
-
+    // Gets a Contact from database -> converts to ContactForm (Prefills fields)
     @Override
     public ContactForm getFormById(Long id) {
 
@@ -90,8 +85,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         return mapToForm(contact);
     }
 
-    // REQUIRED BY BASESERVICE
-
+    // Contact form -> contact (save/update)
     @Override
     public void updateEntity(Contact contact, ContactForm form) {
         contact.setName(form.getName());
@@ -101,6 +95,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         contact.setComments(form.getComments());
     }
 
+    // Contact -> contact form (display/edit)
     @Override
     public ContactForm mapToForm(Contact contact) {
 

@@ -2,6 +2,7 @@ package ie.universityofgalway.projecttrackingsystem.service;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.*;
 import ie.universityofgalway.projecttrackingsystem.dto.CostItemForm;
+import ie.universityofgalway.projecttrackingsystem.dto.CostItemView;
 import ie.universityofgalway.projecttrackingsystem.repository.core.*;
 
 import org.springframework.stereotype.Service;
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class CostItemService implements BaseService<CostItem, CostItemForm> {
 
     private final CostItemRepository costItemRepository;
@@ -29,56 +32,62 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         this.contactRepository = contactRepository;
     }
 
-    // LIST
-
+    // List
     @Override
+    @Transactional(readOnly = true)
     public List<CostItem> list() {
         return costItemRepository.findAll();
     }
 
-    // GET BY ID
-
+    // Get by id
     @Override
+    @Transactional(readOnly = true)
     public CostItem getById(Long id) {
         return costItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cost item not found"));
     }
 
-
-    // CREATE
-
+    // Create
     @Override
     public CostItem create(CostItemForm form) {
         return saveInternal(form, null);
     }
 
 
-    // UPDATE
-
+    // Update
     @Override
     public CostItem update(Long id, CostItemForm form) {
+
+        CostItem item = getById(id);
+
+        if (!item.isUnbilled()) {
+            throw new IllegalStateException("Billed cost items cannot be edited.");
+        }
+
         return saveInternal(form, id);
     }
 
-
-    // DELETE
-
+    // Delete
     @Override
     public void delete(Long id) {
-        costItemRepository.deleteById(id);
+
+        CostItem item = costItemRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Cost item not found"));
+
+        if (!item.isUnbilled()) {
+            throw new IllegalStateException("Billed cost items cannot be deleted.");
+        }
+
+        costItemRepository.delete(item);
     }
-    // GET FORM
 
+    // Get form by id
     @Override
+    @Transactional(readOnly = true)
     public CostItemForm getFormById(Long id) {
-
         CostItem costItem = getById(id);
-
         return mapToForm(costItem);
     }
-
-
-    // REQUIRED BY BASESERVICE
 
     @Override
     public void updateEntity(CostItem entity, CostItemForm form) {
@@ -86,7 +95,7 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         Project project = projectRepository.findById(form.getProjectId()).orElseThrow();
         Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow();
 
-        CostItem.Type type = CostItem.Type.valueOf(form.getType());
+        CostItem.Type type = form.getType();
 
         Contact supplierContact = null;
 
@@ -126,61 +135,62 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         form.setCostDate(c.getCostDate());
         form.setDescription(c.getDescription());
         form.setCostAmount(c.getCostAmount());
-        form.setType(c.getType().name());
+        form.setType(c.getType());
 
         return form;
     }
 
-    // INTERNAL SAVE
+    @Transactional(readOnly = true)
+    public List<CostItemView> listViews() {
+        return costItemRepository.findAllWithDetails()
+                .stream()
+                .map(this::toView)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public CostItemView getViewById(Long id) {
+        CostItem item = costItemRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new RuntimeException("Cost item not found"));
+
+        return toView(item);
+    }
+
+    // Internal Save
 
     private CostItem saveInternal(CostItemForm form, Long id) {
-
-        Project project = projectRepository.findById(form.getProjectId())
-                .orElseThrow();
-
-        Employee employee = employeeRepository.findById(form.getEmployeeId())
-                .orElseThrow();
-
-        CostItem.Type type = CostItem.Type.valueOf(form.getType());
-
-        Contact supplierContact = null;
-
-        if (type == CostItem.Type.OUTLAY) {
-
-            if (form.getSupplierContactId() == null) {
-                throw new IllegalStateException("Outlays must be linked to a supplier.");
-            }
-
-            supplierContact = contactRepository
-                    .findById(form.getSupplierContactId())
-                    .orElseThrow();
-        }
 
         CostItem costItem;
 
         if (id != null) {
-
+            // Update existing
             costItem = getById(id);
-
-            updateEntity(costItem, form);
-
         } else {
-
-            costItem = new CostItem(
-                    project,
-                    employee,
-                    supplierContact,
-                    form.getCostDate(),
-                    form.getDescription(),
-                    form.getCostAmount(),
-                    type
-            );
+            // Create new (empty entity)
+            costItem = new CostItem();
         }
+
+        // Let ONE method handle all mapping + business logic
+        updateEntity(costItem, form);
 
         return costItemRepository.save(costItem);
     }
 
-    // FORM DROPDOWNS
+    private CostItemView toView(CostItem item) {
+        return new CostItemView(
+                item.getId(),
+                item.getProject().getTitle(),
+                item.getEmployee().getName(),
+                item.getSupplierContact() != null ? item.getSupplierContact().getName() : null,
+                item.getCostDate(),
+                item.getDescription(),
+                item.getCostAmount(),
+                item.getType(),
+                item.getInvoice() != null
+        );
+    }
+
+    // Form Dropdowns
 
     public Map<String, Object> getDropdowns() {
 

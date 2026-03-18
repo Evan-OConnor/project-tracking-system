@@ -12,21 +12,21 @@ public abstract class BaseController<T, F> {
         this.service = service;
     }
 
-    // LIST
+    // List
     @GetMapping
     public String list(Model model) {
         model.addAttribute(getListAttributeName(), service.list());
         return getListView();
     }
 
-    // VIEW
+    // View
     @GetMapping("/{id:\\d+}")
     public String view(@PathVariable Long id, Model model) {
         model.addAttribute(getEntityAttributeName(), service.getById(id));
         return getDetailsView();
     }
 
-    // DELETE
+    // Delete
     @PostMapping("/{id:\\d+}/delete")
     public String delete(@PathVariable Long id,
                          org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
@@ -52,6 +52,8 @@ public abstract class BaseController<T, F> {
         return "redirect:" + getBaseUrl();
     }
 
+
+    // Getters
     protected abstract String getListView();
     protected abstract String getDetailsView();
     protected abstract String getBaseUrl();

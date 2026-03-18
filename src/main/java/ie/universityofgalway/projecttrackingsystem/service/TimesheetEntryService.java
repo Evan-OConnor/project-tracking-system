@@ -38,7 +38,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         this.workDescRepo = workDescRepo;
     }
 
-    // LIST
+    // List
     @Override
     public List<TimesheetEntryView> list() {
         return repository.findAll()
@@ -47,7 +47,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
                 .collect(Collectors.toList());
     }
 
-    // GET BY ID
+    // Get by id
     @Override
     public TimesheetEntryView getById(Long id) {
 
@@ -57,7 +57,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return toView(entry);
     }
 
-    // GET FORM
+    // Get form
     @Override
     public TimesheetEntryForm getFormById(Long id) {
 
@@ -67,7 +67,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return toForm(entry);
     }
 
-    // CREATE
+    // Create
     @Override
     public TimesheetEntryView create(TimesheetEntryForm form) {
 
@@ -92,7 +92,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return toView(entry);
     }
 
-    // UPDATE
+    // Update
     @Override
     public TimesheetEntryView update(Long id, TimesheetEntryForm form) {
 
@@ -114,7 +114,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return toView(entry);
     }
 
-    // DELETE
+    // Delete
     @Override
     public void delete(Long id) {
 
@@ -145,7 +145,6 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return selected;
     }
 
-    // REQUIRED BY BASESERVICE
     @Override
     public void updateEntity(TimesheetEntryView entity, TimesheetEntryForm form) {
         // Not required
@@ -156,7 +155,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return new TimesheetEntryForm();
     }
 
-    // ENTITY → VIEW
+    // Entity to view
     private TimesheetEntryView toView(TimesheetEntry entry) {
 
         BigDecimal charge = entry.getNetAmount()
@@ -173,7 +172,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         );
     }
 
-    // ENTITY → FORM
+    // Entity to form
     private TimesheetEntryForm toForm(TimesheetEntry entry) {
 
         TimesheetEntryForm form = new TimesheetEntryForm();
@@ -188,7 +187,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return form;
     }
 
-    // PROJECT FILTER
+    // Project filter
     public List<TimesheetEntryView> findByProjectId(Long projectId) {
 
         return repository.findByProject_Id(projectId)
@@ -197,7 +196,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
                 .toList();
     }
 
-    // FORM LOOKUPS
+    // Form lookups
     public Map<String, Object> getFormLookups() {
 
         return Map.of(

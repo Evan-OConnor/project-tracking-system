@@ -8,6 +8,7 @@ public class ProjectSearchCriteria {
     private String title;
     private Long clientId;
     private Long statusId;
+    private Long categoryId;
 
     private LocalDate startDateFrom;
     private LocalDate startDateTo;
@@ -18,72 +19,80 @@ public class ProjectSearchCriteria {
     private Boolean hasInvoices;
     private Boolean hasExpenses;
 
+    // Getters
+
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public Long getClientId() {
         return clientId;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
-
     public Long getStatusId() {
         return statusId;
     }
 
-    public void setStatusId(Long statusId) {
-        this.statusId = statusId;
-    }
+    public Long getCategoryId() {return categoryId;}
 
     public LocalDate getStartDateFrom() {
         return startDateFrom;
-    }
-
-    public void setStartDateFrom(LocalDate startDateFrom) {
-        this.startDateFrom = startDateFrom;
     }
 
     public LocalDate getStartDateTo() {
         return startDateTo;
     }
 
-    public void setStartDateTo(LocalDate startDateTo) {
-        this.startDateTo = startDateTo;
-    }
-
     public BigDecimal getMinBudget() {
         return minBudget;
-    }
-
-    public void setMinBudget(BigDecimal minBudget) {
-        this.minBudget = minBudget;
     }
 
     public BigDecimal getMaxBudget() {
         return maxBudget;
     }
 
-    public void setMaxBudget(BigDecimal maxBudget) {
-        this.maxBudget = maxBudget;
-    }
-
     public Boolean getHasInvoices() {
         return hasInvoices;
     }
 
-    public void setHasInvoices(Boolean hasInvoices) {
-        this.hasInvoices = hasInvoices;
-    }
-
     public Boolean getHasExpenses() {
         return hasExpenses;
+    }
+
+
+  // Setters
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public void setCategoryId(Long categoryId) {this.categoryId = categoryId;}
+
+    public void setStartDateFrom(LocalDate startDateFrom) {
+        this.startDateFrom = startDateFrom;
+    }
+
+    public void setStartDateTo(LocalDate startDateTo) {
+        this.startDateTo = startDateTo;
+    }
+
+    public void setMinBudget(BigDecimal minBudget) {
+        this.minBudget = minBudget;
+    }
+
+    public void setMaxBudget(BigDecimal maxBudget) {
+        this.maxBudget = maxBudget;
+    }
+
+    public void setHasInvoices(Boolean hasInvoices) {
+        this.hasInvoices = hasInvoices;
     }
 
     public void setHasExpenses(Boolean hasExpenses) {

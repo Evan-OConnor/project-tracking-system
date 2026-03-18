@@ -1,5 +1,6 @@
 package ie.universityofgalway.projecttrackingsystem.dto;
 
+import ie.universityofgalway.projecttrackingsystem.domain.core.CostItem;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,32 +29,41 @@ public class CostItemForm {
     @PositiveOrZero(message = "Cost amount must be zero or positive")
     private BigDecimal costAmount;
 
-    @NotBlank(message = "Type is required")
-    @Pattern(regexp = "OUTLAY|EXPENSE", message = "Type must be OUTLAY or EXPENSE")
-    private String type;
+    @NotNull(message = "Type is required")
+    private CostItem.Type type;
 
-    // Getters and Setters
+    // Getters
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public Long getProjectId() { return projectId; }
-    public void setProjectId(Long projectId) { this.projectId = projectId; }
 
     public Long getEmployeeId() { return employeeId; }
-    public void setEmployeeId(Long employeeId) { this.employeeId = employeeId; }
 
     public Long getSupplierContactId() { return supplierContactId; }
-    public void setSupplierContactId(Long supplierContactId) { this.supplierContactId = supplierContactId; }
 
     public LocalDate getCostDate() { return costDate; }
-    public void setCostDate(LocalDate costDate) { this.costDate = costDate; }
 
     public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
 
     public BigDecimal getCostAmount() { return costAmount; }
+
+    public CostItem.Type getType() { return type; }
+
+    // Setters
+
+    public void setId(Long id) { this.id = id; }
+
+    public void setProjectId(Long projectId) { this.projectId = projectId; }
+
+    public void setEmployeeId(Long employeeId) { this.employeeId = employeeId; }
+
+    public void setSupplierContactId(Long supplierContactId) { this.supplierContactId = supplierContactId; }
+
+    public void setCostDate(LocalDate costDate) { this.costDate = costDate; }
+
+    public void setDescription(String description) { this.description = description; }
+
     public void setCostAmount(BigDecimal costAmount) { this.costAmount = costAmount; }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public void setType(CostItem.Type type) { this.type = type; }
 }

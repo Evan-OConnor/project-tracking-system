@@ -16,12 +16,12 @@
   <h1 th:text="${mode == 'edit' ? 'Edit Project' : 'New Project'}"></h1>
   <p class="text-muted">Create or edit a project. Required fields are marked.</p>
 
-  <!-- Success message -->
+  <!-- Success -->
   <div th:if="${successMessage}" class="alert alert-success">
     <span th:text="${successMessage}"></span>
   </div>
 
-  <!-- Controller error message -->
+  <!-- Error -->
   <div th:if="${errorMessage}" class="alert alert-danger">
     <span th:text="${errorMessage}"></span>
   </div>
@@ -36,9 +36,11 @@
            th:name="${_csrf.parameterName}"
            th:value="${_csrf.token}" />
 
-    <!-- Global validation errors -->
+    <!-- Global validation -->
     <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-      Please correct the errors below.
+      <ul class="mb-0">
+        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+      </ul>
     </div>
 
     <!-- Category -->
@@ -82,8 +84,7 @@
 
         <option th:each="s : ${statuses}"
                 th:value="${s.id}"
-                th:text="${s.name}"
-                th:selected="${mode == 'new' and s.name == 'IN_PROGRESS'}">
+                th:text="${s.name}">
         </option>
 
       </select>
@@ -93,6 +94,9 @@
            th:errors="*{statusId}">
       </div>
     </div>
+
+    <!-- Contacts -->
+    <h5 class="mt-4">Contacts</h5>
 
     <!-- Client -->
     <div class="mb-3">
@@ -106,18 +110,22 @@
                list="clients-list"
                th:field="*{clientContactName}"
                placeholder="Start typing client name..."
+               autocomplete="off"
                required
                th:classappend="${#fields.hasErrors('clientContactName')} ? ' is-invalid'">
 
         <a class="btn btn-outline-secondary"
-           th:href="@{/contacts/new}">
+           th:href="${mode == 'edit'} ?
+             @{/contacts/new(returnUrl=${'/projects/' + projectId + '/edit'})} :
+             @{/contacts/new(returnUrl='/projects/new')}">
+
           + New Contact
         </a>
 
       </div>
 
       <small class="text-muted">
-        Client must already exist. Create one if it is not listed.
+        Select an existing client or type the exact name.
       </small>
 
       <datalist id="clients-list">
@@ -129,6 +137,7 @@
            th:errors="*{clientContactName}">
       </div>
     </div>
+
     <!-- Solicitor + Insurance -->
     <div class="row">
 
@@ -139,6 +148,7 @@
                list="solicitors-list"
                th:field="*{solicitorContactName}"
                placeholder="Solicitor name"
+               autocomplete="off"
                th:classappend="${#fields.hasErrors('solicitorContactName')} ? ' is-invalid'">
 
         <datalist id="solicitors-list">
@@ -158,6 +168,7 @@
                list="insurance-list"
                th:field="*{insuranceCompanyContactName}"
                placeholder="Insurance company"
+               autocomplete="off"
                th:classappend="${#fields.hasErrors('insuranceCompanyContactName')} ? ' is-invalid'">
 
         <datalist id="insurance-list">
@@ -197,6 +208,7 @@
       <textarea class="form-control"
                 th:field="*{description}"
                 rows="4"
+                maxlength="1000"
                 placeholder="Short description"
                 th:classappend="${#fields.hasErrors('description')} ? ' is-invalid'"></textarea>
 

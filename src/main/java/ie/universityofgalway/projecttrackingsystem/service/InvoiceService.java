@@ -1,6 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.service;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.*;
+import ie.universityofgalway.projecttrackingsystem.domain.lookup.InvoiceStatus;
 import ie.universityofgalway.projecttrackingsystem.domain.lookup.VatRate;
 import ie.universityofgalway.projecttrackingsystem.dto.InvoiceDTO;
 import ie.universityofgalway.projecttrackingsystem.dto.InvoiceLineItemDTO;
@@ -15,6 +16,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -28,13 +30,15 @@ public class InvoiceService {
     private final InvoiceLineItemRepository lineItemRepo;
     private final ProjectRepository projectRepo;
     private final VatRateRepository vatRateRepo;
+    private final ReceiptRepository receiptRepo;
 
     public InvoiceService(InvoiceRepository invoiceRepo,
                           TimesheetEntryRepository timesheetRepo,
                           CostItemRepository costItemRepo,
                           InvoiceLineItemRepository lineItemRepo,
                           ProjectRepository projectRepo,
-                          VatRateRepository vatRateRepo) {
+                          VatRateRepository vatRateRepo,
+                          ReceiptRepository receiptRepo) {
 
         this.invoiceRepo = invoiceRepo;
         this.timesheetRepo = timesheetRepo;
@@ -42,9 +46,11 @@ public class InvoiceService {
         this.lineItemRepo = lineItemRepo;
         this.projectRepo = projectRepo;
         this.vatRateRepo = vatRateRepo;
+        this.receiptRepo = receiptRepo;
     }
 
-    // GENERATE INVOICE
+    // Generate Invoice
+
     public InvoiceDTO generateInvoice(Long projectId) {
 
         Project project = projectRepo.findById(projectId)
@@ -73,12 +79,11 @@ public class InvoiceService {
 
         invoiceRepo.save(invoice);
 
-        // PROFESSIONAL FEES
+        // Professional Fees
         for (TimesheetEntry entry : timesheets) {
 
             InvoiceLineItem line = new InvoiceLineItem(
                     invoice,
-                    standardVat,
                     "Professional Services - " + entry.getEmployee().getName(),
                     entry.getHours(),
                     entry.getEmployee().getHourlyRate()
@@ -88,12 +93,11 @@ public class InvoiceService {
             entry.setInvoice(invoice);
         }
 
-        // EXPENSES
+        // Expenses
         for (CostItem cost : costs) {
 
             InvoiceLineItem line = new InvoiceLineItem(
                     invoice,
-                    standardVat,
                     cost.getDescription(),
                     BigDecimal.ONE,
                     cost.getCostAmount()
@@ -106,7 +110,8 @@ public class InvoiceService {
         return mapToDTO(invoice);
     }
 
-    // LIST ALL INVOICES
+    // List all invoices
+
     public List<InvoiceDTO> getAllInvoices() {
 
         List<InvoiceDTO> result = new ArrayList<>();
@@ -118,16 +123,37 @@ public class InvoiceService {
         return result;
     }
 
-    // GET SINGLE INVOICE
+    // Get single invoice
+
     public InvoiceDTO getInvoiceById(Long id) {
 
-        Invoice invoice = invoiceRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+        Invoice invoice = invoiceRepo.findByIdWithProject(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invoice not found"));
 
         return mapToDTO(invoice);
     }
 
-    // SUPPORT METHODS
+    public void voidInvoice(Long invoiceId) {
+
+        Invoice invoice =  invoiceRepo.findByIdWithProject(invoiceId)
+                .orElseThrow(() -> new IllegalArgumentException("Invoice not found"));
+
+        if (invoice.getStatus() == InvoiceStatus.VOID) {
+            throw new IllegalStateException("Invoice is already void.");
+        }
+
+        if (invoice.getStatus() == InvoiceStatus.PAID) {
+            throw new IllegalStateException("Cannot void a fully paid invoice.");
+        }
+
+        if (invoice.getStatus() == InvoiceStatus.PARTIALLY_PAID) {
+            throw new IllegalStateException("Cannot void a partially paid invoice.");
+        }
+
+        invoice.setStatus(InvoiceStatus.VOID);
+    }
+
+    // Support Methods
 
     public List<Project> getAllProjects() {
         return projectRepo.findAll();
@@ -138,12 +164,7 @@ public class InvoiceService {
     }
 
     private String generateInvoiceNumber() {
-
-        Invoice lastInvoice = invoiceRepo.findTopByOrderByIdDesc();
-
-        long nextNumber = (lastInvoice == null) ? 1 : lastInvoice.getId() + 1;
-
-        return String.format("INV-%05d", nextNumber);
+        return "INV-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     private VatRate getDefaultVatRate() {
@@ -153,7 +174,43 @@ public class InvoiceService {
                         new RuntimeException("Default VAT rate not configured in database"));
     }
 
-    // ENTITY → DTO WITH VAT CALCULATION
+    public List<InvoiceDTO> searchInvoices(String query) {
+
+        List<Invoice> invoices =
+                invoiceRepo.findByInvoiceNumberContainingIgnoreCase(query);
+
+        List<InvoiceDTO> results = new ArrayList<>();
+
+        for (Invoice invoice : invoices) {
+            results.add(mapToDTO(invoice));
+        }
+
+        return results;
+    }
+
+    private InvoiceStatus calculateStatus (
+            BigDecimal total,
+            BigDecimal totalPaid,
+            BigDecimal totalDiscount
+    )
+    {
+        BigDecimal outstanding = total
+                .subtract(totalPaid)
+                .subtract(totalDiscount)
+                .max(BigDecimal.ZERO);
+
+        if (outstanding.compareTo(BigDecimal.ZERO) == 0) {
+            return InvoiceStatus.PAID;
+        } else if (totalPaid.compareTo(BigDecimal.ZERO) > 0
+                || totalDiscount.compareTo(BigDecimal.ZERO) > 0) {
+            return InvoiceStatus.PARTIALLY_PAID;
+        } else {
+            return InvoiceStatus.GENERATED;
+        }
+    }
+
+    // ENTITY → DTO WITH VAT + PAYMENT CALCULATION
+
     private InvoiceDTO mapToDTO(Invoice invoice) {
 
         List<InvoiceLineItem> lines =
@@ -164,6 +221,10 @@ public class InvoiceService {
         BigDecimal subtotal = BigDecimal.ZERO;
         BigDecimal vatAmount = BigDecimal.ZERO;
 
+        VatRate vatRate = getDefaultVatRate();
+        BigDecimal vatDecimal = vatRate.getRateDecimal();
+        BigDecimal vatPercent = vatRate.getRatePercent();
+
         for (InvoiceLineItem line : lines) {
 
             BigDecimal net = line.getQuantity()
@@ -171,7 +232,7 @@ public class InvoiceService {
                     .setScale(2, RoundingMode.HALF_UP);
 
             BigDecimal vat = net
-                    .multiply(line.getVatRate().getRateDecimal())
+                    .multiply(vatDecimal)
                     .setScale(2, RoundingMode.HALF_UP);
 
             BigDecimal gross = net.add(vat)
@@ -186,7 +247,7 @@ public class InvoiceService {
                     line.getQuantity(),
                     line.getUnitRate(),
                     net,
-                    line.getVatRate().getRatePercent(),
+                    vatPercent,
                     vat,
                     gross
             ));
@@ -198,16 +259,41 @@ public class InvoiceService {
         BigDecimal total = subtotal.add(vatAmount)
                 .setScale(2, RoundingMode.HALF_UP);
 
+        // ---------------- PAYMENT CALCULATIONS ----------------
+
+        BigDecimal totalPaid =
+                receiptRepo.sumPaymentsByInvoiceId(invoice.getId());
+
+        BigDecimal totalDiscount =
+                receiptRepo.sumDiscountsByInvoiceId(invoice.getId());
+
+        if (totalPaid == null) totalPaid = BigDecimal.ZERO;
+        if (totalDiscount == null) totalDiscount = BigDecimal.ZERO;
+
+        BigDecimal outstanding =
+                total.subtract(totalPaid)
+                        .subtract(totalDiscount)
+                        .max(BigDecimal.ZERO);
+
+        // -------- DETERMINE STATUS -------
+        InvoiceStatus status =
+                invoice.getStatus() == InvoiceStatus.VOID
+                        ? InvoiceStatus.VOID
+                        : calculateStatus(total, totalPaid, totalDiscount);
+
         return new InvoiceDTO(
                 invoice.getId(),
                 invoice.getInvoiceNumber(),
                 invoice.getProject().getTitle(),
                 invoice.getInvoiceDate(),
-                invoice.getStatus(),
+                status,
                 items,
                 subtotal,
                 vatAmount,
-                total
+                total,
+                totalPaid,
+                totalDiscount,
+                outstanding
         );
     }
 }

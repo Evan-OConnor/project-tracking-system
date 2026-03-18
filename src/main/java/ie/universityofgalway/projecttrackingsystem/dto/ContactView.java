@@ -7,6 +7,7 @@ public class ContactView {
     private String phone;
     private String fax;
 
+    // Constructor
     public ContactView(Long id, String name, String address, String phone, String fax) {
         this.id = id;
         this.name = name;
@@ -15,6 +16,7 @@ public class ContactView {
         this.fax = fax;
     }
 
+    // Getters
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getAddress() { return address; }
