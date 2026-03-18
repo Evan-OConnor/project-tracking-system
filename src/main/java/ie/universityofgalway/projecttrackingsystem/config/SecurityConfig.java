@@ -28,9 +28,12 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 public class SecurityConfig {
 
+    // BCrypt work factor - determines hashing speed.
+    private static final int BCRYPT_STRENGTH = 13;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
     }
 
     @Bean

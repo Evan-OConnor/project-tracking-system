@@ -22,6 +22,19 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+/**
+ * Controller responsible for administrative user management.
+ *
+ * Responsibilities:
+ * - Display the create-user and edit-user forms and ensure required model attributes are present.
+ * - Handle form submissions to create, update and delete system users and their linked employee records.
+ * - Provide paginated listing and search for system users used in the admin UI.
+ * - Enforce controller-level safeguards such as preventing edits/deletes of the seeded system admin account.
+ *
+ * Behaviour:
+ * - Delegates business rules and persistence to {@link SystemUserAdminService}.
+ * - Performs presentation-layer validation and converts service exceptions into user-facing errors.
+ */
 @Controller
 public class AdminUserController {
 
