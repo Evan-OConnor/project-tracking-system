@@ -1,14 +1,9 @@
 package ie.universityofgalway.projecttrackingsystem.controller;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
-import ie.universityofgalway.projecttrackingsystem.domain.core.CostItem;
-import ie.universityofgalway.projecttrackingsystem.dto.ProjectForm;
-import ie.universityofgalway.projecttrackingsystem.dto.ProjectSearchCriteria;
-import ie.universityofgalway.projecttrackingsystem.dto.TimesheetEntryView;
-import ie.universityofgalway.projecttrackingsystem.repository.core.CostItemRepository;
-import ie.universityofgalway.projecttrackingsystem.repository.core.TimesheetEntryRepository;
+import ie.universityofgalway.projecttrackingsystem.dto.*;
+import ie.universityofgalway.projecttrackingsystem.service.ProjectQueryService;
 import ie.universityofgalway.projecttrackingsystem.service.ProjectService;
-import ie.universityofgalway.projecttrackingsystem.service.TimesheetEntryService;
 
 import jakarta.validation.Valid;
 
@@ -18,202 +13,163 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 @Controller
 @RequestMapping("/projects")
-public class ProjectController extends BaseController<Project, ProjectForm> {
+public class ProjectController  {
 
     private final ProjectService projectService;
-    private final TimesheetEntryService timesheetService;
-    private final CostItemRepository costItemRepository;
-    private final TimesheetEntryRepository timesheetRepository;
+    private final ProjectQueryService projectQueryService;
 
     public ProjectController(ProjectService projectService,
-                             TimesheetEntryService timesheetService,
-                             CostItemRepository costItemRepository,
-                             TimesheetEntryRepository timesheetRepository) {
-        super(projectService);
+                             ProjectQueryService projectQueryService) {
         this.projectService = projectService;
-        this.timesheetService = timesheetService;
-        this.costItemRepository = costItemRepository;
-        this.timesheetRepository = timesheetRepository;
+        this.projectQueryService = projectQueryService;
     }
 
+    // =========================
     // NEW FORM
+    // =========================
     @GetMapping("/new")
     public String newForm(Model model) {
+
         model.addAttribute("projectForm", new ProjectForm());
         model.addAttribute("mode", "new");
-        projectService.loadFormLookups(model);
+
+        projectQueryService.loadFormLookups(model);
+
         return "projects/form";
     }
 
+    // =========================
     // CREATE
+    // =========================
     @PostMapping
-    public String create(@Valid @ModelAttribute ProjectForm form,
+    public String create(@Valid @ModelAttribute("projectForm") ProjectForm form,
                          BindingResult bindingResult,
-                         Model model) {
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("mode", "new");
-            projectService.loadFormLookups(model);
+            projectQueryService.loadFormLookups(model);
             return "projects/form";
         }
 
-        Project saved = projectService.create(form);
-        return "redirect:/projects/" + saved.getId();
+        try {
+            Project saved = projectService.create(form);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage", "Project created successfully.");
+
+            return "redirect:/projects/" + saved.getId();
+
+        } catch (IllegalArgumentException ex) {
+
+            bindingResult.reject("error.project", ex.getMessage());
+
+            model.addAttribute("mode", "new");
+            projectQueryService.loadFormLookups(model);
+
+            return "projects/form";
+        }
     }
 
+    // =========================
     // EDIT FORM
+    // =========================
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+
         model.addAttribute("projectForm", projectService.getFormById(id));
         model.addAttribute("mode", "edit");
         model.addAttribute("projectId", id);
-        projectService.loadFormLookups(model);
+
+        projectQueryService.loadFormLookups(model);
+
         return "projects/form";
     }
 
-    // VIEW PROJECT
-    @Override
+    // View
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
 
-        Project project = projectService.getById(id);
+        ProjectDetailsView view = projectQueryService.getProjectDetails(id);
 
-        List<CostItem> costItems = project.getCostItems();
-
-        List<CostItem> outlays = costItems.stream()
-                .filter(c -> c.getType() == CostItem.Type.OUTLAY)
-                .toList();
-
-        List<CostItem> expenses = costItems.stream()
-                .filter(c -> c.getType() == CostItem.Type.EXPENSE)
-                .toList();
-
-        BigDecimal outlayTotal = costItemRepository.sumOutlaysByProjectId(id);
-        BigDecimal expenseTotal = costItemRepository.sumExpensesByProjectId(id);
-
-        List<TimesheetEntryView> timesheets =
-                timesheetService.findByProjectId(id);
-
-        BigDecimal labourTotal = timesheetRepository.sumChargesByProjectId(id);
-
-        BigDecimal totalExVat = outlayTotal
-                .add(expenseTotal)
-                .add(labourTotal);
-
-        model.addAttribute("project", project);
-        model.addAttribute("outlays", outlays);
-        model.addAttribute("expenses", expenses);
-        model.addAttribute("outlayTotal", outlayTotal);
-        model.addAttribute("expenseTotal", expenseTotal);
-        model.addAttribute("timesheets", timesheets);
-        model.addAttribute("labourTotal", labourTotal);
-        model.addAttribute("totalExVat", totalExVat);
+        model.addAttribute("project", view.getProject());
+        model.addAttribute("outlays", view.getOutlays());
+        model.addAttribute("expenses", view.getExpenses());
+        model.addAttribute("outlayTotal", view.getOutlayTotal());
+        model.addAttribute("expenseTotal", view.getExpenseTotal());
+        model.addAttribute("timesheets", view.getTimesheets());
+        model.addAttribute("labourTotal", view.getLabourTotal());
+        model.addAttribute("totalExVat", view.getTotalExVat());
+        model.addAttribute("receipts", view.getReceipts());
+        model.addAttribute("receiptsTotal", view.getReceiptsTotal());
+        model.addAttribute("reports", view.getReports());
+        model.addAttribute("documentTypes", view.getDocumentTypes());
 
         return "projects/view";
     }
 
-    // UPDATE
+    // Update
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute ProjectForm form,
+                         @Valid @ModelAttribute("projectForm") ProjectForm form,
                          BindingResult bindingResult,
-                         Model model) {
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("mode", "edit");
             model.addAttribute("projectId", id);
-            projectService.loadFormLookups(model);
+            projectQueryService.loadFormLookups(model);
             return "projects/form";
         }
 
-        projectService.update(id, form);
-        return "redirect:/projects/" + id;
-    }
-
-    // DELETE
-    @Override
-    @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id,
-                         RedirectAttributes redirectAttributes) {
-
         try {
-            projectService.delete(id);
+            projectService.update(id, form);
 
             redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Project deleted successfully."
-            );
+                    "successMessage", "Project updated successfully.");
 
-        } catch (IllegalStateException ex) {
+            return "redirect:/projects/" + id;
 
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    ex.getMessage()
-            );
+        } catch (IllegalArgumentException ex) {
+
+            bindingResult.reject("error.project", ex.getMessage());
+
+            model.addAttribute("mode", "edit");
+            model.addAttribute("projectId", id);
+            projectQueryService.loadFormLookups(model);
+
+            return "projects/form";
         }
-
-        return "redirect:/projects";
     }
 
-    // LIST PROJECTS
-    @Override
+    // List
     @GetMapping
     public String list(Model model) {
 
-        ProjectSearchCriteria criteria = new ProjectSearchCriteria();
+        model.addAttribute("projects", projectQueryService.list());
+        model.addAttribute("criteria", new ProjectSearchCriteria());
 
-        List<Project> projects = projectService.list();
-
-        model.addAttribute("projects", projects);
-        model.addAttribute("criteria", criteria);
-
-        projectService.loadFormLookups(model);
+        projectQueryService.loadFormLookups(model);
 
         return "projects/list";
     }
 
-    // SEARCH PROJECTS
+    // Search
     @GetMapping("/search")
     public String searchProjects(@ModelAttribute ProjectSearchCriteria criteria,
                                  Model model) {
 
-        List<Project> projects = projectService.searchProjects(criteria);
+        model.addAttribute("projects",
+                projectQueryService.search(criteria));
 
-        model.addAttribute("projects", projects);
         model.addAttribute("criteria", criteria);
 
-        projectService.loadFormLookups(model);
+        projectQueryService.loadFormLookups(model);
 
         return "projects/list";
-    }
-
-    @Override
-    protected String getListView() {
-        return "projects/list";
-    }
-
-    @Override
-    protected String getDetailsView() {
-        return "projects/view";
-    }
-
-    @Override
-    protected String getBaseUrl() {
-        return "/projects";
-    }
-
-    @Override
-    protected String getListAttributeName() {
-        return "projects";
-    }
-
-    @Override
-    protected String getEntityAttributeName() {
-        return "project";
     }
 }

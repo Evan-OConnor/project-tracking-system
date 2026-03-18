@@ -1,46 +1,83 @@
+console.log("Receipts JS loaded");
+
 document.addEventListener("DOMContentLoaded", function () {
 
-    const invoiceSelect = document.querySelector("[name='invoiceId']");
+   // Receipt Search
+    const container = document.querySelector(".container");
+    const table = document.querySelector("table");
+    const tableBody = document.querySelector("table tbody");
+
+    if (container && table && tableBody) {
+
+        const tableSearch = document.createElement("input");
+        tableSearch.type = "text";
+        tableSearch.placeholder = "Search receipts...";
+        tableSearch.className = "form-control mb-3";
+
+        container.insertBefore(tableSearch, table.parentElement);
+
+        const rows = tableBody.querySelectorAll("tr");
+
+        tableSearch.addEventListener("input", function () {
+
+            const filter = this.value.toLowerCase();
+
+            rows.forEach(row => {
+
+                if (row.querySelector("td[colspan]")) return;
+
+                let match = false;
+
+                row.querySelectorAll("td").forEach(td => {
+                    if (td.textContent.toLowerCase().includes(filter)) {
+                        match = true;
+                    }
+                });
+
+                row.style.display = match ? "" : "none";
+            });
+
+        });
+    }
+
+     // Select invoice and autofill receipt form
+    const invoiceSelect = document.getElementById("invoiceSelect");
+
     const totalField = document.getElementById("invoiceTotal");
     const outstandingField = document.getElementById("outstandingBalance");
-    const discountField = document.querySelector("[name='discount']");
-    const amountPaidField = document.querySelector("[name='amountPaid']");
+    const amountPaidField = document.getElementById("amountPaid");
 
-    function updateInvoiceTotal() {
+    if (!invoiceSelect) return;
 
-        const invoiceId = invoiceSelect.value;
+    invoiceSelect.addEventListener("change", function () {
+
+        const invoiceId = this.value;
 
         if (!invoiceId) return;
 
-        fetch(`/invoices/api/${invoiceId}/total`)
-            .then(response => response.json())
-            .then(total => {
+        fetch(`/api/invoices/${invoiceId}/summary`)
+            .then(res => res.json())
+            .then(data => {
 
-                totalField.value = total.toFixed(2);
+                console.log("Invoice summary:", data);
 
-                updateOutstanding();
+                const total = parseFloat(data.grossTotal || 0);
+                const outstanding = parseFloat(data.outstanding || 0);
 
-            });
-    }
+                if (totalField) {
+                    totalField.value = total.toFixed(2);
+                }
 
-    function updateOutstanding() {
+                if (outstandingField) {
+                    outstandingField.value = outstanding.toFixed(2);
+                }
 
-        const total = parseFloat(totalField.value || 0);
-        const discount = parseFloat(discountField.value || 0);
+                if (amountPaidField) {
+                    amountPaidField.value = outstanding.toFixed(2);
+                }
 
-        const outstanding = total - discount;
-
-        outstandingField.value = outstanding.toFixed(2);
-
-        amountPaidField.value = outstanding.toFixed(2);
-    }
-
-    if (invoiceSelect) {
-        invoiceSelect.addEventListener("change", updateInvoiceTotal);
-    }
-
-    if (discountField) {
-        discountField.addEventListener("input", updateOutstanding);
-    }
+            })
+            .catch(err => console.error("Autofill error:", err));
+    });
 
 });

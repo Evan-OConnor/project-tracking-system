@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const searchInput = document.getElementById("searchInput");
 
-    // Live search by Name (2nd column)
+    // Live search
     if (searchInput) {
         searchInput.addEventListener("keyup", function () {
             const filter = this.value.trim().toLowerCase();

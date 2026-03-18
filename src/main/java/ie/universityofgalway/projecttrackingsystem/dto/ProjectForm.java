@@ -3,6 +3,7 @@ package ie.universityofgalway.projecttrackingsystem.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
@@ -15,10 +16,13 @@ public class ProjectForm {
     private Long statusId;
 
     @NotBlank(message = "Client name is required")
+    @Size(max = 255, message = "Client name must be less than 255 characters")
     private String clientContactName;
 
+    @Size(max = 255, message = "Solicitor name must be less than 255 characters")
     private String solicitorContactName;
 
+    @Size(max = 255, message = "Insurance company name must be less than 255 characters")
     private String insuranceCompanyContactName;
 
     @NotBlank(message = "Project title is required")
@@ -29,80 +33,79 @@ public class ProjectForm {
     private String description;
 
     @NotNull(message = "Start date is required")
+    @PastOrPresent(message = "Start date cannot be in the future")
     private LocalDate startDate;
 
     public ProjectForm() {
     }
 
-    // Category
+
+    // Getters
     public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    // Status
     public Long getStatusId() {
         return statusId;
+    }
+
+    public String getClientContactName() {
+        return clientContactName;
+    }
+
+    public String getSolicitorContactName() {
+        return solicitorContactName;
+    }
+
+    public String getInsuranceCompanyContactName() {
+        return insuranceCompanyContactName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+
+
+    // Setters
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public void setStatusId(Long statusId) {
         this.statusId = statusId;
     }
 
-    // Client
-    public String getClientContactName() {
-        return clientContactName;
-    }
-
     public void setClientContactName(String clientContactName) {
-        this.clientContactName = clientContactName;
+        this.clientContactName = trim(clientContactName);
     }
 
-    // Solicitor
-    public String getSolicitorContactName() {
-        return solicitorContactName;
-    }
+    public void setSolicitorContactName(String solicitorContactName) {this.solicitorContactName = trim(solicitorContactName);}
 
-    public void setSolicitorContactName(String solicitorContactName) {
-        this.solicitorContactName = solicitorContactName;
-    }
-
-    // Insurance Company
-    public String getInsuranceCompanyContactName() {
-        return insuranceCompanyContactName;
-    }
-
-    public void setInsuranceCompanyContactName(String insuranceCompanyContactName) {
-        this.insuranceCompanyContactName = insuranceCompanyContactName;
-    }
-
-    // Title
-    public String getTitle() {
-        return title;
-    }
+    public void setInsuranceCompanyContactName(String insuranceCompanyContactName) {this.insuranceCompanyContactName = trim(insuranceCompanyContactName);}
 
     public void setTitle(String title) {
-        this.title = title;
-    }
-
-    // Description
-    public String getDescription() {
-        return description;
+        this.title = trim(title);
     }
 
     public void setDescription(String description) {
-        this.description = description;
-    }
-
-    // Start Date
-    public LocalDate getStartDate() {
-        return startDate;
+        this.description = trim(description);
     }
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
+    }
+
+    // Utility
+    private String trim(String value) {
+        return value == null ? null : value.trim();
     }
 }

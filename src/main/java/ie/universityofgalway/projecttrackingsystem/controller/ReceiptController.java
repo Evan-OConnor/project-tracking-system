@@ -23,15 +23,14 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
 
     private final InvoiceRepository invoiceRepository;
 
+
+    // Constructor
     public ReceiptController(BaseService<Receipt, ReceiptForm> service,
                              InvoiceRepository invoiceRepository) {
         super(service);
         this.invoiceRepository = invoiceRepository;
     }
 
-    // ------------------------------------------------
-    // BASE CONTROLLER CONFIG
-    // ------------------------------------------------
 
     @Override
     protected String getListView() {
@@ -58,29 +57,21 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
         return "receipt";
     }
 
-    // ------------------------------------------------
-    // MODEL DATA
-    // ------------------------------------------------
+    // Model Data
 
     @ModelAttribute("invoices")
     public Object getInvoices() {
         return invoiceRepository.findAll();
     }
 
-    // ------------------------------------------------
-    // VIEW REDIRECT
-    // ------------------------------------------------
-
+    // View Redirect
     @Override
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
         return "redirect:/receipts/" + id + "/print";
     }
 
-    // ------------------------------------------------
-    // CREATE FORM
-    // ------------------------------------------------
-
+    // New Receipt
     @GetMapping("/new")
     public String newReceipt(Model model) {
 
@@ -95,10 +86,7 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
         return getDetailsView();
     }
 
-    // ------------------------------------------------
-    // CREATE
-    // ------------------------------------------------
-
+    // Create Receipt
     @PostMapping
     public String createReceipt(
             @Valid @ModelAttribute("receipt") ReceiptForm form,
@@ -128,10 +116,7 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
         }
     }
 
-    // ------------------------------------------------
-    // EDIT FORM
-    // ------------------------------------------------
-
+    // Edit Form
     @GetMapping("/{id}/edit")
     public String editReceipt(@PathVariable Long id, Model model) {
 
@@ -142,10 +127,7 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
         return getDetailsView();
     }
 
-    // ------------------------------------------------
-    // UPDATE
-    // ------------------------------------------------
-
+    // Update Form
     @PostMapping("/{id}/edit")
     public String updateReceipt(
             @PathVariable Long id,
@@ -176,10 +158,7 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
         }
     }
 
-    // ------------------------------------------------
-    // QUICK CREATE FROM INVOICE
-    // ------------------------------------------------
-
+    // Quick Create Receipt from Invoice
     @PostMapping("/createFromInvoice")
     public String createReceiptFromInvoice(
             @RequestParam("invoiceId") Long invoiceId,
@@ -212,10 +191,7 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
         return "redirect:" + getBaseUrl();
     }
 
-    // ------------------------------------------------
-    // PRINT RECEIPT
-    // ------------------------------------------------
-
+    // Print Receipt
     @GetMapping("/{id}/print")
     public String printReceipt(@PathVariable Long id, Model model) {
 

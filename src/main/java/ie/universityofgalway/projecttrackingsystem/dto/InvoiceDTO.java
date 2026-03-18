@@ -17,9 +17,13 @@ public class InvoiceDTO {
 
     private final List<InvoiceLineItemDTO> lineItems;
 
-    private final BigDecimal subtotal;     // Sum of net amounts
-    private final BigDecimal vatAmount;    // Total VAT
-    private final BigDecimal grossTotal;   // Subtotal + VAT
+    private final BigDecimal subtotal;
+    private final BigDecimal vatAmount;
+    private final BigDecimal grossTotal;
+
+    private final BigDecimal totalPaid;
+    private final BigDecimal totalDiscount;
+    private final BigDecimal outstanding;
 
     public InvoiceDTO(Long invoiceId,
                       String invoiceNumber,
@@ -29,7 +33,10 @@ public class InvoiceDTO {
                       List<InvoiceLineItemDTO> lineItems,
                       BigDecimal subtotal,
                       BigDecimal vatAmount,
-                      BigDecimal grossTotal) {
+                      BigDecimal grossTotal,
+                      BigDecimal totalPaid,
+                      BigDecimal totalDiscount,
+                      BigDecimal outstanding) {
 
         this.invoiceId = invoiceId;
         this.invoiceNumber = invoiceNumber;
@@ -40,8 +47,12 @@ public class InvoiceDTO {
         this.subtotal = subtotal;
         this.vatAmount = vatAmount;
         this.grossTotal = grossTotal;
+        this.totalPaid = totalPaid;
+        this.totalDiscount = totalDiscount;
+        this.outstanding = outstanding;
     }
 
+    // Getters
     public Long getInvoiceId() {
         return invoiceId;
     }
@@ -76,5 +87,13 @@ public class InvoiceDTO {
 
     public BigDecimal getGrossTotal() {
         return grossTotal;
+    }
+
+    public BigDecimal getTotalPaid() {return totalPaid;}
+
+    public BigDecimal getTotalDiscount() {return totalDiscount;}
+
+    public BigDecimal getOutstanding() {
+        return outstanding;
     }
 }

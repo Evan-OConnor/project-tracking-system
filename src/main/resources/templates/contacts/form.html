@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${mode != null and mode == 'edit' ? 'Edit Contact' : 'New Contact'}">
+    <title th:text="${mode == 'edit' ? 'Edit Contact' : 'New Contact'}">
         Contact Form
     </title>
 
@@ -20,22 +20,25 @@
         <div class="card-body">
 
             <h2 class="mb-4"
-                th:text="${mode != null and mode == 'edit' ? 'Edit Contact' : 'New Contact'}">
+                th:text="${mode == 'edit' ? 'Edit Contact' : 'New Contact'}">
                 Contact Form
             </h2>
 
-            <!-- If the controller forgot to send contactForm, show a helpful message instead of blank page -->
+            <!-- If the controller forgot to send contactForm -->
             <div class="alert alert-danger" th:if="${contactForm == null}">
                 Form data was not provided to the view. Please go back and try again.
             </div>
 
             <form th:if="${contactForm != null}"
-                  th:action="${mode != null and mode == 'edit'} ? @{/contacts/{id}(id=${contactForm.id})} : @{/contacts}"
+                  th:action="${mode == 'edit'} ? @{/contacts/{id}(id=${contactForm.id})} : @{/contacts}"
                   th:object="${contactForm}"
                   method="post"
                   novalidate>
 
-                <!-- Global Error Message (only evaluate #fields if contactForm exists) -->
+                <!-- Return URL -->
+                <input type="hidden" name="returnUrl" th:value="${returnUrl}" />
+
+                <!-- Global Error -->
                 <div class="alert alert-danger"
                      th:if="${#fields.hasErrors('*')}">
                     Please correct the errors below.
@@ -47,6 +50,7 @@
                     <input type="text"
                            th:field="*{name}"
                            class="form-control"
+                           required
                            th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
                     <div class="invalid-feedback"
                          th:if="${#fields.hasErrors('name')}"
@@ -69,6 +73,7 @@
 
                 <!-- PHONE + FAX -->
                 <div class="row">
+
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Phone</label>
                         <input type="text"
@@ -92,6 +97,7 @@
                              th:errors="*{fax}">
                         </div>
                     </div>
+
                 </div>
 
                 <!-- COMMENTS -->
@@ -112,18 +118,29 @@
                     <button type="submit" class="btn btn-primary">
                         Save
                     </button>
+
                     <a class="btn btn-outline-secondary"
-                       th:href="@{/contacts}">
+                       th:href="${returnUrl != null} ? ${returnUrl} : @{/contacts}">
                         Cancel
                     </a>
                 </div>
 
             </form>
 
+            <!-- CREATE NEW CONTACT BUTTON -->
+            <div class="mt-3" th:if="${projectId != null}">
+                <a class="btn btn-outline-secondary btn-sm"
+                   th:href="@{/contacts/new(returnUrl=${'/projects/' + projectId + '/edit'})}">
+                    + Create New Contact
+                </a>
+            </div>
+
         </div>
     </div>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

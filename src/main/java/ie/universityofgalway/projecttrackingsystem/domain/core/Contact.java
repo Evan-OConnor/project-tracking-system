@@ -59,14 +59,9 @@ public class Contact {
         return comments;
     }
 
-    // Setters with validation where needed
+    // Setters
 
-    public void setName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Contact name cannot be empty");
-        }
-        this.name = name;
-    }
+    public void setName(String name) {this.name = name;}
 
     public void setAddress(String address) {
         this.address = address;
@@ -89,6 +84,7 @@ public class Contact {
         return "Contact{id=" + id + ", name='" + name + "'}";
     }
 
+    // Checks contact id does not already exist
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -97,6 +93,7 @@ public class Contact {
         return id != null && id.equals(contact.id);
     }
 
+    // Required with equals(): ensures objects that are equal have the same hash code
     @Override
     public int hashCode() {
         return getClass().hashCode();

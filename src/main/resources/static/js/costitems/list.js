@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+// Live Search
     const searchInput = document.createElement("input");
     searchInput.type = "text";
     searchInput.placeholder = "Search...";

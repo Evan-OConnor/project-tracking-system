@@ -20,10 +20,6 @@ public class InvoiceLineItem {
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "vat_rate_id", nullable = false)
-    private VatRate vatRate;
-
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
@@ -38,41 +34,18 @@ public class InvoiceLineItem {
     @Column(name = "unit_rate", nullable = false, precision = 10, scale = 2)
     private BigDecimal unitRate;
 
-    // NEW: Discount percentage
-    @DecimalMin(value = "0.0")
-    @Column(name = "discount_percent", precision = 5, scale = 2)
-    private BigDecimal discountPercent = BigDecimal.ZERO;
-
-    // Constructors
-
+    // Constructor
     protected InvoiceLineItem() {
     }
 
     public InvoiceLineItem(Invoice invoice,
-                           VatRate vatRate,
                            String description,
                            BigDecimal quantity,
                            BigDecimal unitRate) {
         this.invoice = invoice;
-        this.vatRate = vatRate;
         this.description = description;
         this.quantity = quantity;
         this.unitRate = unitRate;
-        this.discountPercent = BigDecimal.ZERO;
-    }
-
-    public InvoiceLineItem(Invoice invoice,
-                           VatRate vatRate,
-                           String description,
-                           BigDecimal quantity,
-                           BigDecimal unitRate,
-                           BigDecimal discountPercent) {
-        this.invoice = invoice;
-        this.vatRate = vatRate;
-        this.description = description;
-        this.quantity = quantity;
-        this.unitRate = unitRate;
-        this.discountPercent = discountPercent;
     }
 
     // Getters
@@ -83,10 +56,6 @@ public class InvoiceLineItem {
 
     public Invoice getInvoice() {
         return invoice;
-    }
-
-    public VatRate getVatRate() {
-        return vatRate;
     }
 
     public String getDescription() {
@@ -105,19 +74,12 @@ public class InvoiceLineItem {
         return unitRate;
     }
 
-    public BigDecimal getDiscountPercent() {
-        return discountPercent;
-    }
-
     // Setters
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
     }
 
-    public void setVatRate(VatRate vatRate) {
-        this.vatRate = vatRate;
-    }
 
     public void setDescription(String description) {
         this.description = description;
@@ -133,9 +95,5 @@ public class InvoiceLineItem {
 
     public void setUnitRate(BigDecimal unitRate) {
         this.unitRate = unitRate;
-    }
-
-    public void setDiscountPercent(BigDecimal discountPercent) {
-        this.discountPercent = discountPercent;
     }
 }

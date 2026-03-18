@@ -24,50 +24,52 @@ public class ContactForm {
     private String comments;
 
 
-    // Getters and Setters
+    // Getters
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getAddress() {
         return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public String getFax() {
         return fax;
     }
 
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
-
     public String getComments() {
         return comments;
+    }
+
+    // Setters
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setFax(String fax) {
+        this.fax = fax;
     }
 
     public void setComments(String comments) {

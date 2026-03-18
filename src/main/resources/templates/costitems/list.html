@@ -52,11 +52,11 @@
 
                 <td th:text="${item.id}">1</td>
 
-                <td th:text="${item.project != null ? item.project.title : 'N/A'}">
+                <td th:text="${item.projectTitle} ?: 'N/A'">
                     Project A
                 </td>
 
-                <td th:text="${item.employee != null ? item.employee.name : 'N/A'}">
+                <td th:text="${item.employeeName}">
                     John Doe
                 </td>
 
@@ -72,7 +72,7 @@
                     EXPENSE
                 </td>
 
-                <td th:text="${item.supplierContact != null ? item.supplierContact.name : 'N/A'}">
+                <td th:text="${item.supplierContactName} ?: 'N/A'">
                     Supplier X
                 </td>
 
@@ -83,16 +83,25 @@
                         View
                     </a>
 
+                    <!-- Edit (only if NOT billed) -->
                     <a class="btn btn-sm btn-outline-warning"
+                       th:if="${!item.billed}"
                        th:href="@{|/cost-items/${item.id}/edit|}">
                         Edit
                     </a>
 
-                    <!-- Standard Delete -->
-                    <form th:action="@{|/cost-items/${item.id}/delete|}"
+                    <!-- Disabled Edit -->
+                    <button class="btn btn-sm btn-outline-warning"
+                            th:if="${item.billed}"
+                            disabled>
+                        Edit
+                    </button>
+
+                    <!-- Delete (only if NOT billed) -->
+                    <form th:if="${!item.billed}"
+                          th:action="@{|/cost-items/${item.id}/delete|}"
                           method="post"
-                          style="display:inline"
-                          onsubmit="return confirm('Delete this cost item?');">
+                          style="display:inline">
 
                         <input type="hidden"
                                th:name="${_csrf.parameterName}"
@@ -104,6 +113,13 @@
                         </button>
 
                     </form>
+
+                    <!-- Disabled Delete -->
+                    <button class="btn btn-sm btn-outline-danger"
+                            th:if="${item.billed}"
+                            disabled>
+                        Delete
+                    </button>
 
                 </td>
 

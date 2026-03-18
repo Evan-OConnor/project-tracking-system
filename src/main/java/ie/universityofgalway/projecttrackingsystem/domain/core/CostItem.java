@@ -17,17 +17,14 @@ public class CostItem {
     @Column(name = "cost_item_id")
     private Long id;
 
-    // Every cost item belongs to a project
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    // Every cost item must have an associated employee
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    // Supplier required ONLY for OUTLAY
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_contact_id")
     private Contact supplierContact;
@@ -60,7 +57,7 @@ public class CostItem {
         EXPENSE
     }
 
-    protected CostItem() {}
+    public CostItem() {}
 
     // Main constructor
     public CostItem(Project project,
@@ -78,8 +75,6 @@ public class CostItem {
         this.description = description;
         this.costAmount = costAmount;
         this.type = type;
-
-        validateBusinessRules();
     }
 
     // Business Rule
@@ -99,16 +94,18 @@ public class CostItem {
             );
         }
 
+        if (type == null) {
+            throw new IllegalStateException("Type is required.");
+        }
+
         if (employee == null) {
             throw new IllegalStateException(
                     "All cost items must have an associated employee."
             );
         }
 
-        if (costAmount == null || costAmount.signum() < 0) {
-            throw new IllegalStateException(
-                    "Cost amount must be zero or positive."
-            );
+        if (costAmount == null) {
+            throw new IllegalStateException("Cost amount is required.");
         }
     }
 

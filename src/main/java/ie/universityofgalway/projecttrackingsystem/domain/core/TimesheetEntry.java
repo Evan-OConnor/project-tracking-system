@@ -16,10 +16,6 @@ public class TimesheetEntry {
     @Column(name = "timesheet_entry_id")
     private Long id;
 
-    // ============================
-    // Relationships
-    // ============================
-
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
@@ -32,14 +28,9 @@ public class TimesheetEntry {
     @JoinColumn(name = "work_description_id", nullable = false)
     private WorkDescription workDescription;
 
-    // 🔴 OPTION 2: Link to Invoice (nullable = unbilled)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id")  // nullable by default
     private Invoice invoice;
-
-    // ============================
-    // Fields
-    // ============================
 
     @Column(name = "entry_date", nullable = false)
     private LocalDate entryDate;
@@ -48,9 +39,7 @@ public class TimesheetEntry {
     @Column(name = "hours", nullable = false, precision = 6, scale = 2)
     private BigDecimal hours;
 
-    // ============================
     // Constructors
-    // ============================
 
     protected TimesheetEntry() {
     }
@@ -67,9 +56,7 @@ public class TimesheetEntry {
         this.hours = hours;
     }
 
-    // ============================
     // Getters
-    // ============================
 
     public Long getId() { return id; }
 

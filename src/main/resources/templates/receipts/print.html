@@ -1,92 +1,165 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
 
+<head>
     <meta charset="UTF-8">
-    <title>Receipt</title>
+    <title>Payment Receipt</title>
 
     <style>
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            margin: 40px;
-            color: #333;
+        body{
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:#f6f8fa;
+            padding:40px;
+            color:#333;
         }
 
-        .receipt-box {
-            border: 1px solid #ccc;
-            padding: 35px;
-            max-width: 750px;
-            margin: auto;
+        .receipt-container{
+            background:white;
+            max-width:750px;
+            margin:auto;
+            padding:40px;
+            border-radius:8px;
+            box-shadow:0 6px 18px rgba(0,0,0,0.08);
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
         }
 
-        .title {
-            font-size: 28px;
-            font-weight: bold;
+        .company{
+            font-size:22px;
+            font-weight:600;
         }
 
-        .subtitle {
-            font-size: 14px;
-            color: #777;
+        .receipt-title{
+            text-align:right;
         }
 
-        hr {
-            margin: 20px 0;
+        .receipt-title h1{
+            margin:0;
+            font-size:30px;
+            letter-spacing:1px;
         }
 
-        .details p {
-            margin: 6px 0;
+        .receipt-title span{
+            font-size:13px;
+            color:#777;
         }
 
-        table {
-            width: 100%;
-            margin-top: 25px;
-            border-collapse: collapse;
+        hr{
+            border:none;
+            border-top:1px solid #eee;
+            margin:30px 0;
         }
 
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+        .details{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:15px;
         }
 
-        .label {
-            font-weight: bold;
+        .detail-block{
+            background:#fafafa;
+            padding:15px;
+            border-radius:6px;
         }
 
-        .amount {
-            text-align: right;
+        .label{
+            font-size:12px;
+            color:#777;
         }
 
-        .total-row {
-            font-weight: bold;
-            font-size: 16px;
+        .value{
+            font-weight:600;
+            margin-top:3px;
         }
 
-        .total-row td {
-            border-top: 2px solid #333;
+        table{
+            width:100%;
+            margin-top:30px;
+            border-collapse:collapse;
         }
 
-        .footer {
-            margin-top: 30px;
-            font-size: 13px;
-            color: #666;
+        th{
+            text-align:left;
+            padding:12px 10px;
+            font-size:13px;
+            border-bottom:2px solid #eee;
+            color:#666;
         }
 
-        /* Hide buttons when printing */
-        @media print {
-            .no-print {
-                display: none;
+        td{
+            padding:14px 10px;
+            border-bottom:1px solid #f1f1f1;
+        }
+
+        .amount{
+            text-align:right;
+        }
+
+        .total{
+            font-size:18px;
+            font-weight:700;
+        }
+
+        .total td{
+            border-top:2px solid #333;
+        }
+
+        .footer{
+            margin-top:35px;
+            font-size:13px;
+            color:#666;
+            text-align:center;
+        }
+
+        .actions{
+            max-width:750px;
+            margin:auto;
+            margin-bottom:20px;
+            display:flex;
+            gap:10px;
+        }
+
+        button{
+            background:#2563eb;
+            color:white;
+            border:none;
+            padding:10px 16px;
+            border-radius:5px;
+            cursor:pointer;
+            font-weight:500;
+        }
+
+        button:hover{
+            background:#1e4ed8;
+        }
+
+        button.secondary{
+            background:#555;
+        }
+
+        button.secondary:hover{
+            background:#333;
+        }
+
+        @media print{
+            body{
+                background:white;
+                padding:0;
             }
-        }
 
-        .actions {
-            margin-bottom: 20px;
+            .receipt-container{
+                box-shadow:none;
+                border:none;
+            }
+
+            .no-print{
+                display:none;
+            }
         }
 
     </style>
@@ -96,46 +169,61 @@
 <body>
 
 <div class="actions no-print">
-    <button onclick="window.print()">Print</button>
-    <button onclick="window.close()">Close</button>
+    <button onclick="window.print()">Print Receipt</button>
+    <button class="secondary" onclick="history.back()">Back</button>
 </div>
 
-<div class="receipt-box">
+<div class="receipt-container">
 
     <div class="header">
-        <div>
-            <div class="title">Payment Receipt</div>
-            <div class="subtitle">Official Payment Confirmation</div>
+
+        <div class="company">
+            Project Tracking System
         </div>
+
+        <div class="receipt-title">
+            <h1>RECEIPT</h1>
+            <span>Official Payment Confirmation</span>
+        </div>
+
     </div>
 
     <hr>
 
     <div class="details">
 
-        <p>
-            <span class="label">Receipt Number:</span>
-            <span th:text="${receipt.receiptNumber}"></span>
-        </p>
+        <div class="detail-block">
+            <div class="label">Receipt Number</div>
+            <div class="value" th:text="${receipt.receiptNumber}"></div>
+        </div>
 
-        <p>
-            <span class="label">Invoice Number:</span>
-            <span th:text="${receipt.invoice.invoiceNumber}"></span>
-        </p>
+        <div class="detail-block">
+            <div class="label">Invoice Number</div>
+            <div class="value" th:text="${receipt.invoice.invoiceNumber}"></div>
+        </div>
 
-        <p>
-            <span class="label">Date Received:</span>
-            <span th:text="${receipt.dateReceived}"></span>
-        </p>
+        <div class="detail-block">
+            <div class="label">Date Received</div>
+            <div class="value" th:text="${receipt.dateReceived}"></div>
+        </div>
 
-        <p>
-            <span class="label">Payment Method:</span>
-            <span th:text="${receipt.paymentMethod}"></span>
-        </p>
+        <div class="detail-block">
+            <div class="label">Payment Method</div>
+            <div class="value" th:text="${receipt.paymentMethod}"></div>
+        </div>
 
     </div>
 
     <table>
+
+        <thead>
+        <tr>
+            <th>Description</th>
+            <th class="amount">Amount</th>
+        </tr>
+        </thead>
+
+        <tbody>
 
         <tr>
             <td>Discount</td>
@@ -144,17 +232,19 @@
             </td>
         </tr>
 
-        <tr class="total-row">
+        <tr class="total">
             <td>Amount Paid</td>
             <td class="amount"
                 th:text="'€' + ${#numbers.formatDecimal(receipt.amountPaid,1,'COMMA',2,'POINT')}">
             </td>
         </tr>
 
+        </tbody>
+
     </table>
 
     <div class="footer">
-        Thank you for your payment.
+        Thank you for your payment. This receipt confirms that your payment has been successfully received.
     </div>
 
 </div>

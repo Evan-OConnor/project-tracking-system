@@ -23,6 +23,7 @@ public class TimesheetEntryView {
         this.charge = charge;
     }
 
+    // Getters
     public Long getId() { return id; }
     public String getProjectTitle() { return projectTitle; }
     public String getEmployeeName() { return employeeName; }

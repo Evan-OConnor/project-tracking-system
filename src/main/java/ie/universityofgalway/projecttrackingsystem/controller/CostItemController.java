@@ -16,22 +16,57 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
 
     private final CostItemService costItemService;
 
+    // Constructor
     public CostItemController(CostItemService costItemService) {
         super(costItemService);
         this.costItemService = costItemService;
     }
 
-    // CREATE FORM
+    // Base Controller
+    @Override
+    protected String getListView() {return "costitems/list";}
+
+    @Override
+    protected String getDetailsView() {return "costitems/details";}
+
+    @Override
+    protected String getBaseUrl() {return "/cost-items";}
+
+    @Override
+    protected String getListAttributeName() {return "costItems";}
+
+    @Override
+    protected String getEntityAttributeName() {return "costItem";}
+
+    // List
+    @Override
+    @GetMapping
+    public String list(Model model) {
+        model.addAttribute(getListAttributeName(), costItemService.listViews());
+        return getListView();
+    }
+
+    //List
+    @Override
+    @GetMapping("/{id:\\d+}")
+    public String view(@PathVariable Long id, Model model) {
+        model.addAttribute(getEntityAttributeName(), costItemService.getViewById(id));
+        return getDetailsView();
+    }
+
+    // Create Form
     @GetMapping("/new")
     public String createForm(Model model) {
+
         model.addAttribute("costItemForm", new CostItemForm());
         model.addAllAttributes(costItemService.getDropdowns());
+
         return "costitems/form";
     }
 
-    // CREATE or UPDATE
+    // Create or Update
     @PostMapping
-    public String save(@Valid @ModelAttribute("costItemForm") CostItemForm form,
+    public String saveCostItem(@Valid @ModelAttribute("costItemForm") CostItemForm form,
                        BindingResult result,
                        Model model) {
 
@@ -41,7 +76,8 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
         }
 
         try {
-
+            // If ID is null, create new cost item
+            // Otherwise, update existing one
             if (form.getId() == null) {
                 costItemService.create(form);
             } else {
@@ -50,46 +86,24 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
 
         } catch (IllegalStateException ex) {
 
-            // Business rule violation
+            // Handle business rule violation (e.g. invalid project state)
             model.addAttribute("businessError", ex.getMessage());
             model.addAllAttributes(costItemService.getDropdowns());
+
             return "costitems/form";
         }
 
         return "redirect:/cost-items";
     }
 
-    // EDIT FORM
+    // Edit Form
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+
         model.addAttribute("costItemForm", costItemService.getFormById(id));
         model.addAllAttributes(costItemService.getDropdowns());
+
         return "costitems/form";
     }
 
-
-    @Override
-    protected String getListView() {
-        return "costitems/list";
-    }
-
-    @Override
-    protected String getDetailsView() {
-        return "costitems/details";
-    }
-
-    @Override
-    protected String getBaseUrl() {
-        return "/cost-items";
-    }
-
-    @Override
-    protected String getListAttributeName() {
-        return "costItems";
-    }
-
-    @Override
-    protected String getEntityAttributeName() {
-        return "costItem";
-    }
 }

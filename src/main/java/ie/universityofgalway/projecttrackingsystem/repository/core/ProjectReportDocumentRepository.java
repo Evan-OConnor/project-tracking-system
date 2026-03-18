@@ -4,6 +4,11 @@ import ie.universityofgalway.projecttrackingsystem.domain.core.ProjectReportDocu
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ProjectReportDocumentRepository extends JpaRepository<ProjectReportDocument, Long> {
+
+    List<ProjectReportDocument> findByProjectId(Long projectId);
+
 }

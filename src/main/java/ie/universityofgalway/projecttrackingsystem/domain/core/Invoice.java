@@ -37,10 +37,7 @@ public class Invoice {
     @Column(name = "status", nullable = false)
     private InvoiceStatus status = InvoiceStatus.GENERATED;
 
-    // ------------------------------------------------
-    // Constructors
-    // ------------------------------------------------
-
+    // Constructor
     protected Invoice() {
     }
 
@@ -54,9 +51,7 @@ public class Invoice {
         this.status = InvoiceStatus.GENERATED;
     }
 
-    // ------------------------------------------------
     // Getters
-    // ------------------------------------------------
 
     public Long getId() {
         return id;
@@ -82,9 +77,7 @@ public class Invoice {
         return status;
     }
 
-    // ------------------------------------------------
     // Setters
-    // ------------------------------------------------
 
     public void setProject(Project project) {
         this.project = project;
@@ -102,9 +95,7 @@ public class Invoice {
         this.status = status;
     }
 
-    // ------------------------------------------------
     // Calculated Totals
-    // ------------------------------------------------
 
     @Transient
     public BigDecimal getTotalExVat() {

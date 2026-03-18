@@ -27,10 +27,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         this.invoiceRepository = invoiceRepository;
     }
 
-    // ------------------------------------------------
-    // LIST
-    // ------------------------------------------------
-
+    // List
     @Override
     public List<Receipt> list() {
         return receiptRepository.findAll(
@@ -38,10 +35,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         );
     }
 
-    // ------------------------------------------------
-    // GET
-    // ------------------------------------------------
-
+    // Get by id
     @Override
     public Receipt getById(Long id) {
         return receiptRepository.findById(id)
@@ -53,10 +47,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         return mapToForm(getById(id));
     }
 
-    // ------------------------------------------------
-    // CREATE
-    // ------------------------------------------------
-
+    // Create
     @Override
     public Receipt create(ReceiptForm form) {
 
@@ -65,10 +56,6 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         }
 
         Long invoiceId = form.getInvoiceId();
-
-        if (receiptRepository.existsByInvoiceId(invoiceId)) {
-            throw new IllegalStateException("A receipt already exists for this invoice");
-        }
 
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new IllegalStateException("Invoice not found"));
@@ -100,10 +87,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         return savedReceipt;
     }
 
-    // ------------------------------------------------
-    // UPDATE
-    // ------------------------------------------------
-
+    // Update form
     @Override
     public Receipt update(Long id, ReceiptForm form) {
 
@@ -116,10 +100,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         return receiptRepository.save(receipt);
     }
 
-    // ------------------------------------------------
-    // DELETE
-    // ------------------------------------------------
-
+    // Delete
     @Override
     public void delete(Long id) {
 
@@ -134,9 +115,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         invoiceRepository.save(invoice);
     }
 
-    // ------------------------------------------------
-    // ENTITY UPDATE
-    // ------------------------------------------------
+    // Update entity
 
     @Override
     public void updateEntity(Receipt receipt, ReceiptForm form) {
@@ -147,10 +126,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         receipt.setPaymentMethod(form.getPaymentMethod());
     }
 
-    // ------------------------------------------------
-    // ENTITY → FORM
-    // ------------------------------------------------
-
+    // Map entity to form
     @Override
     public ReceiptForm mapToForm(Receipt receipt) {
 
@@ -167,11 +143,14 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         return form;
     }
 
-    // HELPERS
-
+    // Helpers
     private String generateReceiptNumber() {
-        long count = receiptRepository.count() + 1;
-        return String.format("RCPT-%05d", count);
+
+        Receipt lastReceipt = receiptRepository.findTopByOrderByIdDesc();
+
+        long nextNumber = (lastReceipt == null) ? 1 : lastReceipt.getId() + 1;
+
+        return String.format("RCPT-%05d", nextNumber);
     }
 
     private void validateAmounts(ReceiptForm form) {

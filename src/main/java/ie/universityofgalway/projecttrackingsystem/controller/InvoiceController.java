@@ -2,12 +2,12 @@ package ie.universityofgalway.projecttrackingsystem.controller;
 
 import ie.universityofgalway.projecttrackingsystem.dto.InvoiceDTO;
 import ie.universityofgalway.projecttrackingsystem.service.InvoiceService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.math.BigDecimal;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/invoices")
@@ -15,40 +15,56 @@ public class InvoiceController {
 
     private final InvoiceService invoiceService;
 
+
+    // Constructor
     public InvoiceController(InvoiceService invoiceService) {
         this.invoiceService = invoiceService;
     }
 
-    // LIST INVOICES
+    // List Invoices
     @GetMapping
     public String listInvoices(Model model) {
+
         model.addAttribute("invoices", invoiceService.getAllInvoices());
+
         return "invoice/list";
     }
 
-    // VIEW INVOICE
+    // View Invoice
     @GetMapping("/{id}")
     public String viewInvoice(@PathVariable Long id, Model model) {
-        model.addAttribute("invoice", invoiceService.getInvoiceById(id));
+
+        model.addAttribute("invoice",
+                invoiceService.getInvoiceById(id));
+
         return "invoice/view";
     }
 
-    // SHOW GENERATE PAGE
+    // Show Generate Page
     @GetMapping("/generate")
     public String showGeneratePage(Model model) {
-        model.addAttribute("projects", invoiceService.getAllProjects());
-        model.addAttribute("vatRates", invoiceService.getAllVatRates());
+
+        model.addAttribute("projects",
+                invoiceService.getAllProjects());
+
+        model.addAttribute("vatRates",
+                invoiceService.getAllVatRates());
+
         return "invoice/generate";
     }
 
-    // GENERATE INVOICE
+    // Generate Invoice
     @PostMapping("/generate")
     public String generateInvoice(@RequestParam Long projectId,
                                   RedirectAttributes redirectAttributes) {
 
         try {
+            if (projectId == null) {
+                throw new IllegalArgumentException("Project ID is required");
+            }
 
-            InvoiceDTO invoice = invoiceService.generateInvoice(projectId);
+            InvoiceDTO invoice =
+                    invoiceService.generateInvoice(projectId);
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",
@@ -58,38 +74,46 @@ public class InvoiceController {
             return "redirect:/invoices/" + invoice.getInvoiceId();
 
         } catch (IllegalStateException ex) {
-
+            // Business rule failure (e.g. invoice already exists)
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
                     ex.getMessage()
             );
 
             return "redirect:/invoices/generate";
+
+        } catch (Exception ex) {
+            // Unexpected errors (DB, concurrency, etc.)
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Something went wrong while generating the invoice."
+            );
+
+            return "redirect:/invoices/generate";
         }
     }
 
-    @PostMapping("/line-items/{id}/discount")
-    public String updateDiscount(@PathVariable Long id,
-                                 @RequestParam BigDecimal discountPercent,
-                                 RedirectAttributes redirectAttributes) {
+    @PostMapping("/{id}/void")
+    public String voidInvoice(@PathVariable Long id,
+                              RedirectAttributes redirectAttributes) {
 
         try {
-            invoiceService.updateLineItemDiscount(id, discountPercent);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Discount updated successfully.");
-        } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    ex.getMessage());
-        }
 
-        return "redirect:/invoices";
+            invoiceService.voidInvoice(id);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Invoice voided successfully."
+            );
+
+        } catch (Exception ex) {
+
+        redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "Cannot void partially paid or paid invoices."
+        );
     }
 
-    // API: GET TOTAL AMOUNT
-    @GetMapping("/api/{id}/total")
-    @ResponseBody
-    public BigDecimal getInvoiceTotal(@PathVariable Long id) {
-        InvoiceDTO invoice = invoiceService.getInvoiceById(id);
-        return invoice.getGrossTotal();
+        return "redirect:/invoices";
     }
 }

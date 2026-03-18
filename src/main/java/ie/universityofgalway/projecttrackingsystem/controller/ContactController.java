@@ -15,13 +15,11 @@ public class ContactController extends BaseController<Contact, ContactForm> {
 
     private final ContactService contactService;
 
+  // Constructor
     public ContactController(ContactService contactService) {
         super(contactService);
         this.contactService = contactService;
     }
-
-
-    // BaseController
 
     @Override
     protected String getListView() {
@@ -48,50 +46,75 @@ public class ContactController extends BaseController<Contact, ContactForm> {
         return "contact";
     }
 
-
-    // Create / Edit with Validation
-
+    // Create Form
     @GetMapping("/new")
-    public String newForm(Model model) {
+    public String newForm(@RequestParam(required = false) String returnUrl,
+                          Model model) {
+
         model.addAttribute("contactForm", new ContactForm());
         model.addAttribute("mode", "create");
+        model.addAttribute("returnUrl", returnUrl);
+
         return "contacts/form";
     }
 
+    // Create Submit
     @PostMapping
     public String create(@Valid @ModelAttribute("contactForm") ContactForm form,
                          BindingResult bindingResult,
+                         @RequestParam(required = false) String returnUrl,
                          Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("mode", "create");
+            model.addAttribute("returnUrl", returnUrl);
             return "contacts/form";
         }
 
-        Contact saved = contactService.create(form);
-        return "redirect:/contacts/" + saved.getId();
+        contactService.create(form);
+
+        if (returnUrl != null && !returnUrl.isBlank()) {
+            return "redirect:" + returnUrl;
+        }
+
+        return "redirect:/contacts";
     }
 
+    // Edit Form
     @GetMapping("/{id:\\d+}/edit")
-    public String editForm(@PathVariable Long id, Model model) {
+    public String editForm(@PathVariable Long id,
+                           @RequestParam(required = false) String returnUrl,
+                           Model model) {
+
         ContactForm form = contactService.getFormById(id);
+
         model.addAttribute("contactForm", form);
         model.addAttribute("mode", "edit");
+        model.addAttribute("returnUrl", returnUrl);
+
         return "contacts/form";
     }
 
+    // Update Contact
     @PostMapping("/{id:\\d+}")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("contactForm") ContactForm form,
                          BindingResult bindingResult,
+                         @RequestParam(required = false) String returnUrl,
                          Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("mode", "edit");
+            model.addAttribute("returnUrl", returnUrl);
             return "contacts/form";
         }
 
         contactService.update(id, form);
+
+        if (returnUrl != null && !returnUrl.isBlank()) {
+            return "redirect:" + returnUrl;
+        }
+
         return "redirect:/contacts/" + id;
     }
 }
