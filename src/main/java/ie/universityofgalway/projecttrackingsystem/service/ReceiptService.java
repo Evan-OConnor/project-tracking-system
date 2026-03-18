@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -67,7 +69,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
 
         validateAmounts(form);
 
-        String receiptNumber = generateReceiptNumber();
+        String receiptNumber = generateReceiptNumber(invoice.getProject().getId());
 
         Receipt receipt = new Receipt(
                 invoice,
@@ -144,15 +146,30 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
     }
 
     // Helpers
-    private String generateReceiptNumber() {
+    private String generateReceiptNumber(Long projectId) {
 
-        Receipt lastReceipt = receiptRepository.findTopByOrderByIdDesc();
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("ddMMyy"));
+        // e.g. 180326
 
-        long nextNumber = (lastReceipt == null) ? 1 : lastReceipt.getId() + 1;
+        String prefix = "RT" + today + "-" + projectId;
 
-        return String.format("RCPT-%05d", nextNumber);
+        Receipt lastReceipt = receiptRepository
+                .findTopByInvoice_Project_IdAndReceiptNumberStartingWithOrderByReceiptNumberDesc(
+                        projectId, prefix
+                );
+
+        int nextSequence = 1;
+
+        if (lastReceipt != null) {
+            String lastNumber = lastReceipt.getReceiptNumber();
+
+            String[] parts = lastNumber.split("-");
+            int lastSequence = Integer.parseInt(parts[2]);
+            nextSequence = lastSequence + 1;
+        }
+
+        return String.format("RT%s-%d-%02d", today, projectId, nextSequence);
     }
-
     private void validateAmounts(ReceiptForm form) {
 
         if (form.getDiscount() == null) {

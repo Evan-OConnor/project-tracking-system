@@ -29,7 +29,7 @@ public class TimesheetEntry {
     private WorkDescription workDescription;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invoice_id")  // nullable by default
+    @JoinColumn(name = "invoice_id")
     private Invoice invoice;
 
     @Column(name = "entry_date", nullable = false)

@@ -31,4 +31,9 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
     """)
     BigDecimal sumDiscountsByInvoiceId(Long invoiceId);
 
+    Receipt findTopByInvoice_Project_IdAndReceiptNumberStartingWithOrderByReceiptNumberDesc(
+            Long projectId,
+            String prefix
+    );
+
 }
