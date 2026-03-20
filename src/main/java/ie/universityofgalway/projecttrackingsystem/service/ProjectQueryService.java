@@ -51,7 +51,7 @@ public class ProjectQueryService {
         this.contactRepository = contactRepository;
     }
 
-    // LIST
+    // List
     public List<ProjectView> list() {
         return projectRepository.findAll()
                 .stream()
@@ -59,7 +59,7 @@ public class ProjectQueryService {
                 .toList();
     }
 
-    // SEARCH
+    // Search
     public List<ProjectView> search(ProjectSearchCriteria criteria) {
         return projectRepository.findAll(ProjectSpecification.search(criteria))
                 .stream()
@@ -68,7 +68,7 @@ public class ProjectQueryService {
     }
 
 
-    // DETAILS
+    // Details
     public ProjectDetailsView getProjectDetails(Long id) {
 
         Project project = projectRepository.findById(id)
@@ -133,7 +133,7 @@ public class ProjectQueryService {
         );
     }
 
-    // LOOKUPS
+    // Lookups
     public void loadFormLookups(Model model) {
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("statuses", statusRepository.findAll());

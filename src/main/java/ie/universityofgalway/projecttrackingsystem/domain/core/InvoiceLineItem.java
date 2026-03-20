@@ -34,9 +34,9 @@ public class InvoiceLineItem {
     @Column(name = "unit_rate", nullable = false, precision = 10, scale = 2)
     private BigDecimal unitRate;
 
+    protected InvoiceLineItem() {}
+
     // Constructor
-    protected InvoiceLineItem() {
-    }
 
     public InvoiceLineItem(Invoice invoice,
                            String description,

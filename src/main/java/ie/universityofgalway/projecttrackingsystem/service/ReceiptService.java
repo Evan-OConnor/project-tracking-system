@@ -57,36 +57,45 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
             throw new IllegalStateException("Invoice must be selected");
         }
 
-        Long invoiceId = form.getInvoiceId();
-
-        Invoice invoice = invoiceRepository.findById(invoiceId)
+        Invoice invoice = invoiceRepository.findById(form.getInvoiceId())
                 .orElseThrow(() -> new IllegalStateException("Invoice not found"));
 
-        // prevent duplicate payment
         if (invoice.getStatus() == InvoiceStatus.PAID) {
             throw new IllegalStateException("Invoice has already been paid");
         }
 
         validateAmounts(form);
 
-        String receiptNumber = generateReceiptNumber(invoice.getProject().getId());
+        //  TEMP value (DB requires NOT NULL)
+        String tempNumber = "TEMP-" + java.util.UUID.randomUUID();
 
         Receipt receipt = new Receipt(
                 invoice,
-                receiptNumber,
+                tempNumber,
                 form.getDateReceived(),
                 form.getDiscount(),
                 form.getAmountPaid(),
                 form.getPaymentMethod()
         );
 
-        Receipt savedReceipt = receiptRepository.save(receipt);
+        //  First save → generates ID
+        receipt = receiptRepository.save(receipt);
+
+        // Generate real receipt number
+        String receiptNumber = generateReceiptNumber(
+                receipt.getId(),
+                receipt.getDateReceived()
+        );
+
+        receipt.setReceiptNumber(receiptNumber);
+
+        receipt = receiptRepository.save(receipt);
 
         // mark invoice as paid
         invoice.setStatus(InvoiceStatus.PAID);
         invoiceRepository.save(invoice);
 
-        return savedReceipt;
+        return receipt;
     }
 
     // Update form
@@ -146,29 +155,9 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
     }
 
     // Helpers
-    private String generateReceiptNumber(Long projectId) {
-
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("ddMMyy"));
-        // e.g. 180326
-
-        String prefix = "RT" + today + "-" + projectId;
-
-        Receipt lastReceipt = receiptRepository
-                .findTopByInvoice_Project_IdAndReceiptNumberStartingWithOrderByReceiptNumberDesc(
-                        projectId, prefix
-                );
-
-        int nextSequence = 1;
-
-        if (lastReceipt != null) {
-            String lastNumber = lastReceipt.getReceiptNumber();
-
-            String[] parts = lastNumber.split("-");
-            int lastSequence = Integer.parseInt(parts[2]);
-            nextSequence = lastSequence + 1;
-        }
-
-        return String.format("RT%s-%d-%02d", today, projectId, nextSequence);
+    private String generateReceiptNumber(Long receiptId, LocalDate receiptDate) {
+        return "RC-" + receiptDate.getYear() + "-" +
+                String.format("%06d", receiptId);
     }
     private void validateAmounts(ReceiptForm form) {
 

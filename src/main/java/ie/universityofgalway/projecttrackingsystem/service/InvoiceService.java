@@ -69,15 +69,25 @@ public class InvoiceService {
         }
 
         VatRate standardVat = getDefaultVatRate();
-        String invoiceNumber = generateInvoiceNumber();
+
+        String tempNumber = "TEMP-" + UUID.randomUUID();
 
         Invoice invoice = new Invoice(
                 project,
                 LocalDate.now(),
-                invoiceNumber
+                tempNumber
         );
 
-        invoiceRepo.save(invoice);
+        invoice = invoiceRepo.save(invoice);
+
+        String finalNumber = generateInvoiceNumber(
+                invoice.getId(),
+                invoice.getInvoiceDate()
+        );
+
+        invoice.setInvoiceNumber(finalNumber);
+
+        invoice = invoiceRepo.save(invoice);
 
         // Professional Fees
         for (TimesheetEntry entry : timesheets) {
@@ -133,24 +143,36 @@ public class InvoiceService {
         return mapToDTO(invoice);
     }
 
-    public void voidInvoice(Long invoiceId) {
+    // Delete Invoice
+    public void deleteInvoice(Long invoiceId) {
 
-        Invoice invoice =  invoiceRepo.findByIdWithProject(invoiceId)
+        Invoice invoice = invoiceRepo.findByIdWithProject(invoiceId)
                 .orElseThrow(() -> new IllegalArgumentException("Invoice not found"));
 
-        if (invoice.getStatus() == InvoiceStatus.VOID) {
-            throw new IllegalStateException("Invoice is already void.");
+        // Cannot delete if paid or partially paid
+        if (invoice.getStatus() == InvoiceStatus.PAID ||
+                invoice.getStatus() == InvoiceStatus.PARTIALLY_PAID) {
+
+            throw new IllegalStateException(
+                    "Cannot delete a paid or partially paid invoice."
+            );
         }
 
-        if (invoice.getStatus() == InvoiceStatus.PAID) {
-            throw new IllegalStateException("Cannot void a fully paid invoice.");
+        // 1. Delete invoice line items (they depend on invoice)
+        lineItemRepo.deleteAll(lineItemRepo.findByInvoice(invoice));
+
+        // 2. Unlink timesheets → automatically becomes unbilled
+        for (TimesheetEntry entry : timesheetRepo.findByInvoice(invoice)) {
+            entry.setInvoice(null);
         }
 
-        if (invoice.getStatus() == InvoiceStatus.PARTIALLY_PAID) {
-            throw new IllegalStateException("Cannot void a partially paid invoice.");
+        // 3. Unlink cost items → automatically becomes unbilled
+        for (CostItem cost : costItemRepo.findByInvoice(invoice)) {
+            cost.setInvoice(null);
         }
 
-        invoice.setStatus(InvoiceStatus.VOID);
+        // 4. Delete the invoice itself
+        invoiceRepo.delete(invoice);
     }
 
     // Support Methods
@@ -163,10 +185,10 @@ public class InvoiceService {
         return vatRateRepo.findAll();
     }
 
-    private String generateInvoiceNumber() {
-        return "INV-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    private String generateInvoiceNumber(Long invoiceId, LocalDate invoiceDate) {
+        return "INV-" + invoiceDate.getYear() + "-" +
+                String.format("%06d", invoiceId);
     }
-
     private VatRate getDefaultVatRate() {
 
         return vatRateRepo.findByRatePercent(DEFAULT_VAT_RATE)

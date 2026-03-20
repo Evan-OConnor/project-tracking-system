@@ -29,7 +29,6 @@ public class CostItem {
     @JoinColumn(name = "supplier_contact_id")
     private Contact supplierContact;
 
-    // Invoices
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id")
     private Invoice invoice;
@@ -58,24 +57,6 @@ public class CostItem {
     }
 
     public CostItem() {}
-
-    // Main constructor
-    public CostItem(Project project,
-                    Employee employee,
-                    Contact supplierContact,
-                    LocalDate costDate,
-                    String description,
-                    BigDecimal costAmount,
-                    Type type) {
-
-        this.project = project;
-        this.employee = employee;
-        this.supplierContact = supplierContact;
-        this.costDate = costDate;
-        this.description = description;
-        this.costAmount = costAmount;
-        this.type = type;
-    }
 
     // Business Rule
     @PrePersist

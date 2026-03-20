@@ -13,9 +13,6 @@ public class ProjectSearchCriteria {
     private LocalDate startDateFrom;
     private LocalDate startDateTo;
 
-    private BigDecimal minBudget;
-    private BigDecimal maxBudget;
-
     private Boolean hasInvoices;
     private Boolean hasExpenses;
 
@@ -41,14 +38,6 @@ public class ProjectSearchCriteria {
 
     public LocalDate getStartDateTo() {
         return startDateTo;
-    }
-
-    public BigDecimal getMinBudget() {
-        return minBudget;
-    }
-
-    public BigDecimal getMaxBudget() {
-        return maxBudget;
     }
 
     public Boolean getHasInvoices() {
@@ -83,14 +72,6 @@ public class ProjectSearchCriteria {
         this.startDateTo = startDateTo;
     }
 
-    public void setMinBudget(BigDecimal minBudget) {
-        this.minBudget = minBudget;
-    }
-
-    public void setMaxBudget(BigDecimal maxBudget) {
-        this.maxBudget = maxBudget;
-    }
-
     public void setHasInvoices(Boolean hasInvoices) {
         this.hasInvoices = hasInvoices;
     }
@@ -108,8 +89,6 @@ public class ProjectSearchCriteria {
                 && statusId == null
                 && startDateFrom == null
                 && startDateTo == null
-                && minBudget == null
-                && maxBudget == null
                 && hasInvoices == null
                 && hasExpenses == null;
     }

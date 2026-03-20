@@ -73,7 +73,7 @@ public class InvoiceController {
 
             return "redirect:/invoices/" + invoice.getInvoiceId();
 
-        } catch (IllegalStateException ex) {
+        } catch (IllegalArgumentException ex) {
             // Business rule failure (e.g. invoice already exists)
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
@@ -93,20 +93,20 @@ public class InvoiceController {
         }
     }
 
-    @PostMapping("/{id}/void")
-    public String voidInvoice(@PathVariable Long id,
+    @PostMapping("/{id}/delete")
+    public String deleteInvoice(@PathVariable Long id,
                               RedirectAttributes redirectAttributes) {
 
         try {
 
-            invoiceService.voidInvoice(id);
+            invoiceService.deleteInvoice(id);
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",
                     "Invoice voided successfully."
             );
 
-        } catch (Exception ex) {
+        } catch (IllegalStateException ex) {
 
         redirectAttributes.addFlashAttribute(
                 "errorMessage",

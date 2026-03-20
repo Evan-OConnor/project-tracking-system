@@ -21,7 +21,7 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    // List / Search Employees
+    // List
     @GetMapping
     public String list(
             @RequestParam(value = "q", required = false) String q,

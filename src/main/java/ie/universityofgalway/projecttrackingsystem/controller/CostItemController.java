@@ -67,8 +67,8 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
     // Create or Update
     @PostMapping
     public String saveCostItem(@Valid @ModelAttribute("costItemForm") CostItemForm form,
-                       BindingResult result,
-                       Model model) {
+                               BindingResult result,
+                               Model model) {
 
         if (result.hasErrors()) {
             model.addAllAttributes(costItemService.getDropdowns());
@@ -84,7 +84,7 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
                 costItemService.update(form.getId(), form);
             }
 
-        } catch (IllegalStateException ex) {
+        } catch (IllegalArgumentException ex) {
 
             // Handle business rule violation (e.g. invalid project state)
             model.addAttribute("businessError", ex.getMessage());

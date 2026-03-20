@@ -3,6 +3,7 @@ package ie.universityofgalway.projecttrackingsystem.service;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Contact;
 import ie.universityofgalway.projecttrackingsystem.dto.ContactForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.ContactRepository;
+import ie.universityofgalway.projecttrackingsystem.repository.core.CostItemRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectRepository;
 
 import org.springframework.stereotype.Service;
@@ -14,12 +15,15 @@ public class ContactService implements BaseService<Contact, ContactForm> {
 
     private final ContactRepository contactRepository;
     private final ProjectRepository projectRepository;
+    private final CostItemRepository costItemRepository;
 
     // Constructor
     public ContactService(ContactRepository contactRepository,
-                          ProjectRepository projectRepository) {
+                          ProjectRepository projectRepository,
+                          CostItemRepository costItemRepository) {
         this.contactRepository = contactRepository;
         this.projectRepository = projectRepository;
+        this.costItemRepository = costItemRepository;
     }
 
     // List  - All contacts from database
@@ -50,6 +54,11 @@ public class ContactService implements BaseService<Contact, ContactForm> {
                     "Cannot delete contact because it is used in a project."
             );
         }
+            if (costItemRepository.existsBySupplierContact_Id(id)) {
+                throw new IllegalStateException(
+                        "Cannot delete contact because it is used in a costitem."
+                );
+            }
 
         contactRepository.delete(contact);
     }

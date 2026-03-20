@@ -11,4 +11,5 @@ import java.util.List;
 public interface InvoiceLineItemRepository extends JpaRepository<InvoiceLineItem, Long> {
 
     List<InvoiceLineItem> findByInvoice(Invoice invoice);
+
 }

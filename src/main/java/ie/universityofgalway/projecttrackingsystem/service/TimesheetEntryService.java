@@ -147,7 +147,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
 
     @Override
     public void updateEntity(TimesheetEntryView entity, TimesheetEntryForm form) {
-        // Not required
+
     }
 
     @Override
@@ -168,7 +168,8 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
                 entry.getWorkDescription().getName(),
                 entry.getEntryDate(),
                 entry.getHours(),
-                charge
+                charge,
+                entry.getInvoice() != null
         );
     }
 

@@ -93,7 +93,7 @@ public class Contact {
         return id != null && id.equals(contact.id);
     }
 
-    // Required with equals(): ensures objects that are equal have the same hash code
+    // Ensures objects that are equal have the same hash code
     @Override
     public int hashCode() {
         return getClass().hashCode();

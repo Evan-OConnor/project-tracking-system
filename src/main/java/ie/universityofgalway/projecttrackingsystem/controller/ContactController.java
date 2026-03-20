@@ -58,7 +58,7 @@ public class ContactController extends BaseController<Contact, ContactForm> {
         return "contacts/form";
     }
 
-    // Create Submit
+    //  Submit
     @PostMapping
     public String create(@Valid @ModelAttribute("contactForm") ContactForm form,
                          BindingResult bindingResult,

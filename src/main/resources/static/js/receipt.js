@@ -40,44 +40,54 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-     // Select invoice and autofill receipt form
-    const invoiceSelect = document.getElementById("invoiceSelect");
+     //  Invoice autofills receipt form
+     const invoiceSelect = document.getElementById("invoiceSelect");
 
-    const totalField = document.getElementById("invoiceTotal");
-    const outstandingField = document.getElementById("outstandingBalance");
-    const amountPaidField = document.getElementById("amountPaid");
+     const totalField = document.getElementById("invoiceTotal");
+     const outstandingField = document.getElementById("outstandingBalance");
+     const amountPaidField = document.getElementById("amountPaid");
 
-    if (!invoiceSelect) return;
+     if (!invoiceSelect) return;
 
-    invoiceSelect.addEventListener("change", function () {
+     // Detect edit mode
+     const isEdit = amountPaidField && amountPaidField.value && amountPaidField.value !== "0";
 
-        const invoiceId = this.value;
+     // Function to load invoice data
+     function loadInvoiceSummary(invoiceId) {
 
-        if (!invoiceId) return;
+         if (!invoiceId) return;
 
-        fetch(`/api/invoices/${invoiceId}/summary`)
-            .then(res => res.json())
-            .then(data => {
+         console.log("Loading invoice:", invoiceId);
 
-                console.log("Invoice summary:", data);
+         fetch(`/api/invoices/${invoiceId}/summary`)
+             .then(res => res.json())
+             .then(data => {
 
-                const total = parseFloat(data.grossTotal || 0);
-                const outstanding = parseFloat(data.outstanding || 0);
+                 console.log("Invoice summary:", data);
 
-                if (totalField) {
-                    totalField.value = total.toFixed(2);
-                }
+                 const total = parseFloat(data.grossTotal || 0);
+                 const outstanding = parseFloat(data.outstanding || 0);
 
-                if (outstandingField) {
-                    outstandingField.value = outstanding.toFixed(2);
-                }
+                 // Always update these
+                 if (totalField) totalField.value = total.toFixed(2);
+                 if (outstandingField) outstandingField.value = outstanding.toFixed(2);
 
-                if (amountPaidField) {
-                    amountPaidField.value = outstanding.toFixed(2);
-                }
+                 // ONLY autofill amount on CREATE
+                 if (!isEdit && amountPaidField) {
+                     amountPaidField.value = outstanding.toFixed(2);
+                 }
 
-            })
-            .catch(err => console.error("Autofill error:", err));
-    });
+             })
+             .catch(err => console.error("Autofill error:", err));
+     }
 
-});
+     // Change event (user selects invoice)
+     invoiceSelect.addEventListener("change", function () {
+         loadInvoiceSummary(this.value);
+     });
+
+     // Run on page load (important for edit form)
+     setTimeout(() => {
+         loadInvoiceSummary(invoiceSelect.value);
+     }, 100);
+   });

@@ -58,7 +58,6 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
     }
 
     // Model Data
-
     @ModelAttribute("invoices")
     public Object getInvoices() {
         return invoiceRepository.findAll();

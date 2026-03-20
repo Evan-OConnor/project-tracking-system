@@ -1,5 +1,6 @@
 package ie.universityofgalway.projecttrackingsystem.repository.core;
 
+import ie.universityofgalway.projecttrackingsystem.domain.core.Invoice;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import ie.universityofgalway.projecttrackingsystem.domain.core.TimesheetEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,8 @@ public interface TimesheetEntryRepository extends JpaRepository<TimesheetEntry, 
     List<TimesheetEntry> findByProjectAndInvoiceIsNull(Project project);
 
     boolean existsByProjectId(Long projectId);
+
+    List<TimesheetEntry> findByInvoice(Invoice invoice);
 
     @Query("""
     SELECT COALESCE(SUM(t.hours * e.hourlyRate),0)

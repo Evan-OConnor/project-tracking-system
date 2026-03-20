@@ -74,14 +74,14 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    // FORM
+    // Form
     public ProjectForm getFormById(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found"));
 
         return mapToForm(project);
     }
-    // Mapping
+    // Update
 
     public void updateEntity(Project project, ProjectForm form) {
 

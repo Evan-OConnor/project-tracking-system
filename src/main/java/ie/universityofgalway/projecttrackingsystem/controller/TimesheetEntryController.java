@@ -83,7 +83,7 @@ public class TimesheetEntryController extends BaseController<TimesheetEntryView,
         return "timesheet/form";
     }
 
-    // Handle Update
+    // Update
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("form") TimesheetEntryForm form,

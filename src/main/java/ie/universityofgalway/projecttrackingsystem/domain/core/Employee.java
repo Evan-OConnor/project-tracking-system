@@ -50,15 +50,6 @@ public class Employee {
 
     public List<TimesheetEntry> getTimesheetEntries() { return timesheetEntries; }
 
-    /**
-     * Helper method to get all unique projects this employee has worked on
-     */
-    public List<Project> getProjectsWorkedOn() {
-        return timesheetEntries.stream()
-                .map(TimesheetEntry::getProject)
-                .distinct()
-                .collect(Collectors.toList());
-    }
 
     // Setters
 

@@ -1,6 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.repository.core;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.CostItem;
+import ie.universityofgalway.projecttrackingsystem.domain.core.Invoice;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import ie.universityofgalway.projecttrackingsystem.dto.CostItemView;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +21,9 @@ public interface CostItemRepository extends JpaRepository<CostItem, Long> {
     List<CostItem> findByProjectAndInvoiceIsNull(Project project);
 
     boolean existsByProjectId(Long projectId);
+    boolean existsBySupplierContact_Id(Long id);
+
+    List<CostItem> findByInvoice(Invoice invoice);
 
     @Query("""
 SELECT COALESCE(SUM(c.costAmount),0)

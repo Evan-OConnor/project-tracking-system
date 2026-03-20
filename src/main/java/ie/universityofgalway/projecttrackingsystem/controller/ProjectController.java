@@ -26,9 +26,7 @@ public class ProjectController  {
         this.projectQueryService = projectQueryService;
     }
 
-    // =========================
-    // NEW FORM
-    // =========================
+    // New Form
     @GetMapping("/new")
     public String newForm(Model model) {
 
@@ -40,9 +38,7 @@ public class ProjectController  {
         return "projects/form";
     }
 
-    // =========================
-    // CREATE
-    // =========================
+    // Create
     @PostMapping
     public String create(@Valid @ModelAttribute("projectForm") ProjectForm form,
                          BindingResult bindingResult,
@@ -74,9 +70,7 @@ public class ProjectController  {
         }
     }
 
-    // =========================
-    // EDIT FORM
-    // =========================
+    // Edit
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
 
