@@ -303,6 +303,17 @@ public class InvoiceService {
                         ? InvoiceStatus.VOID
                         : calculateStatus(total, totalPaid, totalDiscount);
 
+        // Client details (null if project/contact are not present)
+        String clientName = null;
+        String clientAddress = null;
+        if (invoice.getProject() != null && invoice.getProject().getClientContact() != null) {
+            Contact contact = invoice.getProject().getClientContact();
+            clientName = contact.getName();
+            clientAddress = contact.getAddress();
+        }
+
+        BigDecimal vatRatePercent = vatRate != null ? vatRate.getRatePercent() : BigDecimal.ZERO;
+
         return new InvoiceDTO(
                 invoice.getId(),
                 invoice.getInvoiceNumber(),
@@ -315,7 +326,10 @@ public class InvoiceService {
                 total,
                 totalPaid,
                 totalDiscount,
-                outstanding
+                outstanding,
+                clientName,
+                clientAddress,
+                vatRatePercent
         );
     }
 }

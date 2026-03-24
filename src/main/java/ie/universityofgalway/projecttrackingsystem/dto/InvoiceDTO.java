@@ -25,6 +25,10 @@ public class InvoiceDTO {
     private final BigDecimal totalDiscount;
     private final BigDecimal outstanding;
 
+    private final String clientName;
+    private final String clientAddress;
+    private final BigDecimal vatRate;
+
     public InvoiceDTO(Long invoiceId,
                       String invoiceNumber,
                       String projectName,
@@ -36,7 +40,10 @@ public class InvoiceDTO {
                       BigDecimal grossTotal,
                       BigDecimal totalPaid,
                       BigDecimal totalDiscount,
-                      BigDecimal outstanding) {
+                      BigDecimal outstanding,
+                      String clientName,
+                      String clientAddress,
+                      BigDecimal vatRate) {
 
         this.invoiceId = invoiceId;
         this.invoiceNumber = invoiceNumber;
@@ -50,6 +57,9 @@ public class InvoiceDTO {
         this.totalPaid = totalPaid;
         this.totalDiscount = totalDiscount;
         this.outstanding = outstanding;
+        this.clientName = clientName;
+        this.clientAddress = clientAddress;
+        this.vatRate = vatRate;
     }
 
     // Getters
@@ -96,4 +106,10 @@ public class InvoiceDTO {
     public BigDecimal getOutstanding() {
         return outstanding;
     }
+
+    public String getClientName() { return clientName; }
+
+    public String getClientAddress() { return clientAddress; }
+
+    public BigDecimal getVatRate() { return vatRate; }
 }
