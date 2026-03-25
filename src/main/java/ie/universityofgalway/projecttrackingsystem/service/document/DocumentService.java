@@ -13,10 +13,14 @@ public class DocumentService {
 
     private final InvoiceService invoiceService;
     private final InvoiceDocumentMapper invoiceDocumentMapper;
+    private final DocumentTemplateRenderer documentTemplateRenderer;
 
-    public DocumentService(InvoiceService invoiceService, InvoiceDocumentMapper invoiceDocumentMapper) {
+    public DocumentService(InvoiceService invoiceService,
+                           InvoiceDocumentMapper invoiceDocumentMapper,
+                           DocumentTemplateRenderer documentTemplateRenderer) {
         this.invoiceService = invoiceService;
         this.invoiceDocumentMapper = invoiceDocumentMapper;
+        this.documentTemplateRenderer = documentTemplateRenderer;
     }
 
     /**
@@ -24,7 +28,7 @@ public class DocumentService {
      *
      * @param id the unique identifier of the invoice.
      */
-    public void generateInvoice(Long id) {
+    public void generateInvoicePDF(Long id) {
         //TODO document generation process
     }
 
@@ -44,5 +48,19 @@ public class DocumentService {
         }
 
         return invoiceDocumentMapper.toInvoiceDocumentData(invoiceDTO);
+    }
+
+    /**
+     * Generates rendered HTML for an invoice by retrieving invoice data,
+     * converting it to InvoiceDocumentData, and processing it through
+     * the Thymeleaf template engine.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a rendered HTML string for the invoice
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     */
+    public String generateInvoiceHtml(Long invoiceId) {
+        InvoiceDocumentData invoiceData = toInvoiceDocumentData(invoiceId);
+        return documentTemplateRenderer.render("invoice", "invoice", invoiceData);
     }
 }
