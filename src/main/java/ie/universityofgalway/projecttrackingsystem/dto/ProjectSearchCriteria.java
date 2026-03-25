@@ -6,7 +6,7 @@ import java.time.LocalDate;
 public class ProjectSearchCriteria {
 
     private String title;
-    private Long clientId;
+    private String clientContactName;
     private Long statusId;
     private Long categoryId;
 
@@ -22,8 +22,8 @@ public class ProjectSearchCriteria {
         return title;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public String getClientContactName() {
+        return clientContactName;
     }
 
     public Long getStatusId() {
@@ -54,8 +54,8 @@ public class ProjectSearchCriteria {
         this.title = title;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setClientContactName(String clientContactName) {
+        this.clientContactName = clientContactName;
     }
 
     public void setStatusId(Long statusId) {
@@ -85,7 +85,7 @@ public class ProjectSearchCriteria {
      */
     public boolean isEmpty() {
         return (title == null || title.isBlank())
-                && clientId == null
+                && clientContactName == null
                 && statusId == null
                 && startDateFrom == null
                 && startDateTo == null

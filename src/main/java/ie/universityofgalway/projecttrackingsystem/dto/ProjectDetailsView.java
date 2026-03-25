@@ -20,6 +20,8 @@ public class ProjectDetailsView {
     private BigDecimal receiptsTotal;
     private List<ProjectReportDocument> reports;
     private List<DocumentType> documentTypes;
+    private BigDecimal outstandingInvoices;
+    private BigDecimal totalInvoiced;
 
     // Getters
 
@@ -47,6 +49,10 @@ public class ProjectDetailsView {
 
     public List<DocumentType> getDocumentTypes() { return documentTypes; }
 
+    public BigDecimal getOutstandingInvoices() {return outstandingInvoices;}
+
+    public BigDecimal getTotalInvoiced(){ return totalInvoiced;}
+
     // Setters
     public void setProject(Project project) { this.project = project; }
 
@@ -71,4 +77,8 @@ public class ProjectDetailsView {
     public void setReports(List<ProjectReportDocument> reports) { this.reports = reports; }
 
     public void setDocumentTypes(List<DocumentType> documentTypes) { this.documentTypes = documentTypes; }
+
+    public void setOutstandingInvoices(BigDecimal outstandingInvoices) {this.outstandingInvoices = outstandingInvoices;}
+
+    public void setTotalInvoiced(BigDecimal totalInvoiced) {this.totalInvoiced = totalInvoiced;}
 }

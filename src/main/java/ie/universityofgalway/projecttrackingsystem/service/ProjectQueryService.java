@@ -95,6 +95,9 @@ public class ProjectQueryService {
 
         BigDecimal receiptsTotal = financeService.getReceiptsTotal(id);
 
+        BigDecimal totalInvoiced = financeService.getTotalInvoiced(project);
+        BigDecimal outstandingInvoices = financeService.getOutstandingInvoices(project);
+
         List<ProjectReportDocument> reports =
                 projectReportDocumentService.getDocumentsForProject(id);
 
@@ -112,6 +115,8 @@ public class ProjectQueryService {
         view.setReceiptsTotal(receiptsTotal);
         view.setReports(reports);
         view.setDocumentTypes(documentTypeRepository.findAll());
+        view.setTotalInvoiced(totalInvoiced);
+        view.setOutstandingInvoices(outstandingInvoices);
 
         return view;
     }

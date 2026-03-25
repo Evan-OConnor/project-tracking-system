@@ -25,15 +25,14 @@ public class ProjectSpecification {
             }
 
             // Client filter
-            if (criteria.getClientId() != null) {
+            if (criteria.getClientContactName() != null && !criteria.getClientContactName().isBlank()) {
                 predicates = cb.and(predicates,
-                        cb.equal(
-                                root.get("clientContact").get("id"),
-                                criteria.getClientId()
+                        cb.like(
+                                cb.lower(root.get("clientContact").get("name")),
+                                "%" + criteria.getClientContactName().toLowerCase() + "%"
                         )
                 );
             }
-
             // Status filter
             if (criteria.getStatusId() != null) {
                 predicates = cb.and(predicates,
