@@ -14,9 +14,6 @@ public class TimesheetEntryForm {
     @NotNull(message = "Project is required")
     private Long projectId;
 
-    @NotNull(message = "Employee is required")
-    private Long employeeId;
-
     @NotNull(message = "Work description is required")
     private Long workDescriptionId;
 
@@ -40,52 +37,24 @@ public class TimesheetEntryForm {
         return projectId;
     }
 
-    public Long getEmployeeId() {
-        return employeeId;
-    }
+    public Long getWorkDescriptionId() {return workDescriptionId;}
 
-    public Long getWorkDescriptionId() {
-        return workDescriptionId;
-    }
+    public String getOtherDescription() {return otherDescription;}
 
-    public String getOtherDescription() {
-        return otherDescription;
-    }
+    public LocalDate getEntryDate() {return entryDate;}
 
-    public LocalDate getEntryDate() {
-        return entryDate;
-    }
-
-    public BigDecimal getHours() {
-        return hours;
-    }
+    public BigDecimal getHours() {return hours;}
 
     // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setId(Long id) {this.id = id;}
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
-    }
+    public void setProjectId(Long projectId) {this.projectId = projectId;}
 
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
-    }
+    public void setWorkDescriptionId(Long workDescriptionId) {this.workDescriptionId = workDescriptionId;}
 
-    public void setWorkDescriptionId(Long workDescriptionId) {
-        this.workDescriptionId = workDescriptionId;
-    }
+    public void setOtherDescription(String otherDescription) {this.otherDescription = otherDescription;}
 
-    public void setOtherDescription(String otherDescription) {
-        this.otherDescription = otherDescription;
-    }
+    public void setEntryDate(LocalDate entryDate) {this.entryDate = entryDate;}
 
-    public void setEntryDate(LocalDate entryDate) {
-        this.entryDate = entryDate;
-    }
-
-    public void setHours(BigDecimal hours) {
-        this.hours = hours;
-    }
+    public void setHours(BigDecimal hours) {this.hours = hours;}
 }

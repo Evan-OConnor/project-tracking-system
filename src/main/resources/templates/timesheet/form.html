@@ -52,30 +52,6 @@
             </div>
         </div>
 
-        <!-- Employee -->
-        <div class="mb-3">
-            <label class="form-label">Employee</label>
-
-            <select class="form-select"
-                    th:field="*{employeeId}"
-                    th:classappend="${#fields.hasErrors('employeeId')} ? 'is-invalid'"
-                    required>
-
-                <option value="" disabled>Select an employee</option>
-
-                <option th:each="e : ${employees}"
-                        th:value="${e.id}"
-                        th:text="${e.name}">
-                </option>
-
-            </select>
-
-            <div class="invalid-feedback"
-                 th:if="${#fields.hasErrors('employeeId')}"
-                 th:errors="*{employeeId}">
-            </div>
-        </div>
-
         <!-- Work Description -->
         <div class="mb-3">
             <label class="form-label">Work Description</label>

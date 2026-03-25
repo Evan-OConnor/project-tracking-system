@@ -11,6 +11,7 @@ import ie.universityofgalway.projecttrackingsystem.repository.core.EmployeeRepos
 import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.lookup.WorkDescriptionRepository;
 
+import ie.universityofgalway.projecttrackingsystem.service.security.CurrentUserService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,16 +27,19 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     private final ProjectRepository projectRepo;
     private final EmployeeRepository employeeRepo;
     private final WorkDescriptionRepository workDescRepo;
+    private final CurrentUserService currentUserService;
 
     public TimesheetEntryService(TimesheetEntryRepository repository,
                                  ProjectRepository projectRepo,
                                  EmployeeRepository employeeRepo,
-                                 WorkDescriptionRepository workDescRepo) {
+                                 WorkDescriptionRepository workDescRepo,
+                                 CurrentUserService currentUserService) {
 
         this.repository = repository;
         this.projectRepo = projectRepo;
         this.employeeRepo = employeeRepo;
         this.workDescRepo = workDescRepo;
+        this.currentUserService = currentUserService;
     }
 
     // List
@@ -74,8 +78,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         Project project = projectRepo.findById(form.getProjectId())
                 .orElseThrow(() -> new IllegalArgumentException("Project not found"));
 
-        Employee employee = employeeRepo.findById(form.getEmployeeId())
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+        Employee employee = currentUserService.getCurrentEmployee();
 
         WorkDescription workDesc = resolveWorkDescription(form);
 
@@ -100,7 +103,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
                 .orElseThrow(() -> new IllegalArgumentException("Timesheet entry not found"));
 
         Project project = projectRepo.findById(form.getProjectId()).orElseThrow();
-        Employee employee = employeeRepo.findById(form.getEmployeeId()).orElseThrow();
+        Employee employee = currentUserService.getCurrentEmployee();
         WorkDescription workDesc = resolveWorkDescription(form);
 
         entry.setProject(project);
@@ -180,7 +183,6 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
 
         form.setId(entry.getId());
         form.setProjectId(entry.getProject().getId());
-        form.setEmployeeId(entry.getEmployee().getId());
         form.setWorkDescriptionId(entry.getWorkDescription().getId());
         form.setEntryDate(entry.getEntryDate());
         form.setHours(entry.getHours());
@@ -202,7 +204,6 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
 
         return Map.of(
                 "projects", projectRepo.findAll(),
-                "employees", employeeRepo.findAll(),
                 "workDescriptions", workDescRepo.findAll()
         );
     }
