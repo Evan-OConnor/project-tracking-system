@@ -14,22 +14,16 @@ public class DocumentService {
     private final InvoiceService invoiceService;
     private final InvoiceDocumentMapper invoiceDocumentMapper;
     private final DocumentTemplateRenderer documentTemplateRenderer;
+    private final PDFGenerator pdfGenerator;
 
     public DocumentService(InvoiceService invoiceService,
                            InvoiceDocumentMapper invoiceDocumentMapper,
-                           DocumentTemplateRenderer documentTemplateRenderer) {
+                           DocumentTemplateRenderer documentTemplateRenderer,
+                           PDFGenerator pdfGenerator) {
         this.invoiceService = invoiceService;
         this.invoiceDocumentMapper = invoiceDocumentMapper;
         this.documentTemplateRenderer = documentTemplateRenderer;
-    }
-
-    /**
-     * Generates an invoice document for the given invoice ID.
-     *
-     * @param id the unique identifier of the invoice.
-     */
-    public void generateInvoicePDF(Long id) {
-        //TODO document generation process
+        this.pdfGenerator = pdfGenerator;
     }
 
     /**
@@ -62,5 +56,19 @@ public class DocumentService {
     public String generateInvoiceHtml(Long invoiceId) {
         InvoiceDocumentData invoiceData = toInvoiceDocumentData(invoiceId);
         return documentTemplateRenderer.render("invoice", "invoice", invoiceData);
+    }
+
+    /**
+     * Generates a PDF for an invoice by rendering it as HTML and converting
+     * it to PDF format using the OpenHTMLtoPDF library.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a byte array containing the generated PDF
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     * @throws RuntimeException if PDF generation fails
+     */
+    public byte[] generateInvoicePdf(Long invoiceId) {
+        String html = generateInvoiceHtml(invoiceId);
+        return pdfGenerator.generatePdf(html);
     }
 }
