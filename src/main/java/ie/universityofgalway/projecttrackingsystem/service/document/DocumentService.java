@@ -55,7 +55,7 @@ public class DocumentService {
      */
     public String generateInvoiceHtml(Long invoiceId) {
         InvoiceDocumentData invoiceData = toInvoiceDocumentData(invoiceId);
-        return documentTemplateRenderer.render("invoice", "invoice", invoiceData);
+        return documentTemplateRenderer.render("invoice/invoice", "invoice", invoiceData);
     }
 
     /**
