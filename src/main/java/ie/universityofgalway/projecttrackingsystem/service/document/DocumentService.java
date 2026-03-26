@@ -1,7 +1,10 @@
 package ie.universityofgalway.projecttrackingsystem.service.document;
 
 import ie.universityofgalway.projecttrackingsystem.dto.document.InvoiceDocumentData;
+import ie.universityofgalway.projecttrackingsystem.dto.document.ReceiptDocumentData;
+import ie.universityofgalway.projecttrackingsystem.domain.core.Receipt;
 import ie.universityofgalway.projecttrackingsystem.service.InvoiceService;
+import ie.universityofgalway.projecttrackingsystem.service.ReceiptService;
 import ie.universityofgalway.projecttrackingsystem.dto.InvoiceDTO;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +16,21 @@ public class DocumentService {
 
     private final InvoiceService invoiceService;
     private final InvoiceDocumentMapper invoiceDocumentMapper;
+    private final ReceiptService receiptService;
+    private final ReceiptDocumentMapper receiptDocumentMapper;
     private final DocumentTemplateRenderer documentTemplateRenderer;
     private final PDFGenerator pdfGenerator;
 
     public DocumentService(InvoiceService invoiceService,
                            InvoiceDocumentMapper invoiceDocumentMapper,
+                           ReceiptService receiptService,
+                           ReceiptDocumentMapper receiptDocumentMapper,
                            DocumentTemplateRenderer documentTemplateRenderer,
                            PDFGenerator pdfGenerator) {
         this.invoiceService = invoiceService;
         this.invoiceDocumentMapper = invoiceDocumentMapper;
+        this.receiptService = receiptService;
+        this.receiptDocumentMapper = receiptDocumentMapper;
         this.documentTemplateRenderer = documentTemplateRenderer;
         this.pdfGenerator = pdfGenerator;
     }
@@ -37,11 +46,25 @@ public class DocumentService {
     public InvoiceDocumentData toInvoiceDocumentData(Long invoiceId) {
         InvoiceDTO invoiceDTO = invoiceService.getInvoiceById(invoiceId);
 
-        if (invoiceDTO == null) {
-            throw new IllegalArgumentException("No invoice found with id: " + invoiceId);
-        }
-
         return invoiceDocumentMapper.toInvoiceDocumentData(invoiceDTO);
+    }
+
+    /**
+     * Retrieves receipt and associated invoice data and maps them into a
+     * {@link ReceiptDocumentData} object for document rendering.
+     *
+     * @param receiptId the unique identifier of the receipt
+     * @return a fully populated ReceiptDocumentData object
+     * @throws IllegalArgumentException if no receipt exists for the given ID or if the
+     *         associated invoice cannot be found
+     */
+    public ReceiptDocumentData toReceiptDocumentData(Long receiptId) {
+        Receipt receipt = receiptService.getById(receiptId);
+
+        Long invoiceId = receipt.getInvoice().getId();
+        InvoiceDTO invoiceDTO = invoiceService.getInvoiceById(invoiceId);
+
+        return receiptDocumentMapper.toReceiptDocumentData(receipt, invoiceDTO);
     }
 
     /**
