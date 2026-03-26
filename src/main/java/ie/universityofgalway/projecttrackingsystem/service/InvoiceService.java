@@ -23,6 +23,7 @@ import java.util.UUID;
 public class InvoiceService {
 
     private static final BigDecimal DEFAULT_VAT_RATE = new BigDecimal("23.00");
+    private static final int INVOICE_LINE_ITEM_DESCRIPTION_MAX_LENGTH = 255;
 
     private final InvoiceRepository invoiceRepo;
     private final TimesheetEntryRepository timesheetRepo;
@@ -47,6 +48,23 @@ public class InvoiceService {
         this.projectRepo = projectRepo;
         this.vatRateRepo = vatRateRepo;
         this.receiptRepo = receiptRepo;
+    }
+
+    // Helper method to safely truncate description
+
+    private String truncateDescription(String description) {
+        if (description == null) {
+            return "";
+        }
+
+        if (description.length() <= INVOICE_LINE_ITEM_DESCRIPTION_MAX_LENGTH) {
+            return description;
+        }
+
+        // Truncate and append ellipsis while keeping total <= 255 chars
+        int ellipsisLength = 3; // "..."
+        int maxContentLength = INVOICE_LINE_ITEM_DESCRIPTION_MAX_LENGTH - ellipsisLength;
+        return description.substring(0, maxContentLength) + "...";
     }
 
     // Generate Invoice
@@ -108,7 +126,7 @@ public class InvoiceService {
 
             InvoiceLineItem line = new InvoiceLineItem(
                     invoice,
-                    cost.getDescription(),
+                    truncateDescription(cost.getDescription()),
                     BigDecimal.ONE,
                     cost.getCostAmount()
             );
@@ -301,6 +319,17 @@ public class InvoiceService {
                         ? InvoiceStatus.VOID
                         : calculateStatus(total, effectivePaid);
 
+        // Client details (null if project/contact are not present)
+        String clientName = null;
+        String clientAddress = null;
+        if (invoice.getProject() != null && invoice.getProject().getClientContact() != null) {
+            Contact contact = invoice.getProject().getClientContact();
+            clientName = contact.getName();
+            clientAddress = contact.getAddress();
+        }
+
+        BigDecimal vatRatePercent = vatRate != null ? vatRate.getRatePercent() : BigDecimal.ZERO;
+
         return new InvoiceDTO(
                 invoice.getId(),
                 invoice.getInvoiceNumber(),
@@ -312,7 +341,10 @@ public class InvoiceService {
                 vatAmount,
                 total,
                 totalPaid,
-                outstanding
+                outstanding,
+                clientName,
+                clientAddress,
+                vatRatePercent
         );
     }
 }

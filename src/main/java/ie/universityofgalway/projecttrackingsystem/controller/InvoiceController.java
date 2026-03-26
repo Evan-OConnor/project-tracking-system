@@ -2,7 +2,11 @@ package ie.universityofgalway.projecttrackingsystem.controller;
 
 import ie.universityofgalway.projecttrackingsystem.dto.InvoiceDTO;
 import ie.universityofgalway.projecttrackingsystem.service.InvoiceService;
+import ie.universityofgalway.projecttrackingsystem.service.document.DocumentService;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +18,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
+    private final DocumentService documentService;
 
 
     // Constructor
-    public InvoiceController(InvoiceService invoiceService) {
+    public InvoiceController(InvoiceService invoiceService, DocumentService documentService) {
         this.invoiceService = invoiceService;
+        this.documentService = documentService;
     }
 
     // List Invoices
@@ -90,6 +96,27 @@ public class InvoiceController {
             );
 
             return "redirect:/invoices/generate";
+        }
+    }
+
+    /**
+     * Returns a PDF representation of the specified invoice.
+     *
+     * @param id the unique identifier of the invoice
+     * @return a PDF response for the invoice, or 404 if the invoice does not exist
+     */
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getInvoicePdf(@PathVariable Long id) {
+        try {
+            byte[] pdf = documentService.generateInvoicePdf(id);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=invoice-" + id + ".pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdf);
+
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.notFound().build();
         }
     }
 
