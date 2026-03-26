@@ -4,9 +4,13 @@ import ie.universityofgalway.projecttrackingsystem.domain.core.Receipt;
 import ie.universityofgalway.projecttrackingsystem.dto.ReceiptForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.InvoiceRepository;
 import ie.universityofgalway.projecttrackingsystem.service.BaseService;
+import ie.universityofgalway.projecttrackingsystem.service.document.DocumentService;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,13 +26,16 @@ import java.time.LocalDate;
 public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
 
     private final InvoiceRepository invoiceRepository;
+    private final DocumentService documentService;
 
 
     // Constructor
     public ReceiptController(BaseService<Receipt, ReceiptForm> service,
-                             InvoiceRepository invoiceRepository) {
+                             InvoiceRepository invoiceRepository,
+                             DocumentService documentService) {
         super(service);
         this.invoiceRepository = invoiceRepository;
+        this.documentService = documentService;
     }
 
 
@@ -199,6 +206,27 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
         model.addAttribute("receipt", receipt);
 
         return "receipts/print";
+    }
+
+    /**
+     * Returns a PDF representation of the specified receipt.
+     *
+     * @param id the unique identifier of the receipt
+     * @return a PDF response for the receipt, or 404 if the receipt does not exist
+     */
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getReceiptPdf(@PathVariable Long id) {
+        try {
+            byte[] pdf = documentService.generateReceiptPdf(id);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=receipt-" + id + ".pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdf);
+
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
