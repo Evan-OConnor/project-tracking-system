@@ -99,8 +99,6 @@ public class ProjectController  {
         model.addAttribute("totalExVat", view.getTotalExVat());
         model.addAttribute("receipts", view.getReceipts());
         model.addAttribute("receiptsTotal", view.getReceiptsTotal());
-        model.addAttribute("reports", view.getReports());
-        model.addAttribute("documentTypes", view.getDocumentTypes());
         model.addAttribute("outstandingInvoices", view.getOutstandingInvoices());
         model.addAttribute("totalInvoiced", view.getTotalInvoiced());
 

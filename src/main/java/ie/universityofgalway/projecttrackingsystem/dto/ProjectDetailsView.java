@@ -18,8 +18,6 @@ public class ProjectDetailsView {
     private BigDecimal totalExVat;
     private List<Receipt> receipts;
     private BigDecimal receiptsTotal;
-    private List<ProjectReportDocument> reports;
-    private List<DocumentType> documentTypes;
     private BigDecimal outstandingInvoices;
     private BigDecimal totalInvoiced;
 
@@ -45,10 +43,6 @@ public class ProjectDetailsView {
 
     public BigDecimal getReceiptsTotal() { return receiptsTotal; }
 
-    public List<ProjectReportDocument> getReports() { return reports; }
-
-    public List<DocumentType> getDocumentTypes() { return documentTypes; }
-
     public BigDecimal getOutstandingInvoices() {return outstandingInvoices;}
 
     public BigDecimal getTotalInvoiced(){ return totalInvoiced;}
@@ -73,10 +67,6 @@ public class ProjectDetailsView {
     public void setReceipts(List<Receipt> receipts) { this.receipts = receipts; }
 
     public void setReceiptsTotal(BigDecimal receiptsTotal) { this.receiptsTotal = receiptsTotal; }
-
-    public void setReports(List<ProjectReportDocument> reports) { this.reports = reports; }
-
-    public void setDocumentTypes(List<DocumentType> documentTypes) { this.documentTypes = documentTypes; }
 
     public void setOutstandingInvoices(BigDecimal outstandingInvoices) {this.outstandingInvoices = outstandingInvoices;}
 

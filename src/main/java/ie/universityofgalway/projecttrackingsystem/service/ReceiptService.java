@@ -200,7 +200,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         BigDecimal vatAmount = subtotal.multiply(vatRate);
         BigDecimal total = subtotal.add(vatAmount);
 
-        // ✅ Only payments affect outstanding
+        // Only payments affect outstanding
         BigDecimal paid = receiptRepository.sumPaymentsByInvoiceId(invoice.getId());
         if (paid == null) paid = BigDecimal.ZERO;
 
