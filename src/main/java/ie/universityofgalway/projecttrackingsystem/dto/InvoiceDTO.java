@@ -22,7 +22,6 @@ public class InvoiceDTO {
     private final BigDecimal grossTotal;
 
     private final BigDecimal totalPaid;
-    private final BigDecimal totalDiscount;
     private final BigDecimal outstanding;
 
     public InvoiceDTO(Long invoiceId,
@@ -35,7 +34,6 @@ public class InvoiceDTO {
                       BigDecimal vatAmount,
                       BigDecimal grossTotal,
                       BigDecimal totalPaid,
-                      BigDecimal totalDiscount,
                       BigDecimal outstanding) {
 
         this.invoiceId = invoiceId;
@@ -48,7 +46,6 @@ public class InvoiceDTO {
         this.vatAmount = vatAmount;
         this.grossTotal = grossTotal;
         this.totalPaid = totalPaid;
-        this.totalDiscount = totalDiscount;
         this.outstanding = outstanding;
     }
 
@@ -91,9 +88,5 @@ public class InvoiceDTO {
 
     public BigDecimal getTotalPaid() {return totalPaid;}
 
-    public BigDecimal getTotalDiscount() {return totalDiscount;}
-
-    public BigDecimal getOutstanding() {
-        return outstanding;
-    }
+    public BigDecimal getOutstanding() {return outstanding;}
 }

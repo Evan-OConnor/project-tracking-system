@@ -36,6 +36,8 @@ public class Employee {
     public Employee(String name, BigDecimal hourlyRate) {
         this.name = name;
         this.hourlyRate = hourlyRate;
+        this.id = id;
+        this.address = address;
     }
 
     // Getters

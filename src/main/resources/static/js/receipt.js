@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
      const totalField = document.getElementById("invoiceTotal");
      const outstandingField = document.getElementById("outstandingBalance");
      const amountPaidField = document.getElementById("amountPaid");
+     const discountField = document.getElementById("discount");
 
      if (!invoiceSelect) return;
 
@@ -73,12 +74,28 @@ document.addEventListener("DOMContentLoaded", function () {
                  if (outstandingField) outstandingField.value = outstanding.toFixed(2);
 
                  // ONLY autofill amount on CREATE
-                 if (!isEdit && amountPaidField) {
-                     amountPaidField.value = outstanding.toFixed(2);
-                 }
+                if (!isEdit) {
+                    if (discountField) discountField.value = "0.00";
+                    updateAmountPaid();
+                }
 
              })
              .catch(err => console.error("Autofill error:", err));
+     }
+
+     function updateAmountPaid() {
+         if (!outstandingField || !amountPaidField || !discountField) return;
+
+         const outstanding = parseFloat(outstandingField.value) || 0;
+         const discount = parseFloat(discountField.value) || 0;
+
+         const amountPaid = outstanding - discount;
+
+         amountPaidField.value = amountPaid.toFixed(2);
+     }
+
+     if (discountField) {
+         discountField.addEventListener("input", updateAmountPaid);
      }
 
      // Change event (user selects invoice)
