@@ -206,11 +206,6 @@
                         <strong th:text="'€' + ${#numbers.formatDecimal(invoice.totalPaid,1,'COMMA',2,'POINT')}"></strong>
                     </p>
 
-                    <p>
-                        Discounts:
-                        <strong th:text="'€' + ${#numbers.formatDecimal(invoice.totalDiscount,1,'COMMA',2,'POINT')}"></strong>
-                    </p>
-
                     <h5 class="text-danger">
                         Outstanding:
                         <strong th:text="'€' + ${#numbers.formatDecimal(invoice.outstanding,1,'COMMA',2,'POINT')}"></strong>
