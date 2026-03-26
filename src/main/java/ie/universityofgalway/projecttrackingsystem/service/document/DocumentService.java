@@ -109,4 +109,19 @@ public class DocumentService {
         ReceiptDocumentData receiptData = toReceiptDocumentData(receiptId);
         return documentTemplateRenderer.render("receipts/receipt", "receipt", receiptData);
     }
+
+    /**
+     * Generates a PDF for a receipt by rendering it as HTML and converting
+     * it to PDF format using the OpenHTMLtoPDF library.
+     *
+     * @param receiptId the unique identifier of the receipt
+     * @return a byte array containing the generated PDF
+     * @throws IllegalArgumentException if no receipt exists for the given ID or if the
+     *         associated invoice cannot be found
+     * @throws RuntimeException if PDF generation fails
+     */
+    public byte[] generateReceiptPdf(Long receiptId) {
+        String html = generateReceiptHtml(receiptId);
+        return pdfGenerator.generatePdf(html);
+    }
 }
