@@ -101,7 +101,7 @@ public class ProjectController  {
         model.addAttribute("receiptsTotal", view.getReceiptsTotal());
         model.addAttribute("outstandingInvoices", view.getOutstandingInvoices());
         model.addAttribute("totalInvoiced", view.getTotalInvoiced());
-
+        model.addAttribute("discountTotal", view.getDiscountTotal());
         return "projects/view";
     }
 

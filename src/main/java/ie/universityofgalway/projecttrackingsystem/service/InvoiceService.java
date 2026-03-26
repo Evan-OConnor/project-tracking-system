@@ -230,16 +230,16 @@ public class InvoiceService {
 
     private InvoiceStatus calculateStatus (
             BigDecimal total,
-            BigDecimal totalPaid    )
+            BigDecimal effectivePaid    )
     {
         BigDecimal outstanding = total
-                .subtract(totalPaid)
+                .subtract(effectivePaid)
                 .max(BigDecimal.ZERO);
 
         if (outstanding.compareTo(BigDecimal.ZERO) == 0) {
             return InvoiceStatus.PAID;
-        } else if (totalPaid.compareTo(BigDecimal.ZERO) > 0)
-                {
+        } else if (effectivePaid.compareTo(BigDecimal.ZERO) > 0)
+        {
             return InvoiceStatus.PARTIALLY_PAID;
         } else {
             return InvoiceStatus.GENERATED;
@@ -310,7 +310,7 @@ public class InvoiceService {
         BigDecimal effectivePaid = totalPaid.add(totalDiscount);
 
         BigDecimal outstanding =
-                total.subtract(totalPaid)
+                total.subtract(effectivePaid)
                         .max(BigDecimal.ZERO);
 
         // -------- DETERMINE STATUS -------

@@ -15,6 +15,7 @@ import java.util.List;
 @Service
 public class ProjectQueryService {
 
+
     private final ProjectRepository projectRepository;
     private final CostItemRepository costItemRepository;
     private final TimesheetEntryService timesheetService;
@@ -107,6 +108,7 @@ public class ProjectQueryService {
         view.setReceiptsTotal(receiptsTotal);
         view.setTotalInvoiced(totalInvoiced);
         view.setOutstandingInvoices(outstandingInvoices);
+        view.setDiscountTotal(financeService.getDiscountsTotal(project.getId()));
 
         return view;
     }

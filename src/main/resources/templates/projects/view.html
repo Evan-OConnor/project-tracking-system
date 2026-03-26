@@ -355,14 +355,22 @@
                     </strong>
                 </div>
 
+                <!-- ✅ ADD THIS -->
+                <div class="mt-1 text-muted">
+                    Discounts Applied:
+                    €<span th:text="${#numbers.formatDecimal(discountTotal,1,2)}"></span>
+                </div>
+
                 <div class="mt-2">
                     <strong>
                         Outstanding Invoices:
                         <span th:classappend="${outstandingInvoices > 0} ? 'text-danger' : 'text-success'">
-            €<span th:text="${#numbers.formatDecimal(outstandingInvoices,1,2)}"></span>
-        </span>
+                €<span th:text="${#numbers.formatDecimal(outstandingInvoices,1,2)}"></span>
+            </span>
                     </strong>
                 </div>
+
+            </div>
 
             </div>
 

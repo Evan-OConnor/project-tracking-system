@@ -14,6 +14,8 @@ import java.util.Optional;
 @Service
 public class ProjectFinanceService {
 
+    private static final BigDecimal VAT_RATE = new BigDecimal("0.23");
+
     private final CostItemRepository costItemRepository;
     private final TimesheetEntryRepository timesheetRepository;
     private final ReceiptRepository receiptRepository;
@@ -27,6 +29,12 @@ public class ProjectFinanceService {
         this.timesheetRepository = timesheetRepository;
         this.receiptRepository = receiptRepository;
         this.invoiceRepository = invoiceRepository;
+    }
+
+    private BigDecimal calculateInvoiceTotal(Invoice inv) {
+        BigDecimal exVat = inv.getTotalExVat();
+        BigDecimal vat = exVat.multiply(VAT_RATE);
+        return exVat.add(vat);
     }
 
     public BigDecimal getOutlayTotal(Long projectId) {
@@ -51,27 +59,45 @@ public class ProjectFinanceService {
     public BigDecimal getReceiptsTotal(Long projectId) {
         return receiptRepository.findByInvoiceProjectId(projectId)
                 .stream()
-                .map(Receipt::getAmountPaid)
+                .map(r ->
+                        Optional.ofNullable(r.getAmountPaid()).orElse(BigDecimal.ZERO)
+                )
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public BigDecimal getEffectiveReceiptsTotal(Long projectId) {
+        return receiptRepository.findByInvoiceProjectId(projectId)
+                .stream()
+                .map(r -> {
+                    BigDecimal amountPaid =
+                            Optional.ofNullable(r.getAmountPaid()).orElse(BigDecimal.ZERO);
 
-    public BigDecimal getTotalInvoiced(Project project) {
+                    BigDecimal discount =
+                            Optional.ofNullable(r.getDiscount()).orElse(BigDecimal.ZERO);
 
-        return project.getInvoices().stream()
-                .map(inv -> {
-                    BigDecimal exVat = inv.getTotalExVat();
-                    BigDecimal vat = exVat.multiply(new BigDecimal("0.23"));
-                    return exVat.add(vat);
+                    return amountPaid.add(discount);
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public BigDecimal getDiscountsTotal(Long projectId) {
+        return receiptRepository.findByInvoiceProjectId(projectId)
+                .stream()
+                .map(r -> Optional.ofNullable(r.getDiscount()).orElse(BigDecimal.ZERO))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getTotalInvoiced(Project project) {
+
+        return project.getInvoices().stream()
+                .map(this::calculateInvoiceTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     public BigDecimal getOutstandingInvoices(Project project) {
-
         BigDecimal totalInvoiced = getTotalInvoiced(project);
-        BigDecimal totalReceived = getReceiptsTotal(project.getId());
+        BigDecimal totalSettled = getEffectiveReceiptsTotal(project.getId());
 
-        return totalInvoiced.subtract(totalReceived);
+        return totalInvoiced.subtract(totalSettled).max(BigDecimal.ZERO);
     }
 }
