@@ -28,8 +28,13 @@ public class ReceiptDocumentData {
     private final String clientName;
     private final String clientAddress;
 
+    // Invoice Financial Data
+    private final BigDecimal subtotalExVat;
+    private final BigDecimal vatRate;
+    private final BigDecimal vatAmount;
+    private final BigDecimal totalIncVat;
+
     // Payment Summary
-    private final BigDecimal originalInvoiceTotal;
     private final BigDecimal discount;
     private final BigDecimal amountPaid;
     private final String paymentMethod;
@@ -48,7 +53,10 @@ public class ReceiptDocumentData {
             String companyEmail,
             String clientName,
             String clientAddress,
-            BigDecimal originalInvoiceTotal,
+            BigDecimal subtotalExVat,
+            BigDecimal vatRate,
+            BigDecimal vatAmount,
+            BigDecimal totalIncVat,
             BigDecimal discount,
             BigDecimal amountPaid,
             String paymentMethod) {
@@ -64,7 +72,10 @@ public class ReceiptDocumentData {
         this.companyEmail = companyEmail;
         this.clientName = clientName;
         this.clientAddress = clientAddress;
-        this.originalInvoiceTotal = originalInvoiceTotal;
+        this.subtotalExVat = subtotalExVat;
+        this.vatRate = vatRate;
+        this.vatAmount = vatAmount;
+        this.totalIncVat = totalIncVat;
         this.discount = discount;
         this.amountPaid = amountPaid;
         this.paymentMethod = paymentMethod;
@@ -87,7 +98,11 @@ public class ReceiptDocumentData {
     public String getClientName() { return clientName; }
     public String getClientAddress() { return clientAddress; }
 
-    public BigDecimal getOriginalInvoiceTotal() { return originalInvoiceTotal; }
+    public BigDecimal getSubtotalExVat() { return subtotalExVat; }
+    public BigDecimal getVatRate() { return vatRate; }
+    public BigDecimal getVatAmount() { return vatAmount; }
+    public BigDecimal getTotalIncVat() { return totalIncVat; }
+
     public BigDecimal getDiscount() { return discount; }
     public BigDecimal getAmountPaid() { return amountPaid; }
     public String getPaymentMethod() { return paymentMethod; }
