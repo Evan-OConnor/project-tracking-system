@@ -94,4 +94,19 @@ public class DocumentService {
         String html = generateInvoiceHtml(invoiceId);
         return pdfGenerator.generatePdf(html);
     }
+
+    /**
+     * Generates rendered HTML for a receipt by retrieving receipt and invoice data,
+     * converting it to ReceiptDocumentData, and processing it through
+     * the Thymeleaf template engine.
+     *
+     * @param receiptId the unique identifier of the receipt
+     * @return a rendered HTML string for the receipt
+     * @throws IllegalArgumentException if no receipt exists for the given ID or if the
+     *         associated invoice cannot be found
+     */
+    public String generateReceiptHtml(Long receiptId) {
+        ReceiptDocumentData receiptData = toReceiptDocumentData(receiptId);
+        return documentTemplateRenderer.render("receipts/receipt", "receipt", receiptData);
+    }
 }
