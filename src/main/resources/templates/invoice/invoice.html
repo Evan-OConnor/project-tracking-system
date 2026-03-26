@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="'Invoice - ' + ${invoice.invoiceNumber}">Invoice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #2c3e50;
+            background-color: #fff;
+        }
+
+        .invoice-container {
+            width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+            background-color: white;
+        }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0.2in;
+            padding-bottom: 0.2in;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .header-table td {
+            padding: 0;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .company-name {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #2c3e50;
+            line-height: 1.2;
+        }
+
+        .invoice-title {
+            font-size: 36px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: #34495e;
+            text-align: right;
+            line-height: 1.1;
+        }
+
+        .header-metadata-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.15in;
+        }
+
+        .header-metadata-table td {
+            width: 33.33%;
+            padding: 0.08in 0.1in;
+            border: none;
+            vertical-align: top;
+        }
+
+        .header-metadata-table td:first-child {
+            padding-left: 0;
+        }
+
+        .header-metadata-table td:last-child {
+            padding-right: 0;
+        }
+
+        .header-metadata-label {
+            display: block;
+            font-weight: 700;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #7f8c8d;
+            margin-bottom: 3px;
+        }
+
+        .header-metadata-value {
+            font-size: 13px;
+            font-weight: 400;
+            color: #2c3e50;
+            line-height: 1.3;
+        }
+
+        .metadata-section {
+            display: none;
+        }
+
+        .parties-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0.3in;
+            border-bottom: 1px solid #d5dbdb;
+        }
+
+        .parties-table td {
+            width: 50%;
+            padding: 0.1in 0.1in 0.2in 0;
+            border: none;
+            vertical-align: top;
+        }
+
+        .parties-table td:last-child {
+            padding-left: 0.2in;
+            padding-right: 0;
+        }
+
+        .party-title {
+            display: block;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #2c3e50;
+            margin-bottom: 0.08in;
+            padding-bottom: 0.06in;
+            border-bottom: 1.5px solid #d5dbdb;
+        }
+
+        .party-content {
+            font-size: 11px;
+            color: #34495e;
+            line-height: 1.7;
+        }
+
+        .items-section {
+            margin-top: 0.2in;
+            margin-bottom: 0.2in;
+            page-break-after: avoid;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .items-table thead {
+            display: table-header-group;
+        }
+
+        .items-table thead tr {
+            background-color: #ecf0f1;
+        }
+
+        .items-table th {
+            padding: 0.1in 0.08in;
+            text-align: left;
+            font-weight: 700;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #2c3e50;
+            border: none;
+            border-top: 1px solid #2c3e50;
+            border-bottom: 1.5px solid #2c3e50;
+        }
+
+        .items-table th:first-child {
+            width: 55%;
+            padding-left: 0.1in;
+        }
+
+        .items-table th:nth-child(2),
+        .items-table th:nth-child(3) {
+            width: 15%;
+            text-align: right;
+        }
+
+        .items-table th:last-child {
+            width: 15%;
+            text-align: right;
+            padding-right: 0.1in;
+        }
+
+        .items-table tbody tr {
+            border-bottom: 1px solid #d5dbdb;
+            page-break-inside: avoid;
+        }
+
+        .items-table tbody tr:nth-child(odd) {
+            background-color: #f8f9fa;
+        }
+
+        .items-table tbody tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .items-table tbody tr:last-child {
+            border-bottom: 1.5px solid #2c3e50;
+        }
+
+        .items-table td {
+            padding: 0.1in 0.08in;
+            font-size: 11px;
+            color: #2c3e50;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .items-table td:first-child {
+            padding-left: 0.1in;
+            line-height: 1.5;
+        }
+
+        .items-table td:nth-child(2),
+        .items-table td:nth-child(3) {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .items-table td:last-child {
+            text-align: right;
+            padding-right: 0.1in;
+            font-weight: 600;
+        }
+
+        .totals-section {
+            margin-top: 0.15in;
+            margin-bottom: 0.25in;
+            page-break-inside: avoid;
+        }
+
+        .totals-outer-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .totals-outer-table td {
+            border: none;
+            padding: 0;
+        }
+
+        .totals-outer-table td:first-child {
+            width: 60%;
+        }
+
+        .totals-outer-table td:last-child {
+            width: 40%;
+        }
+
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1.5px solid #2c3e50;
+        }
+
+        .totals-table td {
+            padding: 0.1in 0.12in;
+            font-size: 11px;
+            border: none;
+            border-bottom: 1px solid #2c3e50;
+            vertical-align: middle;
+        }
+
+        .totals-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .totals-table td:first-child {
+            text-align: left;
+            font-weight: 400;
+            color: #2c3e50;
+            width: 60%;
+            border-right: 1px solid #2c3e50;
+        }
+
+        .totals-table td:last-child {
+            text-align: right;
+            font-weight: 600;
+            color: #2c3e50;
+            width: 40%;
+        }
+
+        .final-total td {
+            background-color: #f3f5f7;
+            border-top: 1.5px solid #2c3e50;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0.12in;
+        }
+
+        .final-total td:first-child {
+            border-right: 1px solid #2c3e50;
+        }
+
+        .currency {
+            white-space: nowrap;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 0.4in;
+            padding-top: 0.15in;
+            border-top: 1px solid #d5dbdb;
+            page-break-before: avoid;
+        }
+
+        .footer-note {
+            margin-bottom: 0.06in;
+            font-weight: 500;
+            color: #34495e;
+            font-size: 11px;
+            letter-spacing: 0.2px;
+        }
+
+        .footer-contact {
+            font-size: 9px;
+            color: #5d6d7e;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+        }
+
+        @page {
+            margin: 0.5in;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+
+            .invoice-container {
+                width: 100%;
+                max-width: none;
+                padding: 0.5in;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="invoice-container">
+
+    <table class="header-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width: 60%;">
+                <div class="company-name" th:text="${invoice.companyName}">Company Name</div>
+            </td>
+            <td style="width: 40%; text-align: right;">
+                <div class="invoice-title">INVOICE</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="padding-top: 0.1in;">
+                <table class="header-metadata-table" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <div class="header-metadata-label">Invoice Number</div>
+                            <div class="header-metadata-value" th:text="${invoice.invoiceNumber}">INV-2026-000001</div>
+                        </td>
+                        <td>
+                            <div class="header-metadata-label">Invoice Date</div>
+                            <div class="header-metadata-value" th:text="${#temporals.format(invoice.invoiceDate, 'dd MMM yyyy')}">24 Mar 2026</div>
+                        </td>
+                        <td>
+                            <div class="header-metadata-label">Project Title</div>
+                            <div class="header-metadata-value" th:text="${invoice.projectTitle}">Project Name</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <div class="metadata-section">
+        <table cellpadding="0" cellspacing="0" style="width:100%;">
+            <tr>
+                <td>
+                    <div class="metadata-label">Invoice Number</div>
+                    <div class="metadata-value" th:text="${invoice.invoiceNumber}">INV-2026-000001</div>
+                </td>
+                <td>
+                    <div class="metadata-label">Invoice Date</div>
+                    <div class="metadata-value" th:text="${#temporals.format(invoice.invoiceDate, 'dd MMM yyyy')}">24 Mar 2026</div>
+                </td>
+                <td>
+                    <div class="metadata-label">Project Title</div>
+                    <div class="metadata-value" th:text="${invoice.projectTitle}">Project Name</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="parties-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                <div class="party-title">From</div>
+                <div class="party-content">
+                    <div th:text="${invoice.companyName}">Company Name</div>
+                    <div th:text="${invoice.companyAddress}">123 Company Street, City, Country</div>
+                    <div th:if="${invoice.companyPhone}">
+                        <span>Phone: </span><span th:text="${invoice.companyPhone}">+1 234 567 8900</span>
+                    </div>
+                    <div th:if="${invoice.companyEmail}">
+                        <span>Email: </span><span th:text="${invoice.companyEmail}">info@company.com</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="party-title">Bill To</div>
+                <div class="party-content">
+                    <div th:text="${invoice.clientName}">Client Name</div>
+                    <div th:text="${invoice.clientAddress}">456 Client Street, City, Country</div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="items-section">
+        <table class="items-table" cellpadding="0" cellspacing="0">
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Unit Rate</th>
+                <th>Line Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${invoice.lineItems}">
+                <td th:text="${item.description}">Item description</td>
+                <td class="currency" th:text="${#numbers.formatDecimal(item.quantity, 1, 2)}">1.00</td>
+                <td class="currency">€<span th:text="${#numbers.formatDecimal(item.unitRate, 1, 2)}">100.00</span></td>
+                <td class="currency">€<span th:text="${#numbers.formatDecimal(item.lineTotal, 1, 2)}">100.00</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="totals-section">
+        <table class="totals-outer-table" cellpadding="0" cellspacing="0">
+            <tr>
+                <td></td>
+                <td>
+                    <table class="totals-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>Subtotal (Ex. VAT)</td>
+                            <td class="currency">€<span th:text="${#numbers.formatDecimal(invoice.totalExVat, 1, 2)}">1000.00</span></td>
+                        </tr>
+                        <tr>
+                            <td>VAT (<span th:text="${#numbers.formatDecimal(invoice.vatRate, 1, 2)}">23.00</span>%)</td>
+                            <td class="currency">€<span th:text="${#numbers.formatDecimal(invoice.vatAmount, 1, 2)}">230.00</span></td>
+                        </tr>
+                        <tr class="final-total">
+                            <td>Total (Inc. VAT)</td>
+                            <td class="currency">€<span th:text="${#numbers.formatDecimal(invoice.totalIncVat, 1, 2)}">1230.00</span></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <div class="footer-note">Thank you for your business.</div>
+        <div class="footer-contact">
+            <span th:text="${invoice.companyEmail}">info@company.com</span>
+            <span> | </span>
+            <span th:text="${invoice.companyPhone}">+1 234 567 8900</span>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
