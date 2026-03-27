@@ -11,12 +11,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
             tableRows.forEach(row => {
 
+                const idCell = row.cells[0];
                 const nameCell = row.cells[1];
-                if (!nameCell) return;
+                const phoneCell = row.cells[2];
+                if (!idCell || !nameCell || !phoneCell) return;
 
-                const name = nameCell.textContent.toLowerCase();
+                const idText = idCell.textContent.trim();
+                const nameText = nameCell.textContent.toLowerCase();
+                const phoneText = phoneCell.textContent.trim();
 
-                row.style.display = name.includes(filter) ? "" : "none";
+                 const match =
+                                    idText.includes(filter) ||
+                                    nameText.includes(filter) ||
+                                    phoneText.includes(filter);
+
+
+                row.style.display = match ? "" : "none";
 
             });
 

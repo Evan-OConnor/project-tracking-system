@@ -51,9 +51,9 @@ public class ProjectFinanceService {
     }
 
     public BigDecimal getLabourTotal(Long projectId) {
-            return Optional.ofNullable(
-                    timesheetRepository.sumChargesByProjectId(projectId)
-            ).orElse(BigDecimal.ZERO);
+        return Optional.ofNullable(
+                timesheetRepository.sumChargesByProjectId(projectId)
+        ).orElse(BigDecimal.ZERO);
     }
 
     public BigDecimal getReceiptsTotal(Long projectId) {
