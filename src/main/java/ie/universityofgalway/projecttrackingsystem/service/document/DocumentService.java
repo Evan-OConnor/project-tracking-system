@@ -1,6 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.service.document;
 
 import ie.universityofgalway.projecttrackingsystem.dto.document.InvoiceDocumentData;
+import ie.universityofgalway.projecttrackingsystem.dto.document.InvoiceCoverLetterDocumentData;
 import ie.universityofgalway.projecttrackingsystem.dto.document.ReceiptDocumentData;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Receipt;
 import ie.universityofgalway.projecttrackingsystem.service.InvoiceService;
@@ -16,6 +17,7 @@ public class DocumentService {
 
     private final InvoiceService invoiceService;
     private final InvoiceDocumentMapper invoiceDocumentMapper;
+    private final InvoiceCoverLetterDocumentMapper invoiceCoverLetterDocumentMapper;
     private final ReceiptService receiptService;
     private final ReceiptDocumentMapper receiptDocumentMapper;
     private final DocumentTemplateRenderer documentTemplateRenderer;
@@ -23,12 +25,14 @@ public class DocumentService {
 
     public DocumentService(InvoiceService invoiceService,
                            InvoiceDocumentMapper invoiceDocumentMapper,
+                           InvoiceCoverLetterDocumentMapper invoiceCoverLetterDocumentMapper,
                            ReceiptService receiptService,
                            ReceiptDocumentMapper receiptDocumentMapper,
                            DocumentTemplateRenderer documentTemplateRenderer,
                            PDFGenerator pdfGenerator) {
         this.invoiceService = invoiceService;
         this.invoiceDocumentMapper = invoiceDocumentMapper;
+        this.invoiceCoverLetterDocumentMapper = invoiceCoverLetterDocumentMapper;
         this.receiptService = receiptService;
         this.receiptDocumentMapper = receiptDocumentMapper;
         this.documentTemplateRenderer = documentTemplateRenderer;
@@ -47,6 +51,20 @@ public class DocumentService {
         InvoiceDTO invoiceDTO = invoiceService.getInvoiceById(invoiceId);
 
         return invoiceDocumentMapper.toInvoiceDocumentData(invoiceDTO);
+    }
+
+    /**
+     * Retrieves invoice data and maps it into an {@link InvoiceCoverLetterDocumentData}
+     * object for document rendering.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a fully populated InvoiceCoverLetterDocumentData object
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     */
+    public InvoiceCoverLetterDocumentData toInvoiceCoverLetterDocumentData(Long invoiceId) {
+        InvoiceDTO invoiceDTO = invoiceService.getInvoiceById(invoiceId);
+
+        return invoiceCoverLetterDocumentMapper.toInvoiceCoverLetterDocumentData(invoiceDTO);
     }
 
     /**
@@ -122,6 +140,34 @@ public class DocumentService {
      */
     public byte[] generateReceiptPdf(Long receiptId) {
         String html = generateReceiptHtml(receiptId);
+        return pdfGenerator.generatePdf(html);
+    }
+
+    /**
+     * Generates rendered HTML for an invoice cover letter by retrieving invoice data,
+     * converting it to InvoiceCoverLetterDocumentData, and processing it through
+     * the Thymeleaf template engine.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a rendered HTML string for the invoice cover letter
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     */
+    public String generateInvoiceCoverLetterHtml(Long invoiceId) {
+        InvoiceCoverLetterDocumentData coverLetterData = toInvoiceCoverLetterDocumentData(invoiceId);
+        return documentTemplateRenderer.render("invoice/cover-letter", "coverLetter", coverLetterData);
+    }
+
+    /**
+     * Generates a PDF for an invoice cover letter by rendering it as HTML and converting
+     * it to PDF format using the OpenHTMLtoPDF library.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a byte array containing the generated PDF
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     * @throws RuntimeException if PDF generation fails
+     */
+    public byte[] generateInvoiceCoverLetterPdf(Long invoiceId) {
+        String html = generateInvoiceCoverLetterHtml(invoiceId);
         return pdfGenerator.generatePdf(html);
     }
 }

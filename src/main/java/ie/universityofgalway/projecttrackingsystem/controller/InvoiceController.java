@@ -120,6 +120,27 @@ public class InvoiceController {
         }
     }
 
+    /**
+     * Returns a PDF representation of the cover letter for the specified invoice.
+     *
+     * @param id the unique identifier of the invoice
+     * @return a PDF response for the invoice cover letter, or 404 if the invoice does not exist
+     */
+    @GetMapping("/{id}/cover-letter/pdf")
+    public ResponseEntity<byte[]> getInvoiceCoverLetterPdf(@PathVariable Long id) {
+        try {
+            byte[] pdf = documentService.generateInvoiceCoverLetterPdf(id);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=cover-letter-" + id + ".pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdf);
+
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/{id}/delete")
     public String deleteInvoice(@PathVariable Long id,
                               RedirectAttributes redirectAttributes) {
