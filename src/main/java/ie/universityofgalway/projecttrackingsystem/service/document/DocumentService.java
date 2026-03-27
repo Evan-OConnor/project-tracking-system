@@ -142,4 +142,18 @@ public class DocumentService {
         String html = generateReceiptHtml(receiptId);
         return pdfGenerator.generatePdf(html);
     }
+
+    /**
+     * Generates rendered HTML for an invoice cover letter by retrieving invoice data,
+     * converting it to InvoiceCoverLetterDocumentData, and processing it through
+     * the Thymeleaf template engine.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a rendered HTML string for the invoice cover letter
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     */
+    public String generateInvoiceCoverLetterHtml(Long invoiceId) {
+        InvoiceCoverLetterDocumentData coverLetterData = toInvoiceCoverLetterDocumentData(invoiceId);
+        return documentTemplateRenderer.render("invoice/cover-letter", "coverLetter", coverLetterData);
+    }
 }
