@@ -4,6 +4,7 @@ import ie.universityofgalway.projecttrackingsystem.domain.core.Receipt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,14 +23,10 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
         FROM Receipt r
         WHERE r.invoice.id = :invoiceId
     """)
-    BigDecimal sumPaymentsByInvoiceId(Long invoiceId);
+    BigDecimal sumPaymentsByInvoiceId(@Param("invoiceId") Long invoiceId);
 
-    @Query("""
-        SELECT COALESCE(SUM(r.discount), 0)
-        FROM Receipt r
-        WHERE r.invoice.id = :invoiceId
-    """)
-    BigDecimal sumDiscountsByInvoiceId(Long invoiceId);
+    @Query("SELECT COALESCE(SUM(r.discount), 0) FROM Receipt r WHERE r.invoice.id = :invoiceId")
+    BigDecimal sumDiscountsByInvoiceId(@Param("invoiceId") Long invoiceId);
 
     Receipt findTopByInvoice_Project_IdAndReceiptNumberStartingWithOrderByReceiptNumberDesc(
             Long projectId,

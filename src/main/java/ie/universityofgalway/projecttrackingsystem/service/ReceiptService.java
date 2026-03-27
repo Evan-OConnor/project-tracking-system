@@ -53,6 +53,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
     @Override
     public Receipt create(ReceiptForm form) {
 
+
         if (form.getInvoiceId() == null) {
             throw new IllegalStateException("Invoice must be selected");
         }
@@ -64,7 +65,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
             throw new IllegalStateException("Invoice has already been paid");
         }
 
-        validateAmounts(form);
+        validateAmounts(form,invoice);
 
         //  TEMP value (DB requires NOT NULL)
         String tempNumber = "TEMP-" + java.util.UUID.randomUUID();
@@ -92,8 +93,28 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         receipt = receiptRepository.save(receipt);
 
         // mark invoice as paid
-        invoice.setStatus(InvoiceStatus.PAID);
+        BigDecimal subtotal = invoice.getTotalExVat();
+        BigDecimal vatRate = new BigDecimal("0.23");
+        BigDecimal vatAmount = subtotal.multiply(vatRate);
+        BigDecimal total = subtotal.add(vatAmount);
+
+        BigDecimal totalPaid = receiptRepository.sumPaymentsByInvoiceId(invoice.getId());
+        BigDecimal totalDiscount = receiptRepository.sumDiscountsByInvoiceId(invoice.getId());
+
+        if (totalPaid == null) totalPaid = BigDecimal.ZERO;
+        if (totalDiscount == null) totalDiscount = BigDecimal.ZERO;
+
+        BigDecimal effectivePaid = totalPaid.add(totalDiscount);
+
+        if (effectivePaid.compareTo(total) >= 0) {
+            invoice.setStatus(InvoiceStatus.PAID);
+        } else {
+            invoice.setStatus(InvoiceStatus.PARTIALLY_PAID);
+        }
+
         invoiceRepository.save(invoice);
+
+
 
         return receipt;
     }
@@ -104,7 +125,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
 
         Receipt receipt = getById(id);
 
-        validateAmounts(form);
+        validateAmounts(form, receipt.getInvoice());
 
         updateEntity(receipt, form);
 
@@ -159,7 +180,8 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         return "RC-" + receiptDate.getYear() + "-" +
                 String.format("%06d", receiptId);
     }
-    private void validateAmounts(ReceiptForm form) {
+
+    private void validateAmounts(ReceiptForm form, Invoice invoice) {
 
         if (form.getDiscount() == null) {
             form.setDiscount(BigDecimal.ZERO);
@@ -172,5 +194,25 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         if (form.getAmountPaid() == null || form.getAmountPaid().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalStateException("Amount paid must be greater than zero");
         }
+
+        BigDecimal subtotal = invoice.getTotalExVat();
+        BigDecimal vatRate = new BigDecimal("0.23");
+        BigDecimal vatAmount = subtotal.multiply(vatRate);
+        BigDecimal total = subtotal.add(vatAmount);
+
+        // Only payments affect outstanding
+        BigDecimal paid = receiptRepository.sumPaymentsByInvoiceId(invoice.getId());
+        if (paid == null) paid = BigDecimal.ZERO;
+
+        BigDecimal outstanding = total.subtract(paid);
+
+        //  Discount cannot exceed outstanding
+        if (form.getDiscount().compareTo(outstanding) > 0) {
+            throw new IllegalStateException("Discount cannot exceed outstanding balance");
+        }
+
+        // Rule
+        BigDecimal expectedAmount = outstanding.subtract(form.getDiscount());
+        form.setAmountPaid(expectedAmount);
     }
 }

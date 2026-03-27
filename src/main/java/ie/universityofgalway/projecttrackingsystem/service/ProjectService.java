@@ -1,12 +1,15 @@
 package ie.universityofgalway.projecttrackingsystem.service;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.*;
+import ie.universityofgalway.projecttrackingsystem.domain.lookup.ProjectStatus;
 import ie.universityofgalway.projecttrackingsystem.dto.ProjectForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.*;
 import ie.universityofgalway.projecttrackingsystem.repository.lookup.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -136,5 +139,10 @@ public class ProjectService {
         form.setStartDate(project.getStartDate());
 
         return form;
+    }
+    public long getActiveProjectCount() {
+        return projectRepository.countByStatus_NameIn(
+                List.of("IN_PROGRESS")
+        );
     }
 }

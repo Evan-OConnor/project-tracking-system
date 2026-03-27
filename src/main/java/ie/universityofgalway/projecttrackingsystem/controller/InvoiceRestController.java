@@ -40,7 +40,6 @@ public class InvoiceRestController {
 
         Map<String, Object> data = new HashMap<>();
         data.put("total", invoice.getGrossTotal());
-        data.put("discount", BigDecimal.ZERO);
 
         return data;
     }
