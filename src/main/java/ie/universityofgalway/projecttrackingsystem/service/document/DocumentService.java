@@ -156,4 +156,18 @@ public class DocumentService {
         InvoiceCoverLetterDocumentData coverLetterData = toInvoiceCoverLetterDocumentData(invoiceId);
         return documentTemplateRenderer.render("invoice/cover-letter", "coverLetter", coverLetterData);
     }
+
+    /**
+     * Generates a PDF for an invoice cover letter by rendering it as HTML and converting
+     * it to PDF format using the OpenHTMLtoPDF library.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a byte array containing the generated PDF
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     * @throws RuntimeException if PDF generation fails
+     */
+    public byte[] generateInvoiceCoverLetterPdf(Long invoiceId) {
+        String html = generateInvoiceCoverLetterHtml(invoiceId);
+        return pdfGenerator.generatePdf(html);
+    }
 }
