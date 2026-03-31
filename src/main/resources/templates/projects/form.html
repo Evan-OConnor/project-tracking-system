@@ -191,6 +191,7 @@
 
       <input class="form-control"
              th:field="*{title}"
+             maxlength="80"
              placeholder="Project title"
              required
              th:classappend="${#fields.hasErrors('title')} ? ' is-invalid'">

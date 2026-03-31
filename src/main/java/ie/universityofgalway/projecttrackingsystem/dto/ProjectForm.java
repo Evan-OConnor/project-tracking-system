@@ -26,7 +26,7 @@ public class ProjectForm {
     private String insuranceCompanyContactName;
 
     @NotBlank(message = "Project title is required")
-    @Size(max = 255, message = "Title must be less than 255 characters")
+    @Size(max = 80, message = "Project title must be 80 characters or fewer")
     private String title;
 
     @Size(max = 1000, message = "Description must be less than 1000 characters")

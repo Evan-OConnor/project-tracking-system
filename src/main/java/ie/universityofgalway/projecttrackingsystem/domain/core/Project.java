@@ -3,6 +3,8 @@ package ie.universityofgalway.projecttrackingsystem.domain.core;
 import ie.universityofgalway.projecttrackingsystem.domain.lookup.ProjectCategory;
 import ie.universityofgalway.projecttrackingsystem.domain.lookup.ProjectStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -46,7 +48,9 @@ public class Project {
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "title", nullable = false, length = 255)
+    @NotBlank(message = "Project title is required")
+    @Size(max = 80, message = "Project title must be 80 characters or fewer")
+    @Column(name = "title", nullable = false, length = 80)
     private String title;
 
     @Column(name = "description", columnDefinition = "TEXT")
