@@ -79,7 +79,7 @@ public class InvoiceController {
 
             return "redirect:/invoices/" + invoice.getInvoiceId();
 
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalStateException ex) {
             // Business rule failure (e.g. invoice already exists)
             redirectAttributes.addFlashAttribute(
                     "errorMessage",

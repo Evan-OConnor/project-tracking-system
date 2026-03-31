@@ -20,6 +20,7 @@ public class ProjectDetailsView {
     private BigDecimal receiptsTotal;
     private BigDecimal outstandingInvoices;
     private BigDecimal totalInvoiced;
+    private BigDecimal discountTotal;
 
     // Getters
 
@@ -47,6 +48,8 @@ public class ProjectDetailsView {
 
     public BigDecimal getTotalInvoiced(){ return totalInvoiced;}
 
+    public BigDecimal getDiscountTotal(){ return discountTotal;}
+
     // Setters
     public void setProject(Project project) { this.project = project; }
 
@@ -71,4 +74,6 @@ public class ProjectDetailsView {
     public void setOutstandingInvoices(BigDecimal outstandingInvoices) {this.outstandingInvoices = outstandingInvoices;}
 
     public void setTotalInvoiced(BigDecimal totalInvoiced) {this.totalInvoiced = totalInvoiced;}
+
+    public void setDiscountTotal(BigDecimal discountTotal){ this.discountTotal = discountTotal;}
 }
