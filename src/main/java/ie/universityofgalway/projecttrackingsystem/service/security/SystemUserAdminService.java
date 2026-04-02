@@ -38,6 +38,8 @@ public class SystemUserAdminService {
     private final PasswordEncoder passwordEncoder;
 
     private static final int EMPLOYEE_NAME_MAX_LENGTH = 150;
+    private static final java.math.BigDecimal MIN_HOURLY_RATE = new java.math.BigDecimal("0.01");
+    private static final java.math.BigDecimal MAX_HOURLY_RATE = new java.math.BigDecimal("99999999.99");
 
     public SystemUserAdminService(SystemUserRepository userRepository,
                                   SystemRoleRepository roleRepository,
@@ -84,6 +86,12 @@ public class SystemUserAdminService {
 
         if (form.getHourlyRate() == null) {
             throw new IllegalArgumentException("Hourly rate is required");
+        }
+
+        // Defensive validation: ensure hourly rate is within acceptable bounds
+        if (form.getHourlyRate().compareTo(MIN_HOURLY_RATE) < 0 || 
+            form.getHourlyRate().compareTo(MAX_HOURLY_RATE) > 0) {
+            throw new IllegalArgumentException("Hourly rate must be between " + MIN_HOURLY_RATE + " and " + MAX_HOURLY_RATE);
         }
 
         // create employee
@@ -194,6 +202,12 @@ public class SystemUserAdminService {
 
         if (form.getEmployeeName() != null && form.getEmployeeName().length() > EMPLOYEE_NAME_MAX_LENGTH) {
             throw new IllegalArgumentException("Employee name cannot exceed " + EMPLOYEE_NAME_MAX_LENGTH + " characters");
+        }
+
+        // Defensive validation: ensure hourly rate is within acceptable bounds
+        if (form.getHourlyRate() != null && (form.getHourlyRate().compareTo(MIN_HOURLY_RATE) < 0 || 
+            form.getHourlyRate().compareTo(MAX_HOURLY_RATE) > 0)) {
+            throw new IllegalArgumentException("Hourly rate must be between " + MIN_HOURLY_RATE + " and " + MAX_HOURLY_RATE);
         }
 
         Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + form.getEmployeeId()));

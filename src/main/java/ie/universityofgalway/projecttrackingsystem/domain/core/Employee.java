@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.DecimalMax;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,7 +29,9 @@ public class Employee {
     @Column(name = "address", nullable = false, length = 255)
     private String address;
 
-    @Positive
+    @Positive(message = "Hourly rate must be positive")
+    @Digits(integer = 8, fraction = 2, message = "Hourly rate must have up to 8 integer digits and 2 decimal places")
+    @DecimalMax(value = "99999999.99", message = "Hourly rate cannot exceed 99999999.99")
     @Column(name = "hourly_rate", nullable = false, precision = 10, scale = 2)
     private BigDecimal hourlyRate;
 
