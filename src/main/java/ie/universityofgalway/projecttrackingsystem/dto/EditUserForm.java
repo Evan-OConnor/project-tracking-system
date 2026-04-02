@@ -72,7 +72,7 @@ public class EditUserForm {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = (password != null) ? password.trim() : null;
     }
 
     public String getConfirmPassword() {
@@ -80,7 +80,7 @@ public class EditUserForm {
     }
 
     public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
+        this.confirmPassword = (confirmPassword != null) ? confirmPassword.trim() : null;
     }
 
     public boolean isActive() {

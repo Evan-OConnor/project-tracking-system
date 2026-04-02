@@ -81,11 +81,11 @@ public class CreateUserForm {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = (password != null) ? password.trim() : null;
     }
 
     public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
+        this.confirmPassword = (confirmPassword != null) ? confirmPassword.trim() : null;
     }
 
     public void setRoleName(String roleName) {
