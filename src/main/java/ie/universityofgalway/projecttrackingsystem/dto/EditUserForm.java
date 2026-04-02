@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
@@ -13,6 +14,7 @@ public class EditUserForm {
     private Long employeeId;
 
     @NotBlank(message = "Employee name is required")
+    @Size(max = 150, message = "Employee name cannot exceed 150 characters")
     private String employeeName;
 
     @NotNull(message = "Hourly rate is required")
@@ -43,7 +45,7 @@ public class EditUserForm {
     }
 
     public void setEmployeeName(String employeeName) {
-        this.employeeName = employeeName;
+        this.employeeName = (employeeName != null) ? employeeName.trim() : null;
     }
 
     public BigDecimal getHourlyRate() {

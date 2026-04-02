@@ -1,7 +1,9 @@
 package ie.universityofgalway.projecttrackingsystem.domain.core;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ public class Employee {
     @Column(name = "employee_id")
     private Long id;
 
+    @NotBlank(message = "Employee name is required")
+    @Size(max = 150, message = "Employee name cannot exceed 150 characters")
     @Column(name = "name", nullable = false, length = 150)
     private String name;
 

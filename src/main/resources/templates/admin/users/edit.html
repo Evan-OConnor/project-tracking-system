@@ -29,7 +29,7 @@
 
     <div class="mb-3">
       <label class="form-label">Employee Name</label>
-      <input class="form-control" th:field="*{employeeName}" />
+      <input class="form-control" th:field="*{employeeName}" maxlength="150" />
       <div class="text-danger" th:if="${#fields.hasErrors('employeeName')}" th:errors="*{employeeName}"></div>
     </div>
 

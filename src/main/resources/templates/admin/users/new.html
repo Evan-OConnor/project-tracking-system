@@ -32,7 +32,7 @@
 
     <div class="mb-3">
       <label for="employeeName" class="form-label">Employee Name <span class="text-danger">*</span></label>
-      <input id="employeeName" class="form-control" th:field="*{employeeName}" placeholder="Enter employee name" />
+      <input id="employeeName" class="form-control" th:field="*{employeeName}" maxlength="150" placeholder="Enter employee name" />
       <div class="text-danger" th:if="${#fields.hasErrors('employeeName')}" th:errors="*{employeeName}"></div>
     </div>
 

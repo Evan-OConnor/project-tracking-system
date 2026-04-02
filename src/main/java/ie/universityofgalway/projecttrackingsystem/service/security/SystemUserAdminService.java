@@ -37,6 +37,8 @@ public class SystemUserAdminService {
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private static final int EMPLOYEE_NAME_MAX_LENGTH = 150;
+
     public SystemUserAdminService(SystemUserRepository userRepository,
                                   SystemRoleRepository roleRepository,
                                   EmployeeRepository employeeRepository,
@@ -74,6 +76,10 @@ public class SystemUserAdminService {
 
         if (form.getEmployeeName() == null || form.getEmployeeName().isBlank()) {
             throw new IllegalArgumentException("Employee name is required");
+        }
+
+        if (form.getEmployeeName().length() > EMPLOYEE_NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException("Employee name cannot exceed " + EMPLOYEE_NAME_MAX_LENGTH + " characters");
         }
 
         if (form.getHourlyRate() == null) {
@@ -184,6 +190,10 @@ public class SystemUserAdminService {
             if (form.getConfirmPassword() == null || !form.getPassword().equals(form.getConfirmPassword())) {
                 throw new IllegalArgumentException("Passwords do not match");
             }
+        }
+
+        if (form.getEmployeeName() != null && form.getEmployeeName().length() > EMPLOYEE_NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException("Employee name cannot exceed " + EMPLOYEE_NAME_MAX_LENGTH + " characters");
         }
 
         Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + form.getEmployeeId()));

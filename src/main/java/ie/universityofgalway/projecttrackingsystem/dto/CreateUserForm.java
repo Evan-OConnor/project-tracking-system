@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public class CreateUserForm {
 
     @NotBlank(message = "Employee name is required")
+    @Size(max = 150, message = "Employee name cannot exceed 150 characters")
     private String employeeName;
 
     @NotNull(message = "Hourly rate is required")
@@ -65,7 +66,7 @@ public class CreateUserForm {
     // Setters
 
     public void setEmployeeName(String employeeName) {
-        this.employeeName = employeeName;
+        this.employeeName = (employeeName != null) ? employeeName.trim() : null;
     }
 
     public void setHourlyRate(BigDecimal hourlyRate) {
