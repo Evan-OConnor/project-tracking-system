@@ -179,12 +179,12 @@ public class InvoiceService {
         // 1. Delete invoice line items (they depend on invoice)
         lineItemRepo.deleteAll(lineItemRepo.findByInvoice(invoice));
 
-        // 2. Unlink timesheets → automatically becomes unbilled
+        // 2. Unlink timesheets - automatically becomes unbilled
         for (TimesheetEntry entry : timesheetRepo.findByInvoice(invoice)) {
             entry.setInvoice(null);
         }
 
-        // 3. Unlink cost items → automatically becomes unbilled
+        // 3. Unlink cost items - automatically becomes unbilled
         for (CostItem cost : costItemRepo.findByInvoice(invoice)) {
             cost.setInvoice(null);
         }
@@ -246,7 +246,7 @@ public class InvoiceService {
         }
     }
 
-    // ENTITY → DTO WITH VAT + PAYMENT CALCULATION
+    // ENTITY - DTO WITH VAT + PAYMENT CALCULATION
 
     private InvoiceDTO mapToDTO(Invoice invoice) {
 
@@ -296,7 +296,7 @@ public class InvoiceService {
         BigDecimal total = subtotal.add(vatAmount)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        // ---------------- PAYMENT CALCULATIONS ----------------
+        //  PAYMENT CALCULATIONS
 
         BigDecimal totalPaid =
                 receiptRepo.sumPaymentsByInvoiceId(invoice.getId());
@@ -313,7 +313,7 @@ public class InvoiceService {
                 total.subtract(effectivePaid)
                         .max(BigDecimal.ZERO);
 
-        // -------- DETERMINE STATUS -------
+        //  DETERMINE STATUS
         InvoiceStatus status =
                 invoice.getStatus() == InvoiceStatus.VOID
                         ? InvoiceStatus.VOID

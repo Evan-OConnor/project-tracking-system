@@ -85,7 +85,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         return contactRepository.save(contact);
     }
 
-    // Gets a Contact from database -> converts to ContactForm (Prefills fields)
+    // Gets a Contact from database - converts to ContactForm (Prefills fields)
     @Override
     public ContactForm getFormById(Long id) {
 
@@ -94,7 +94,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         return mapToForm(contact);
     }
 
-    // Contact form -> contact (save/update)
+    // Contact form - contact (save/update)
     @Override
     public void updateEntity(Contact contact, ContactForm form) {
         contact.setName(form.getName());
@@ -104,7 +104,7 @@ public class ContactService implements BaseService<Contact, ContactForm> {
         contact.setComments(form.getComments());
     }
 
-    // Contact -> contact form (display/edit)
+    // Contact - contact form (display/edit)
     @Override
     public ContactForm mapToForm(Contact contact) {
 

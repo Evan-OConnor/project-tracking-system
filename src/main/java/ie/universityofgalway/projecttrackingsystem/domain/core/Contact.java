@@ -29,9 +29,7 @@ public class Contact {
     protected Contact() {
     }
 
-    public Contact(String name) {
-        setName(name); // enforce validation
-    }
+    public Contact(String name) {setName(name);}
 
     // Getters
 
