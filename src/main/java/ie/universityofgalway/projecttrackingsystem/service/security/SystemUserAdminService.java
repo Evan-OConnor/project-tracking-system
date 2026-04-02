@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -36,6 +37,11 @@ public class SystemUserAdminService {
     private final SystemRoleRepository roleRepository;
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private static final int EMPLOYEE_NAME_MAX_LENGTH = 150;
+    private static final int ADDRESS_MAX_LENGTH = 255;
+    private static final BigDecimal MIN_HOURLY_RATE = new BigDecimal("0.01");
+    private static final BigDecimal MAX_HOURLY_RATE = new BigDecimal("99999999.99");
 
     public SystemUserAdminService(SystemUserRepository userRepository,
                                   SystemRoleRepository roleRepository,
@@ -76,8 +82,21 @@ public class SystemUserAdminService {
             throw new IllegalArgumentException("Employee name is required");
         }
 
+        if (form.getEmployeeName().length() > EMPLOYEE_NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException("Employee name cannot exceed " + EMPLOYEE_NAME_MAX_LENGTH + " characters");
+        }
+
         if (form.getHourlyRate() == null) {
             throw new IllegalArgumentException("Hourly rate is required");
+        }
+
+        if (form.getHourlyRate().compareTo(MIN_HOURLY_RATE) < 0 ||
+            form.getHourlyRate().compareTo(MAX_HOURLY_RATE) > 0) {
+            throw new IllegalArgumentException("Hourly rate must be between " + MIN_HOURLY_RATE + " and " + MAX_HOURLY_RATE);
+        }
+
+        if (form.getAddress() != null && form.getAddress().length() > ADDRESS_MAX_LENGTH) {
+            throw new IllegalArgumentException("Address cannot exceed " + ADDRESS_MAX_LENGTH + " characters");
         }
 
         // create employee
@@ -184,6 +203,19 @@ public class SystemUserAdminService {
             if (form.getConfirmPassword() == null || !form.getPassword().equals(form.getConfirmPassword())) {
                 throw new IllegalArgumentException("Passwords do not match");
             }
+        }
+
+        if (form.getEmployeeName() != null && form.getEmployeeName().length() > EMPLOYEE_NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException("Employee name cannot exceed " + EMPLOYEE_NAME_MAX_LENGTH + " characters");
+        }
+
+        if (form.getHourlyRate() != null && (form.getHourlyRate().compareTo(MIN_HOURLY_RATE) < 0 ||
+            form.getHourlyRate().compareTo(MAX_HOURLY_RATE) > 0)) {
+            throw new IllegalArgumentException("Hourly rate must be between " + MIN_HOURLY_RATE + " and " + MAX_HOURLY_RATE);
+        }
+
+        if (form.getAddress() != null && form.getAddress().length() > ADDRESS_MAX_LENGTH) {
+            throw new IllegalArgumentException("Address cannot exceed " + ADDRESS_MAX_LENGTH + " characters");
         }
 
         Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + form.getEmployeeId()));

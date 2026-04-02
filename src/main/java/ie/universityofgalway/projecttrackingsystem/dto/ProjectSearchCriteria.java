@@ -1,10 +1,12 @@
 package ie.universityofgalway.projecttrackingsystem.dto;
 
-import java.math.BigDecimal;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public class ProjectSearchCriteria {
 
+    @Size(max = 80, message = "Project title must be 80 characters or fewer")
     private String title;
     private String clientContactName;
     private Long statusId;

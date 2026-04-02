@@ -95,7 +95,7 @@ CREATE TABLE project (
     insurance_company_contact_id BIGINT NULL,
 
     start_date DATE NOT NULL,
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR(80) NOT NULL,
     description TEXT NULL,
 
     CONSTRAINT pk_project PRIMARY KEY (project_id),

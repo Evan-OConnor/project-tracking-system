@@ -32,13 +32,13 @@
 
     <div class="mb-3">
       <label for="employeeName" class="form-label">Employee Name <span class="text-danger">*</span></label>
-      <input id="employeeName" class="form-control" th:field="*{employeeName}" placeholder="Enter employee name" />
+      <input id="employeeName" class="form-control" th:field="*{employeeName}" maxlength="150" placeholder="Enter employee name" />
       <div class="text-danger" th:if="${#fields.hasErrors('employeeName')}" th:errors="*{employeeName}"></div>
     </div>
 
     <div class="mb-3">
       <label for="hourlyRate" class="form-label">Hourly Rate <span class="text-danger">*</span></label>
-      <input id="hourlyRate" class="form-control" th:field="*{hourlyRate}" type="number" step="0.01" placeholder="0.00" />
+      <input id="hourlyRate" class="form-control" th:field="*{hourlyRate}" type="number" step="0.01" min="0.01" max="99999999.99" placeholder="0.00" />
       <div class="text-danger" th:if="${#fields.hasErrors('hourlyRate')}" th:errors="*{hourlyRate}"></div>
     </div>
 
@@ -52,7 +52,7 @@
 
     <div class="mb-3">
       <label for="address" class="form-label">Address</label>
-      <textarea id="address" class="form-control" th:field="*{address}" rows="2" placeholder="Optional address"></textarea>
+      <textarea id="address" class="form-control" th:field="*{address}" rows="2" maxlength="255" placeholder="Optional address"></textarea>
       <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
     </div>
 

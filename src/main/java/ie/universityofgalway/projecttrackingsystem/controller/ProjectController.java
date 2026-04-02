@@ -154,8 +154,15 @@ public class ProjectController  {
 
     // Search
     @GetMapping("/search")
-    public String searchProjects(@ModelAttribute ProjectSearchCriteria criteria,
+    public String searchProjects(@Valid @ModelAttribute("criteria") ProjectSearchCriteria criteria,
+                                 BindingResult bindingResult,
                                  Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("projects", projectQueryService.list());
+            projectQueryService.loadFormLookups(model);
+            return "projects/list";
+        }
 
         model.addAttribute("projects",
                 projectQueryService.search(criteria));
