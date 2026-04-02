@@ -20,6 +20,19 @@
     <a class="btn btn-primary" th:href="@{/admin/users/new}">Create user</a>
   </div>
 
+  <!-- flash success message -->
+  <div th:if="${message}" class="alert alert-primary alert-dismissible fade show d-flex align-items-center" role="alert">
+    <span th:if="${message.contains(': ')}" th:utext="${message.substring(0, message.lastIndexOf(': ') + 2) + '<strong>' + message.substring(message.lastIndexOf(': ') + 2) + '</strong>'}"></span>
+    <span th:if="!${message.contains(': ')}" th:text="${message}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- flash error message -->
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
   <form class="mb-3" th:action="@{/admin/users}" method="get" role="search" style="max-width:640px;">
     <div class="input-group">
       <span class="input-group-text" id="search-addon" aria-hidden="true" style="padding:6px 10px;">
