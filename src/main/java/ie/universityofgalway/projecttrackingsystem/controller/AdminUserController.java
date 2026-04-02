@@ -129,7 +129,7 @@ public class AdminUserController {
 
         try {
             SystemUser updated = systemUserAdminService.updateEmployeeAndUser(form);
-            redirectAttributes.addFlashAttribute("message", "Updated user " + updated.getUsername());
+            redirectAttributes.addFlashAttribute("message", "Updated user: " + updated.getUsername());
             return "redirect:/admin/users";
         } catch (Exception e) {
             bindingResult.reject("editError", e.getMessage());
@@ -190,10 +190,11 @@ public class AdminUserController {
         }
 
         try {
+            String deletedUsername = userOpt.map(SystemUser::getUsername).orElse("User");
             systemUserAdminService.deleteEmployeeAndAccount(employeeId);
-            redirectAttributes.addFlashAttribute("message", "Deleted employee and account");
+            redirectAttributes.addFlashAttribute("message", "Deleted user: " + deletedUsername);
         } catch (DataIntegrityViolationException dive) {
-            redirectAttributes.addFlashAttribute("error", "Cannot delete employee because related records exist (timesheets, projects, etc.). Remove related records first.");
+            redirectAttributes.addFlashAttribute("error", "Cannot delete employee because related records exists.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Could not delete employee: " + e.getMessage());
         }
