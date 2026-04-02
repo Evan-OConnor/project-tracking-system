@@ -24,6 +24,7 @@ public class EditUserForm {
     @DecimalMax(value = "99999999.99", message = "Hourly rate cannot exceed 99999999.99")
     private BigDecimal hourlyRate;
 
+    @Size(max = 255, message = "Address cannot exceed 255 characters")
     private String address;
 
     // optional password fields
@@ -63,7 +64,7 @@ public class EditUserForm {
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.address = (address != null) ? address.trim() : null;
     }
 
     public String getPassword() {

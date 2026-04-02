@@ -26,6 +26,7 @@ public class Employee {
     @Column(name = "name", nullable = false, length = 150)
     private String name;
 
+    @Size(max = 255, message = "Address cannot exceed 255 characters")
     @Column(name = "address", nullable = false, length = 255)
     private String address;
 

@@ -52,7 +52,7 @@
 
     <div class="mb-3">
       <label for="address" class="form-label">Address</label>
-      <textarea id="address" class="form-control" th:field="*{address}" rows="2" placeholder="Optional address"></textarea>
+      <textarea id="address" class="form-control" th:field="*{address}" rows="2" maxlength="255" placeholder="Optional address"></textarea>
       <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
     </div>
 
