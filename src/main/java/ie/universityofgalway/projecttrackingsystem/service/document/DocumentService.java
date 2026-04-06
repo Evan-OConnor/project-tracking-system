@@ -40,6 +40,92 @@ public class DocumentService {
     }
 
     /**
+     * Generates a PDF for an invoice by rendering it as HTML and converting
+     * it to PDF format using the OpenHTMLtoPDF library.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a byte array containing the generated PDF
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     * @throws RuntimeException if PDF generation fails
+     */
+    public byte[] generateInvoicePdf(Long invoiceId) {
+        String html = generateInvoiceHtml(invoiceId);
+        return pdfGenerator.generatePdf(html);
+    }
+
+    /**
+     * Generates rendered HTML for an invoice by retrieving invoice data,
+     * converting it to InvoiceDocumentData, and processing it through
+     * the Thymeleaf template engine.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a rendered HTML string for the invoice
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     */
+    public String generateInvoiceHtml(Long invoiceId) {
+        InvoiceDocumentData invoiceData = toInvoiceDocumentData(invoiceId);
+        return documentTemplateRenderer.render("invoice/invoice", "invoice", invoiceData);
+    }
+
+    /**
+     * Generates a PDF for a receipt by rendering it as HTML and converting
+     * it to PDF format using the OpenHTMLtoPDF library.
+     *
+     * @param receiptId the unique identifier of the receipt
+     * @return a byte array containing the generated PDF
+     * @throws IllegalArgumentException if no receipt exists for the given ID or if the
+     *         associated invoice cannot be found
+     * @throws RuntimeException if PDF generation fails
+     */
+    public byte[] generateReceiptPdf(Long receiptId) {
+        String html = generateReceiptHtml(receiptId);
+        return pdfGenerator.generatePdf(html);
+    }
+
+    /**
+     * Generates rendered HTML for a receipt by retrieving receipt and invoice data,
+     * converting it to ReceiptDocumentData, and processing it through
+     * the Thymeleaf template engine.
+     *
+     * @param receiptId the unique identifier of the receipt
+     * @return a rendered HTML string for the receipt
+     * @throws IllegalArgumentException if no receipt exists for the given ID or if the
+     *         associated invoice cannot be found
+     */
+    public String generateReceiptHtml(Long receiptId) {
+        ReceiptDocumentData receiptData = toReceiptDocumentData(receiptId);
+        return documentTemplateRenderer.render("receipts/receipt", "receipt", receiptData);
+    }
+
+    /**
+     * Generates a PDF for an invoice cover letter by rendering it as HTML and converting
+     * it to PDF format using the OpenHTMLtoPDF library.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a byte array containing the generated PDF
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     * @throws RuntimeException if PDF generation fails
+     */
+    public byte[] generateInvoiceCoverLetterPdf(Long invoiceId) {
+        String html = generateInvoiceCoverLetterHtml(invoiceId);
+        return pdfGenerator.generatePdf(html);
+    }
+
+    /**
+     * Generates rendered HTML for an invoice cover letter by retrieving invoice data,
+     * converting it to InvoiceCoverLetterDocumentData, and processing it through
+     * the Thymeleaf template engine.
+     *
+     * @param invoiceId the unique identifier of the invoice
+     * @return a rendered HTML string for the invoice cover letter
+     * @throws IllegalArgumentException if no invoice exists for the given ID
+     */
+    public String generateInvoiceCoverLetterHtml(Long invoiceId) {
+        InvoiceCoverLetterDocumentData coverLetterData = toInvoiceCoverLetterDocumentData(invoiceId);
+        return documentTemplateRenderer.render("invoice/cover-letter", "coverLetter", coverLetterData);
+    }
+
+    /**
      * Retrieves invoice data and maps it into an {@link InvoiceDocumentData}
      * object for document rendering.
      *
@@ -83,91 +169,5 @@ public class DocumentService {
         InvoiceDTO invoiceDTO = invoiceService.getInvoiceById(invoiceId);
 
         return receiptDocumentMapper.toReceiptDocumentData(receipt, invoiceDTO);
-    }
-
-    /**
-     * Generates rendered HTML for an invoice by retrieving invoice data,
-     * converting it to InvoiceDocumentData, and processing it through
-     * the Thymeleaf template engine.
-     *
-     * @param invoiceId the unique identifier of the invoice
-     * @return a rendered HTML string for the invoice
-     * @throws IllegalArgumentException if no invoice exists for the given ID
-     */
-    public String generateInvoiceHtml(Long invoiceId) {
-        InvoiceDocumentData invoiceData = toInvoiceDocumentData(invoiceId);
-        return documentTemplateRenderer.render("invoice/invoice", "invoice", invoiceData);
-    }
-
-    /**
-     * Generates a PDF for an invoice by rendering it as HTML and converting
-     * it to PDF format using the OpenHTMLtoPDF library.
-     *
-     * @param invoiceId the unique identifier of the invoice
-     * @return a byte array containing the generated PDF
-     * @throws IllegalArgumentException if no invoice exists for the given ID
-     * @throws RuntimeException if PDF generation fails
-     */
-    public byte[] generateInvoicePdf(Long invoiceId) {
-        String html = generateInvoiceHtml(invoiceId);
-        return pdfGenerator.generatePdf(html);
-    }
-
-    /**
-     * Generates rendered HTML for a receipt by retrieving receipt and invoice data,
-     * converting it to ReceiptDocumentData, and processing it through
-     * the Thymeleaf template engine.
-     *
-     * @param receiptId the unique identifier of the receipt
-     * @return a rendered HTML string for the receipt
-     * @throws IllegalArgumentException if no receipt exists for the given ID or if the
-     *         associated invoice cannot be found
-     */
-    public String generateReceiptHtml(Long receiptId) {
-        ReceiptDocumentData receiptData = toReceiptDocumentData(receiptId);
-        return documentTemplateRenderer.render("receipts/receipt", "receipt", receiptData);
-    }
-
-    /**
-     * Generates a PDF for a receipt by rendering it as HTML and converting
-     * it to PDF format using the OpenHTMLtoPDF library.
-     *
-     * @param receiptId the unique identifier of the receipt
-     * @return a byte array containing the generated PDF
-     * @throws IllegalArgumentException if no receipt exists for the given ID or if the
-     *         associated invoice cannot be found
-     * @throws RuntimeException if PDF generation fails
-     */
-    public byte[] generateReceiptPdf(Long receiptId) {
-        String html = generateReceiptHtml(receiptId);
-        return pdfGenerator.generatePdf(html);
-    }
-
-    /**
-     * Generates rendered HTML for an invoice cover letter by retrieving invoice data,
-     * converting it to InvoiceCoverLetterDocumentData, and processing it through
-     * the Thymeleaf template engine.
-     *
-     * @param invoiceId the unique identifier of the invoice
-     * @return a rendered HTML string for the invoice cover letter
-     * @throws IllegalArgumentException if no invoice exists for the given ID
-     */
-    public String generateInvoiceCoverLetterHtml(Long invoiceId) {
-        InvoiceCoverLetterDocumentData coverLetterData = toInvoiceCoverLetterDocumentData(invoiceId);
-        return documentTemplateRenderer.render("invoice/cover-letter", "coverLetter", coverLetterData);
-    }
-
-    /**
-     * Generates a PDF for an invoice cover letter by rendering it as HTML and converting
-     * it to PDF format using the OpenHTMLtoPDF library.
-     *
-     * @param invoiceId the unique identifier of the invoice
-     * @return a byte array containing the generated PDF
-     * @throws IllegalArgumentException if no invoice exists for the given ID
-     * @throws RuntimeException if PDF generation fails
-     */
-    public byte[] generateInvoiceCoverLetterPdf(Long invoiceId) {
-        String html = generateInvoiceCoverLetterHtml(invoiceId);
-        return pdfGenerator.generatePdf(html);
     }
 }
