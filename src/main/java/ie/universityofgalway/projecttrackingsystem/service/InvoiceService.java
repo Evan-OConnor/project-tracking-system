@@ -344,7 +344,9 @@ public class InvoiceService {
                 outstanding,
                 clientName,
                 clientAddress,
-                vatRatePercent
+                vatRatePercent,
+                totalDiscount,
+                effectivePaid
         );
     }
 }

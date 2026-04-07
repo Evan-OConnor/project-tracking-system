@@ -1,8 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,10 +20,12 @@ public class TimesheetEntryForm {
     private String otherDescription;
 
     @NotNull(message = "Entry date is required")
+    @PastOrPresent(message = "Start date cannot be in the future")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate entryDate;
 
     @NotNull(message = "Hours are required")
-    @PositiveOrZero(message = "Hours must be zero or positive")
+    @DecimalMin(value = "0.01", message = "Hours must be greater than 0")
     private BigDecimal hours;
 
     // Getters

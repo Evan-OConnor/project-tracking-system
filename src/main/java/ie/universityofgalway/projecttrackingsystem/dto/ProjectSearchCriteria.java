@@ -1,6 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.dto;
 
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -12,7 +13,10 @@ public class ProjectSearchCriteria {
     private Long statusId;
     private Long categoryId;
 
+    @DateTimeFormat (pattern = "yyyy-MM-dd")
     private LocalDate startDateFrom;
+
+    @DateTimeFormat (pattern = "yyyy-MM-dd")
     private LocalDate startDateTo;
 
     private Boolean hasInvoices;

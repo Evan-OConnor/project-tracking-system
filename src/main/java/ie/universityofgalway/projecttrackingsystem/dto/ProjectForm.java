@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.PastOrPresent;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -12,7 +13,6 @@ public class ProjectForm {
     @NotNull(message = "Category is required")
     private Long categoryId;
 
-    @NotNull(message = "Status is required")
     private Long statusId;
 
     @NotBlank(message = "Client name is required")
@@ -34,6 +34,7 @@ public class ProjectForm {
 
     @NotNull(message = "Start date is required")
     @PastOrPresent(message = "Start date cannot be in the future")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
     public ProjectForm() {
@@ -106,6 +107,9 @@ public class ProjectForm {
 
     // Utility
     private String trim(String value) {
-        return value == null ? null : value.trim();
+        if (value == null) return null;
+
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

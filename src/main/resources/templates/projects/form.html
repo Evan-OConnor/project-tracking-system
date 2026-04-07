@@ -16,6 +16,7 @@
   <h1 th:text="${mode == 'edit' ? 'Edit Project' : 'New Project'}"></h1>
   <p class="text-muted">Create or edit a project. Required fields are marked.</p>
 
+
   <!-- Success -->
   <div th:if="${successMessage}" class="alert alert-success">
     <span th:text="${successMessage}"></span>
@@ -70,7 +71,7 @@
     </div>
 
     <!-- Status -->
-    <div class="mb-3">
+    <div class="mb-3" th:if="${mode == 'edit'}">
       <label class="form-label">
         Status <span class="text-danger">*</span>
       </label>

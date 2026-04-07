@@ -2,6 +2,7 @@ package ie.universityofgalway.projecttrackingsystem.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 public class ContactForm {
 
@@ -11,12 +12,15 @@ public class ContactForm {
     @Size(min = 2, max = 150, message = "Name must be between 2 and 150 characters")
     private String name;
 
+    @NotBlank(message = "Address is required")
     @Size(max = 255, message = "Address cannot exceed 255 characters")
     private String address;
 
+    @Pattern(regexp = "^[0-9+\\-\\s]*$", message = "Phone number can only contain digits, spaces, + or -")
     @Size(max = 50, message = "Phone cannot exceed 50 characters")
     private String phone;
 
+    @Pattern(regexp = "^[0-9+\\-\\s]*$", message = "Fax can only contain digits, spaces, + or -")
     @Size(max = 50, message = "Fax cannot exceed 50 characters")
     private String fax;
 
@@ -57,22 +61,27 @@ public class ContactForm {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = trim(name);
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.address = trim(address);
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    public void setPhone(String phone) {this.phone = trim(phone);}
 
     public void setFax(String fax) {
-        this.fax = fax;
+        this.fax = trim(fax);
     }
 
     public void setComments(String comments) {
-        this.comments = comments;
+        this.comments = trim(comments);
+    }
+
+    private String trim(String value) {
+        if (value == null) return null;
+
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

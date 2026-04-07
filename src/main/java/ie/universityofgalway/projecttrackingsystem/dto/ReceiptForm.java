@@ -1,6 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.dto;
 
 import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,8 @@ public class ReceiptForm {
     private String receiptNumber;
 
     @NotNull(message = "Date received is required")
+    @PastOrPresent(message = "Date cannot be in the future")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateReceived;
 
     @NotNull(message = "Discount is required")

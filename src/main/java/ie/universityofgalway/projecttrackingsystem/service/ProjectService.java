@@ -42,8 +42,27 @@ public class ProjectService {
 
     // Create
     public Project create(ProjectForm form) {
+
         Project project = new Project();
-        updateEntity(project, form);
+
+        project.setTitle(form.getTitle());
+        project.setDescription(form.getDescription());
+        project.setStartDate(form.getStartDate());
+
+        project.setCategory(
+                categoryRepository.findById(form.getCategoryId())
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid category"))
+        );
+
+        Contact client = contactRepository.findByNameIgnoreCase(form.getClientContactName())
+                .orElseThrow(() -> new IllegalArgumentException("Client must exist"));
+        project.setClientContact(client);
+
+        ProjectStatus inProgress = statusRepository.findByName("IN_PROGRESS")
+                .orElseThrow(() -> new IllegalStateException("Default status not found"));
+
+        project.setStatus(inProgress);
+
         return projectRepository.save(project);
     }
 

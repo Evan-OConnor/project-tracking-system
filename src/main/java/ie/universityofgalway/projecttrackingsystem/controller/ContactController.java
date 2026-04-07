@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/contacts")
@@ -62,7 +63,7 @@ public class ContactController extends BaseController<Contact, ContactForm> {
     @PostMapping
     public String create(@Valid @ModelAttribute("contactForm") ContactForm form,
                          BindingResult bindingResult,
-                         @RequestParam(required = false) String returnUrl,
+                         @RequestParam(required = false) String returnUrl, RedirectAttributes ra,
                          Model model) {
 
         if (bindingResult.hasErrors()) {
@@ -70,8 +71,9 @@ public class ContactController extends BaseController<Contact, ContactForm> {
             model.addAttribute("returnUrl", returnUrl);
             return "contacts/form";
         }
+        Contact saved = contactService.create(form);
 
-        contactService.create(form);
+        ra.addFlashAttribute("selectedClientName", saved.getName());
 
         if (returnUrl != null && !returnUrl.isBlank()) {
             return "redirect:" + returnUrl;

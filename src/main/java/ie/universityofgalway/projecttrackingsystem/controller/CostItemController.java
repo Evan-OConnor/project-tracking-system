@@ -84,7 +84,7 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
                 costItemService.update(form.getId(), form);
             }
 
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalStateException ex) {
 
             // Handle business rule violation (e.g. invalid project state)
             model.addAttribute("businessError", ex.getMessage());

@@ -19,14 +19,15 @@ public class CostItemForm {
     private Long supplierContactId; // Optional
 
     @NotNull(message = "Cost date is required")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @PastOrPresent(message = "Date cannot be in the future")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate costDate;
 
     @NotBlank(message = "Description is required")
     private String description;
 
     @NotNull(message = "Cost amount is required")
-    @PositiveOrZero(message = "Cost amount must be zero or positive")
+    @Positive(message = "Cost amount must be greater than 0")
     private BigDecimal costAmount;
 
     @NotNull(message = "Type is required")

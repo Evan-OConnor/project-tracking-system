@@ -28,9 +28,15 @@ public class ProjectController  {
 
     // New Form
     @GetMapping("/new")
-    public String newForm(Model model) {
+    public String newForm(Model model, @ModelAttribute("selectedClientName") String clientName) {
 
-        model.addAttribute("projectForm", new ProjectForm());
+        ProjectForm form = new ProjectForm();
+
+        if (clientName != null && !clientName.isBlank()) {
+            form.setClientContactName(clientName);
+        }
+
+        model.addAttribute("projectForm", form);
         model.addAttribute("mode", "new");
 
         projectQueryService.loadFormLookups(model);
@@ -72,9 +78,15 @@ public class ProjectController  {
 
     // Edit
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model) {
+    public String editForm(@PathVariable Long id, Model model, @ModelAttribute("selectedClientName") String clientName){
 
-        model.addAttribute("projectForm", projectService.getFormById(id));
+        ProjectForm form = projectService.getFormById(id);
+
+        if (clientName != null && !clientName.isBlank()) {
+            form.setClientContactName(clientName);
+        }
+
+        model.addAttribute("projectForm", form);
         model.addAttribute("mode", "edit");
         model.addAttribute("projectId", id);
 
@@ -138,6 +150,23 @@ public class ProjectController  {
 
             return "projects/form";
         }
+    }
+
+    @PostMapping("/{id}/delete")
+    public String deleteProject(@PathVariable Long id, RedirectAttributes ra) {
+
+        try {
+            projectService.delete(id);
+            ra.addFlashAttribute("successMessage", "Project deleted successfully");
+
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("errorMessage", e.getMessage());
+
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Something went wrong while deleting the project");
+        }
+
+        return "redirect:/projects";
     }
 
     // List

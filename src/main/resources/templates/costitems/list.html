@@ -90,13 +90,6 @@
                         Edit
                     </a>
 
-                    <!-- Disabled Edit -->
-                    <button class="btn btn-sm btn-outline-warning"
-                            th:if="${item.billed}"
-                            disabled>
-                        Edit
-                    </button>
-
                     <!-- Delete (only if NOT billed) -->
                     <form th:if="${!item.billed}"
                           th:action="@{|/cost-items/${item.id}/delete|}"
@@ -113,13 +106,6 @@
                         </button>
 
                     </form>
-
-                    <!-- Disabled Delete -->
-                    <button class="btn btn-sm btn-outline-danger"
-                            th:if="${item.billed}"
-                            disabled>
-                        Delete
-                    </button>
 
                 </td>
 
