@@ -54,8 +54,9 @@ public class ProjectService {
                         .orElseThrow(() -> new IllegalArgumentException("Invalid category"))
         );
 
-        Contact client = contactRepository.findByNameIgnoreCase(form.getClientContactName())
+        Contact client = contactRepository.findById(form.getClientId())
                 .orElseThrow(() -> new IllegalArgumentException("Client must exist"));
+
         project.setClientContact(client);
 
         ProjectStatus inProgress = statusRepository.findByName("IN_PROGRESS")
@@ -113,8 +114,8 @@ public class ProjectService {
         project.setStatus(statusRepository.findById(form.getStatusId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid status")));
 
-        Contact client = contactRepository.findByNameIgnoreCase(form.getClientContactName())
-                .orElseThrow(() -> new IllegalArgumentException("Client must exist"));
+        Contact client = contactRepository.findById(form.getClientId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid client"));
         project.setClientContact(client);
 
         if (form.getSolicitorContactName() != null && !form.getSolicitorContactName().isBlank()) {
@@ -143,7 +144,8 @@ public class ProjectService {
 
         form.setCategoryId(project.getCategory().getId());
         form.setStatusId(project.getStatus().getId());
-        form.setClientContactName(project.getClientContact().getName());
+        form.setClientId(project.getClientContact().getId());
+        form.setClientName(project.getClientContact().getName());
 
         if (project.getSolicitorContact() != null) {
             form.setSolicitorContactName(project.getSolicitorContact().getName());

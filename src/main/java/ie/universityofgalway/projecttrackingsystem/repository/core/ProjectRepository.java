@@ -13,6 +13,8 @@ import java.util.Optional;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpecificationExecutor<Project> {
 
+    List<Project> findByClientContactId(Long clientId);
+
     @EntityGraph(attributePaths = {"costItems"})
     Optional<Project> findWithCostItemsById(Long id);
 

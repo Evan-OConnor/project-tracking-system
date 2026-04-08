@@ -73,10 +73,11 @@ public class ContactController extends BaseController<Contact, ContactForm> {
         }
         Contact saved = contactService.create(form);
 
-        ra.addFlashAttribute("selectedClientName", saved.getName());
+        ra.addFlashAttribute("clientId", saved.getId());
+        ra.addFlashAttribute("clientName", saved.getName());
 
         if (returnUrl != null && !returnUrl.isBlank()) {
-            return "redirect:" + returnUrl;
+            return "redirect:" + returnUrl + "?clientId=" + saved.getId();
         }
 
         return "redirect:/contacts";

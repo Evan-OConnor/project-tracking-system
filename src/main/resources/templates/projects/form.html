@@ -100,42 +100,42 @@
     <h5 class="mt-4">Contacts</h5>
 
     <!-- Client -->
+    <!-- Client -->
     <div class="mb-3">
       <label class="form-label">
         Client <span class="text-danger">*</span>
       </label>
 
-      <div class="input-group">
+      <!-- Visible input -->
+      <input type="text"
+             id="clientSearch"
+             class="form-control"
+             th:value="*{clientName}"
+             placeholder="Search client..."
+             autocomplete="off"
+             required>
 
-        <input class="form-control"
-               list="clients-list"
-               th:field="*{clientContactName}"
-               placeholder="Start typing client name..."
-               autocomplete="off"
-               required
-               th:classappend="${#fields.hasErrors('clientContactName')} ? ' is-invalid'">
+      <!-- Hidden ID (THIS is what gets submitted) -->
+      <input type="hidden"
+             th:field="*{clientId}"
+             id="clientId">
 
-        <a class="btn btn-outline-secondary"
+      <!-- Results list -->
+      <ul id="clientResults" class="list-group mt-2"></ul>
+
+      <!-- Add new -->
+      <div class="mt-2">
+        <a class="btn btn-outline-secondary btn-sm"
            th:href="${mode == 'edit'} ?
-             @{/contacts/new(returnUrl=${'/projects/' + projectId + '/edit'})} :
-             @{/contacts/new(returnUrl='/projects/new')}">
-
+         @{/contacts/new(returnUrl=${'/projects/' + projectId + '/edit'})} :
+         @{/contacts/new(returnUrl='/projects/new')}">
           + New Contact
         </a>
-
       </div>
 
-      <small class="text-muted">
-        Select an existing client or type the exact name.
-      </small>
-
-      <datalist id="clients-list">
-        <option th:each="c : ${contacts}" th:value="${c.name}"></option>
-      </datalist>
-
-      <div class="invalid-feedback"
-           th:if="${#fields.hasErrors('clientContactName')}"
-           th:errors="*{clientContactName}">
+      <div class="invalid-feedback d-block"
+           th:if="${#fields.hasErrors('clientId')}"
+           th:errors="*{clientId}">
       </div>
     </div>
 
@@ -255,6 +255,7 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/project/form.js}"></script>
 
 </body>
 </html>

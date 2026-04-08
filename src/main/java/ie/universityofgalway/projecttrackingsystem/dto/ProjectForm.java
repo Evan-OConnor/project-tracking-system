@@ -15,9 +15,10 @@ public class ProjectForm {
 
     private Long statusId;
 
-    @NotBlank(message = "Client name is required")
-    @Size(max = 255, message = "Client name must be less than 255 characters")
-    private String clientContactName;
+    @NotNull(message = "Client must be selected")
+    private Long clientId;
+
+    private String clientName;
 
     @Size(max = 255, message = "Solicitor name must be less than 255 characters")
     private String solicitorContactName;
@@ -50,8 +51,10 @@ public class ProjectForm {
         return statusId;
     }
 
-    public String getClientContactName() {
-        return clientContactName;
+    public Long getClientId() {return clientId;}
+
+    public String getClientName() {
+        return clientName;
     }
 
     public String getSolicitorContactName() {
@@ -85,9 +88,9 @@ public class ProjectForm {
         this.statusId = statusId;
     }
 
-    public void setClientContactName(String clientContactName) {
-        this.clientContactName = trim(clientContactName);
-    }
+    public void setClientId(Long clientId) {this.clientId = clientId;}
+
+    public void setClientName(String clientName) {this.clientName = trim(clientName);}
 
     public void setSolicitorContactName(String solicitorContactName) {this.solicitorContactName = trim(solicitorContactName);}
 

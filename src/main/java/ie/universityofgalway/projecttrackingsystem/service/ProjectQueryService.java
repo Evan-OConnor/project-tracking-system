@@ -23,6 +23,8 @@ public class ProjectQueryService {
     private final ProjectFinanceService financeService;
 
     private final ProjectCategoryRepository categoryRepository;
+    private final DocumentTypeRepository documentTypeRepository;
+    private final ProjectReportDocumentService projectReportDocumentService;
     private final ProjectStatusRepository statusRepository;
     private final ContactRepository contactRepository;
 
@@ -32,6 +34,8 @@ public class ProjectQueryService {
                                ReceiptRepository receiptRepository,
                                ProjectFinanceService financeService,
                                ProjectCategoryRepository categoryRepository,
+                               DocumentTypeRepository documentTypeRepository,
+                               ProjectReportDocumentService projectReportDocumentService,
                                ProjectStatusRepository statusRepository,
                                ContactRepository contactRepository) {
 
@@ -42,6 +46,8 @@ public class ProjectQueryService {
         this.financeService = financeService;
 
         this.categoryRepository = categoryRepository;
+        this.documentTypeRepository = documentTypeRepository;
+        this.projectReportDocumentService = projectReportDocumentService;
         this.statusRepository = statusRepository;
         this.contactRepository = contactRepository;
     }
@@ -93,6 +99,8 @@ public class ProjectQueryService {
         BigDecimal totalInvoiced = financeService.getTotalInvoiced(project);
         BigDecimal outstandingInvoices = financeService.getOutstandingInvoices(project);
 
+        List<ProjectReportDocument> reports =
+                projectReportDocumentService.getDocumentsForProject(id);
 
         ProjectDetailsView view = new ProjectDetailsView();
 
@@ -109,6 +117,8 @@ public class ProjectQueryService {
         view.setTotalInvoiced(totalInvoiced);
         view.setOutstandingInvoices(outstandingInvoices);
         view.setDiscountTotal(financeService.getDiscountsTotal(project.getId()));
+        view.setReports(reports);
+        view.setDocumentTypes(documentTypeRepository.findAll());
 
         return view;
     }

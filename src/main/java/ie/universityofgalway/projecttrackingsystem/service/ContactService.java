@@ -9,6 +9,7 @@ import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectReposi
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ContactService implements BaseService<Contact, ContactForm> {
@@ -61,6 +62,11 @@ public class ContactService implements BaseService<Contact, ContactForm> {
             }
 
         contactRepository.delete(contact);
+    }
+
+    // Search
+    public List<Contact> searchByName(String query) {
+        return contactRepository.findByNameContainingIgnoreCase(query);
     }
 
     // Create

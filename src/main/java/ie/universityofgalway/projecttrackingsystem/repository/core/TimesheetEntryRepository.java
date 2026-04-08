@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -28,4 +29,10 @@ public interface TimesheetEntryRepository extends JpaRepository<TimesheetEntry, 
     WHERE t.project.id = :projectId
 """)
     BigDecimal sumChargesByProjectId(Long projectId);
+
+    List<TimesheetEntry> findByEmployeeIdAndEntryDateBetween(
+            Long employeeId,
+            LocalDate from,
+            LocalDate to
+    );
 }

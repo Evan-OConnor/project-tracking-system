@@ -1,7 +1,9 @@
 package ie.universityofgalway.projecttrackingsystem.controller;
 
+import ie.universityofgalway.projecttrackingsystem.domain.core.Contact;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import ie.universityofgalway.projecttrackingsystem.dto.*;
+import ie.universityofgalway.projecttrackingsystem.repository.core.ContactRepository;
 import ie.universityofgalway.projecttrackingsystem.service.ProjectQueryService;
 import ie.universityofgalway.projecttrackingsystem.service.ProjectService;
 
@@ -19,21 +21,27 @@ public class ProjectController  {
 
     private final ProjectService projectService;
     private final ProjectQueryService projectQueryService;
+    private final ContactRepository contactRepository;
 
     public ProjectController(ProjectService projectService,
-                             ProjectQueryService projectQueryService) {
+                             ProjectQueryService projectQueryService, ContactRepository contactRepository) {
         this.projectService = projectService;
         this.projectQueryService = projectQueryService;
+        this.contactRepository = contactRepository;
     }
 
     // New Form
     @GetMapping("/new")
-    public String newForm(Model model, @ModelAttribute("selectedClientName") String clientName) {
+    public String newForm(Model model) {
 
         ProjectForm form = new ProjectForm();
 
-        if (clientName != null && !clientName.isBlank()) {
-            form.setClientContactName(clientName);
+        if (model.containsAttribute("clientId")) {
+            Long clientId = (Long) model.getAttribute("clientId");
+            String clientName = (String) model.getAttribute("clientName");
+
+            form.setClientId(clientId);
+            form.setClientName(clientName);
         }
 
         model.addAttribute("projectForm", form);
@@ -78,13 +86,9 @@ public class ProjectController  {
 
     // Edit
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model, @ModelAttribute("selectedClientName") String clientName){
+    public String editForm(@PathVariable Long id, Model model){
 
         ProjectForm form = projectService.getFormById(id);
-
-        if (clientName != null && !clientName.isBlank()) {
-            form.setClientContactName(clientName);
-        }
 
         model.addAttribute("projectForm", form);
         model.addAttribute("mode", "edit");
@@ -114,6 +118,8 @@ public class ProjectController  {
         model.addAttribute("outstandingInvoices", view.getOutstandingInvoices());
         model.addAttribute("totalInvoiced", view.getTotalInvoiced());
         model.addAttribute("discountTotal", view.getDiscountTotal());
+        model.addAttribute("reports", view.getReports());
+        model.addAttribute("documentTypes", view.getDocumentTypes());
         return "projects/view";
     }
 
