@@ -92,7 +92,10 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
     @Override
     public void updateEntity(CostItem entity, CostItemForm form) {
 
-        Project project = projectRepository.findById(form.getProjectId()).orElseThrow();
+        Project project = projectRepository
+                .findById(form.getProjectId())
+                .orElseThrow(() -> new IllegalStateException("Project not found"));
+
         Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow();
 
         CostItem.Type type = form.getType();
@@ -126,6 +129,7 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
 
         form.setId(c.getId());
         form.setProjectId(c.getProject().getId());
+        form.setProjectName(c.getProject().getTitle());
         form.setEmployeeId(c.getEmployee().getId());
 
         if (c.getSupplierContact() != null) {

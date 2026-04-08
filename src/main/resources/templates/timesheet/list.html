@@ -41,6 +41,7 @@
                 <th>Date</th>
                 <th>Hours</th>
                 <th>Charge</th>
+                <th>Billing Status</th>
                 <th class="text-end">Actions</th>
             </tr>
             </thead>
@@ -54,6 +55,7 @@
                 <td th:text="${#temporals.format(entry.entryDate,'yyyy-MM-dd')}">Date</td>
                 <td th:text="${entry.hours}">Hours</td>
                 <td th:text="${entry.charge}">Charge</td>
+                <td><span th:if="${entry.billed}" class="badge bg-success">Billed</span><span th:if="${!entry.billed}" class="badge bg-warning text-dark">Unbilled</span></td>
 
                 <td class="text-end">
 
@@ -62,12 +64,16 @@
                         View
                     </a>
 
+                    <!-- Edit ONLY if NOT billed -->
                     <a class="btn btn-sm btn-outline-primary"
+                       th:if="${!entry.billed}"
                        th:href="@{/timesheet-entries/{id}/edit(id=${entry.id})}">
                         Edit
                     </a>
 
-                    <form th:action="@{/timesheet-entries/{id}/delete(id=${entry.id})}"
+                    <!-- Delete ONLY if NOT billed -->
+                    <form th:if="${!entry.billed}"
+                          th:action="@{/timesheet-entries/{id}/delete(id=${entry.id})}"
                           method="post"
                           class="d-inline"
                           onsubmit="return confirm('Delete this timesheet entry?');">
@@ -75,15 +81,13 @@
                         <button type="submit" class="btn btn-sm btn-outline-danger">
                             Delete
                         </button>
-
                     </form>
-
                 </td>
             </tr>
 
             <!-- Empty state -->
             <tr th:if="${#lists.isEmpty(entries)}">
-                <td colspan="7" class="text-center text-muted">
+                <td colspan="8" class="text-center text-muted">
                     No timesheet entries yet.
                 </td>
             </tr>

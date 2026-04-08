@@ -1,9 +1,11 @@
 package ie.universityofgalway.projecttrackingsystem.service;
 
+import ie.universityofgalway.projecttrackingsystem.domain.core.CostItem;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Employee;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import ie.universityofgalway.projecttrackingsystem.domain.core.TimesheetEntry;
 import ie.universityofgalway.projecttrackingsystem.domain.lookup.WorkDescription;
+import ie.universityofgalway.projecttrackingsystem.dto.CostItemForm;
 import ie.universityofgalway.projecttrackingsystem.dto.TimesheetEntryForm;
 import ie.universityofgalway.projecttrackingsystem.dto.TimesheetEntryView;
 import ie.universityofgalway.projecttrackingsystem.repository.core.TimesheetEntryRepository;
@@ -76,7 +78,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     public TimesheetEntryView create(TimesheetEntryForm form) {
 
         Project project = projectRepo.findById(form.getProjectId())
-                .orElseThrow(() -> new IllegalArgumentException("Project not found"));
+                .orElseThrow(() -> new IllegalStateException("Project not found"));
 
         Employee employee = currentUserService.getCurrentEmployee();
 
@@ -102,12 +104,16 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         TimesheetEntry entry = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Timesheet entry not found"));
 
-        Project project = projectRepo.findById(form.getProjectId()).orElseThrow();
+        if (!entry.isUnbilled()) {
+            throw new IllegalStateException("Cannot edit a billed timesheet entry.");
+        }
+
+        Project project = projectRepo.findById(form.getProjectId())
+                .orElseThrow(() -> new IllegalArgumentException("Project not found"));
         Employee employee = currentUserService.getCurrentEmployee();
         WorkDescription workDesc = resolveWorkDescription(form);
 
         entry.setProject(project);
-        entry.setEmployee(employee);
         entry.setWorkDescription(workDesc);
         entry.setEntryDate(form.getEntryDate());
         entry.setHours(form.getHours());
@@ -117,6 +123,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return toView(entry);
     }
 
+
     // Delete
     @Override
     public void delete(Long id) {
@@ -124,7 +131,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         TimesheetEntry entry = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Timesheet entry not found"));
 
-        if (entry.getInvoice() != null) {
+        if (!entry.isUnbilled()) {
             throw new IllegalStateException("Cannot delete a billed timesheet entry.");
         }
 
@@ -183,6 +190,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
 
         form.setId(entry.getId());
         form.setProjectId(entry.getProject().getId());
+        form.setProjectName(entry.getProject().getTitle());
         form.setWorkDescriptionId(entry.getWorkDescription().getId());
         form.setEntryDate(entry.getEntryDate());
         form.setHours(entry.getHours());

@@ -96,7 +96,15 @@ public class TimesheetEntryController extends BaseController<TimesheetEntryView,
             return "timesheet/form";
         }
 
-        timesheetEntryService.update(id, form);
+        try {
+            timesheetEntryService.update(id, form);
+        } catch (IllegalStateException ex) {
+            model.addAttribute("businessError", ex.getMessage());
+            model.addAllAttributes(timesheetEntryService.getFormLookups());
+            model.addAttribute("isEdit", true);
+            return "timesheet/form";
+        }
+
         return "redirect:/timesheet-entries";
     }
 }
