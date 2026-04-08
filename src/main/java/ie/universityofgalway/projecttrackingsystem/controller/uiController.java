@@ -14,6 +14,11 @@ public class uiController {
         this.projectService = projectService;
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
     @GetMapping({"/", "/dashboard"})
     public String dashboard(Model model) {
 
