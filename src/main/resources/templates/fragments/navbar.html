@@ -1,36 +1,212 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark"
-     xmlns:th="http://www.thymeleaf.org"
-     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-     th:fragment="navbar">
+<th:block xmlns:th="http://www.thymeleaf.org"
+          xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+          th:fragment="navbar">
 
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/}">Aardvark Insurance Accessors</a>
+    <nav class="navbar navbar-expand-lg aardvark-navbar sticky-top">
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false"
-                aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center gap-3 me-4 text-decoration-none" th:href="@{/}">
+                <div class="aardvark-brand-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true" focusable="false">
+                        <path d="M12 16v5"/>
+                        <path d="M16 14v7"/>
+                        <path d="M20 10v11"/>
+                        <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15"/>
+                        <path d="M4 18v3"/>
+                        <path d="M8 14v7"/>
+                    </svg>
+                </div>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+                <div class="aardvark-brand-text">
+                    <div class="aardvark-brand-title">Aardvark</div>
+                    <div class="aardvark-brand-subtitle">Insurance Assessors</div>
+                </div>
+            </a>
 
-                <li class="nav-item"><a class="nav-link" th:href="@{/projects}">Projects</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/contacts}">Contacts</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/employees}">Employees</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/timesheet-entries}">Timesheets</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/cost-items}">Expenses/Outlays</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/invoices}">Invoices</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/receipts}">Receipts</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/reports}">Reports</a></li>
+            <button class="navbar-toggler aardvark-toggler border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <!-- ADMIN ONLY -->
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/users}">Users</a>
-                </li>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav flex-fill aardvark-nav-links gap-1">
 
-            </ul>
+                    <li class="nav-item"><a class="nav-link aardvark-link" th:href="@{/projects}">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link aardvark-link" th:href="@{/contacts}">Contacts</a></li>
+                    <li class="nav-item"><a class="nav-link aardvark-link" th:href="@{/employees}">Employees</a></li>
+                    <li class="nav-item"><a class="nav-link aardvark-link"
+                                            th:href="@{/timesheet-entries}">Timesheets</a></li>
+                    <li class="nav-item"><a class="nav-link aardvark-link" th:href="@{/cost-items}">Expenses/Outlays</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link aardvark-link" th:href="@{/invoices}">Invoices</a></li>
+                    <li class="nav-item"><a class="nav-link aardvark-link" th:href="@{/receipts}">Receipts</a></li>
+                    <li class="nav-item"><a class="nav-link aardvark-link" th:href="@{/reports}">Reports</a></li>
+
+                    <!-- ADMIN ONLY -->
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link aardvark-link" th:href="@{/admin/users}">Users</a>
+                    </li>
+
+                </ul>
+
+                <div class="aardvark-right d-flex align-items-center gap-3 ms-3" sec:authorize="isAuthenticated()">
+                    <div class="aardvark-user-info text-end">
+                        <div class="aardvark-user-name" sec:authentication="name">User</div>
+                        <div class="aardvark-user-role" sec:authorize="hasRole('ADMIN')">Admin</div>
+                        <div class="aardvark-user-role" sec:authorize="!hasRole('ADMIN')">Staff</div>
+                    </div>
+
+                    <form th:action="@{/logout}" method="post" class="m-0">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="aardvark-logout-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true" focusable="false">
+                                <path d="M12 16v5"/>
+                                <path d="M16 14v7"/>
+                                <path d="M20 10v11"/>
+                                <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15"/>
+                                <path d="M4 18v3"/>
+                                <path d="M8 14v7"/>
+                            </svg>
+                            <span>Sign out</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+
+    <style>
+        .navbar.aardvark-navbar {
+            background-color: #0f172a;
+            border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+            min-height: 82px;
+            padding-top: 0.72rem;
+            padding-bottom: 0.72rem;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            z-index: 1030;
+        }
+
+        .navbar.aardvark-navbar .container-fluid {
+            align-items: center;
+        }
+
+        .aardvark-brand-icon {
+            width: 38px;
+            height: 38px;
+            background-color: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #ffffff;
+        }
+
+        .navbar.aardvark-navbar .aardvark-brand-text {
+            line-height: 1.2;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .navbar.aardvark-navbar .aardvark-brand-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .navbar.aardvark-navbar .aardvark-brand-subtitle {
+            font-size: 0.76rem;
+            color: #60a5fa;
+            margin-top: 0.12rem;
+        }
+
+        .navbar.aardvark-navbar .aardvark-nav-links {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 0.4rem !important;
+        }
+
+        .navbar.aardvark-navbar .aardvark-link {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #ffffff;
+            padding: 0.48rem 0.72rem;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .navbar.aardvark-navbar .aardvark-link:hover,
+        .navbar.aardvark-navbar .aardvark-link:focus {
+            color: #93c5fd;
+            background-color: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.25);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.10) inset;
+        }
+
+        .navbar.aardvark-navbar .aardvark-link.active,
+        .navbar.aardvark-navbar .aardvark-link[aria-current="page"] {
+            color: #bfdbfe;
+            background-color: rgba(59, 130, 246, 0.18);
+            border-color: rgba(59, 130, 246, 0.32);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.16) inset;
+        }
+
+        .aardvark-user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .aardvark-user-role {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .aardvark-logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.48rem 0.82rem;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: color 0.15s ease, background-color 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .aardvark-logout-btn:hover,
+        .aardvark-logout-btn:focus {
+            color: #dbeafe;
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+
+        .navbar.aardvark-navbar .aardvark-toggler .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar.aardvark-navbar .aardvark-nav-links {
+                flex-wrap: wrap;
+                overflow-x: visible;
+                margin-bottom: 0.5rem;
+            }
+
+            .navbar.aardvark-navbar .aardvark-right {
+                padding-bottom: 0.5rem;
+            }
+        }
+    </style>
+
+</th:block>
