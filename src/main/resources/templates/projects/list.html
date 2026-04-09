@@ -6,19 +6,282 @@
     <title>Projects</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body {
+            background: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .projects-main {
+            padding: 40px 0;
+        }
+
+        .projects-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .projects-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+
+        .projects-subtitle {
+            color: #64748b;
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+
+        .btn-new-project {
+            background: #2563eb;
+            color: #fff;
+            border: 1px solid #2563eb;
+            border-radius: 12px;
+            padding: 0.55rem 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-new-project:hover {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+            color: #fff;
+        }
+
+        .projects-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .projects-filter-card {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .projects-table-card {
+            overflow: hidden;
+        }
+
+        .projects-table {
+            margin-bottom: 0;
+        }
+
+        .projects-table th {
+            font-size: 0.76rem;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 700;
+            border-bottom-color: #e5e7eb;
+        }
+
+        .projects-table th,
+        .projects-table td {
+            padding-top: 0.8rem;
+            padding-bottom: 0.8rem;
+            vertical-align: middle;
+        }
+
+        .filter-label {
+            color: #111827;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .projects-filter-card .form-control,
+        .projects-filter-card .form-select {
+            font-size: 0.9rem;
+        }
+
+        .projects-filter-card .form-control::placeholder {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .filter-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .filter-action-btn svg {
+            flex-shrink: 0;
+        }
+
+        .btn-clear-filter {
+            color: #475569;
+            border-color: #94a3b8;
+            background: #ffffff;
+        }
+
+        .btn-clear-filter:hover,
+        .btn-clear-filter:focus {
+            color: #334155;
+            border-color: #64748b;
+            background: #f1f5f9;
+        }
+
+        .btn-clear-filter:active {
+            color: #1e293b;
+            background: #e2e8f0;
+            border-color: #64748b;
+        }
+
+        .projects-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .projects-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .project-title-cell {
+            max-width: 260px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .recent-projects-name {
+            font-size: 0.9rem;
+        }
+
+        .recent-projects-date {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 0.18rem 0.6rem;
+            font-size: 0.74rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-active {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-cancelled {
+            background: #ffe4d6;
+            color: #c2410c;
+        }
+
+        .actions-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: nowrap;
+        }
+
+        .recent-view-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #64748b;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .recent-view-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .recent-view-link:hover {
+            color: #475569;
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .action-icon-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 10px;
+            border: 1px solid #bfdbfe;
+            background: #eff6ff;
+            color: #2563eb;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .action-icon-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .action-icon-link:hover {
+            color: #1d4ed8;
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .delete-action-link {
+            border-color: #fca5a5;
+            background: #fff1f2;
+            color: #b91c1c;
+        }
+
+        .delete-action-link:hover {
+            color: #991b1b;
+            background: #ffe4e6;
+            border-color: #f87171;
+        }
+
+        @media (max-width: 767.98px) {
+            .actions-wrap {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .project-title-cell {
+                max-width: 180px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<main class="container mt-4">
+<main class="container projects-main">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="mb-0">Projects</h1>
-        <a class="btn btn-primary" th:href="@{/projects/new}">+ New Project</a>
-    </div>
+    <section class="d-flex justify-content-between align-items-center flex-wrap projects-header">
+        <div>
+            <h1 class="projects-title">Projects</h1>
+            <p class="projects-subtitle">Manage project records, statuses, and key details.</p>
+        </div>
+        <a class="btn btn-new-project" th:href="@{/projects/new}">+ New Project</a>
+    </section>
 
     <!-- Flash Messages -->
     <div th:if="${successMessage}"
@@ -34,167 +297,179 @@
     </div>
 
     <!-- Advanced Search -->
-    <div class="card mb-4">
-        <div class="card-body">
+    <div class="projects-card projects-filter-card">
+        <form th:action="@{/projects/search}"
+              method="get"
+              th:object="${criteria}"
+              class="row g-3 align-items-end">
 
-            <form th:action="@{/projects/search}"
-                  method="get"
-                  th:object="${criteria}"
-                  class="row g-3">
-
-                <div class="col-md-3">
-                    <input type="text"
-                           th:field="*{title}"
-                           class="form-control"
-                           maxlength="80"
-                           th:classappend="${#fields.hasErrors('title')} ? ' is-invalid'"
-                           placeholder="Project title">
-                    <div class="invalid-feedback"
-                         th:if="${#fields.hasErrors('title')}"
-                         th:errors="*{title}">
-                    </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <label class="form-label filter-label">Project Title</label>
+                <input type="text"
+                       th:field="*{title}"
+                       class="form-control"
+                       maxlength="80"
+                       th:classappend="${#fields.hasErrors('title')} ? ' is-invalid'"
+                       placeholder="Search by title...">
+                <div class="invalid-feedback"
+                     th:if="${#fields.hasErrors('title')}"
+                     th:errors="*{title}">
                 </div>
+            </div>
 
-                <div class="col-md-2">
-                    <select th:field="*{status}" class="form-select">
-                        <option value="">Any Status</option>
-                        <option th:each="status : ${statuses}"
-                                th:value="${status.name}"
-                                th:text="${status.name}">
-                        </option>
-                    </select>
-                </div>
+            <div class="col-12 col-md-6 col-xl-2">
+                <label class="form-label filter-label">Status</label>
+                <select th:field="*{status}" class="form-select">
+                    <option value="">Any</option>
+                    <option th:each="status : ${statuses}"
+                            th:value="${status.name}"
+                            th:text="${status.name}">
+                    </option>
+                </select>
+            </div>
 
-                <div class="col-md-3">
-                    <input class="form-control"
-                           th:field="*{clientContactName}"
-                           placeholder="Search client...">
-                </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <label class="form-label filter-label">Client</label>
+                <input class="form-control"
+                       th:field="*{clientContactName}"
+                       placeholder="Search by client...">
+            </div>
 
-                <div class="col-md-2">
-                    <input type="date"
-                           th:field="*{startDateFrom}"
-                           class="form-control">
-                </div>
+            <div class="col-6 col-md-3 col-xl-2">
+                <label class="form-label filter-label">From</label>
+                <input type="date"
+                       th:field="*{startDateFrom}"
+                       class="form-control">
+            </div>
 
-                <div class="col-md-2">
-                    <input type="date"
-                           th:field="*{startDateTo}"
-                           class="form-control">
-                </div>
+            <div class="col-6 col-md-3 col-xl-2">
+                <label class="form-label filter-label">To</label>
+                <input type="date"
+                       th:field="*{startDateTo}"
+                       class="form-control">
+            </div>
 
-                <div class="col-md-2">
-                    <select th:field="*{hasInvoices}" class="form-select">
-                        <option value="">Invoices: Any</option>
-                        <option value="true">With invoices</option>
-                        <option value="false">No invoices</option>
-                    </select>
-                </div>
+            <div class="col-12 col-md-6 col-xl-2">
+                <label class="form-label filter-label">Invoices</label>
+                <select th:field="*{hasInvoices}" class="form-select">
+                    <option value="">Any</option>
+                    <option value="true">With invoices</option>
+                    <option value="false">No invoices</option>
+                </select>
+            </div>
 
-                <div class="col-md-2">
-                    <select th:field="*{hasExpenses}" class="form-select">
-                        <option value="">Expenses: Any</option>
-                        <option value="true">With expenses</option>
-                        <option value="false">No expenses</option>
-                    </select>
-                </div>
+            <div class="col-12 col-md-6 col-xl-2">
+                <label class="form-label filter-label">Expenses & Outlays</label>
+                <select th:field="*{hasExpenses}" class="form-select">
+                    <option value="">Any</option>
+                    <option value="true">With expenses / outlays</option>
+                    <option value="false">No expenses / outlays</option>
+                </select>
+            </div>
 
-                <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        Search
-                    </button>
+            <div class="col-12 col-md-6 col-xl-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 filter-action-btn d-inline-flex align-items-center justify-content-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search" aria-hidden="true" focusable="false">
+                        <path d="m21 21-4.34-4.34"/>
+                        <circle cx="11" cy="11" r="8"/>
+                    </svg>
+                    <span>Search</span>
+                </button>
+                <a th:href="@{/projects}" class="btn btn-outline-secondary w-100 filter-action-btn btn-clear-filter d-inline-flex align-items-center justify-content-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x" aria-hidden="true" focusable="false">
+                        <path d="M18 6 6 18"/>
+                        <path d="m6 6 12 12"/>
+                    </svg>
+                    <span>Clear</span>
+                </a>
+            </div>
 
-                    <a th:href="@{/projects}" class="btn btn-outline-secondary w-100">
-                        Clear
-                    </a>
-                </div>
-
-            </form>
-
-        </div>
+        </form>
     </div>
 
     <!-- Table -->
-    <div class="table-responsive">
-        <table id="projectsTable" class="table table-striped align-middle">
+    <div class="projects-card projects-table-card">
+        <div class="table-responsive">
+            <table id="projectsTable" class="table table-striped align-middle projects-table">
 
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Category</th>
-                <th>Client</th>
-                <th>Start Date</th>
-                <th class="text-end">Actions</th>
-            </tr>
-            </thead>
+                <thead>
+                <tr>
+                    <th class="ps-4">ID</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Category</th>
+                    <th>Client</th>
+                    <th>Start Date</th>
+                    <th class="text-end pe-4">Actions</th>
+                </tr>
+                </thead>
 
-            <tbody>
+                <tbody>
 
-            <tr th:each="p : ${projects}">
+                <tr th:each="p : ${projects}">
 
-                <td th:text="${p.id}">1</td>
+                    <td class="ps-4" th:text="${p.id}">1</td>
 
-                <td th:text="${p.title}">Example</td>
+                    <td class="project-title-cell recent-projects-name" th:text="${p.title}" th:title="${p.title}">Example</td>
 
-                <!-- Status -->
-                <td>
-                    <span class="badge"
-                          th:classappend="${p.status != null && p.status.equalsIgnoreCase('OPEN')} ? 'text-bg-success' : 'text-bg-secondary'"
-                          th:text="${p.status}">
-                    </span>
-                </td>
+                    <td>
+                        <span class="status-pill"
+                              th:classappend="${p.status != null && p.status.equalsIgnoreCase('ACTIVE')} ? ' badge-active' : (${p.status != null && p.status.equalsIgnoreCase('COMPLETED')} ? ' badge-completed' : ' badge-cancelled')"
+                              th:text="${p.status}">
+                        </span>
+                    </td>
 
-                <!-- ✅ FIXED: DTO fields -->
-                <td th:text="${p.categoryName}"></td>
+                    <td class="recent-projects-name" th:text="${p.categoryName}"></td>
 
-                <td th:text="${p.clientName}"></td>
+                    <td class="recent-projects-name" th:text="${p.clientName}"></td>
 
-                <td th:text="${p.startDate != null ? #temporals.format(p.startDate,'yyyy-MM-dd') : '—'}"></td>
+                    <td class="recent-projects-name recent-projects-date" th:text="${p.startDate != null ? #temporals.format(p.startDate,'yyyy-MM-dd') : '—'}"></td>
 
-                <!-- Actions -->
-                <td class="text-end">
+                    <td class="text-end pe-4">
+                        <div class="actions-wrap">
+                            <a class="recent-view-link"
+                               th:href="@{/projects/{id}(id=${p.id})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                    <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </a>
 
-                    <a class="btn btn-sm btn-outline-secondary"
-                       th:href="@{/projects/{id}(id=${p.id})}">
-                        View
-                    </a>
+                            <a class="action-icon-link"
+                               th:href="@{/projects/{id}/edit(id=${p.id})}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-icon lucide-pencil" aria-hidden="true" focusable="false"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+                            </a>
 
-                    <a class="btn btn-sm btn-outline-primary"
-                       th:href="@{/projects/{id}/edit(id=${p.id})}">
-                        Edit
-                    </a>
+                            <form th:action="@{/projects/{id}/delete(id=${p.id})}"
+                                  method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Delete this project?')">
 
-                    <form th:action="@{/projects/{id}/delete(id=${p.id})}"
-                          method="post"
-                          class="d-inline"
-                          onsubmit="return confirm('Delete this project?')">
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}" />
 
-                        <input type="hidden"
-                               th:name="${_csrf.parameterName}"
-                               th:value="${_csrf.token}" />
+                                <button type="submit"
+                                        class="action-icon-link delete-action-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2" aria-hidden="true" focusable="false"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </button>
 
-                        <button type="submit"
-                                class="btn btn-sm btn-outline-danger">
-                            Delete
-                        </button>
+                            </form>
+                        </div>
+                    </td>
 
-                    </form>
+                </tr>
 
-                </td>
+                <tr th:if="${#lists.isEmpty(projects)}">
+                    <td colspan="7" class="text-center text-muted py-4">
+                        No projects found.
+                    </td>
+                </tr>
 
-            </tr>
+                </tbody>
 
-            <tr th:if="${#lists.isEmpty(projects)}">
-                <td colspan="7" class="text-center text-muted">
-                    No projects found.
-                </td>
-            </tr>
-
-            </tbody>
-
-        </table>
+            </table>
+        </div>
     </div>
 
 </main>
