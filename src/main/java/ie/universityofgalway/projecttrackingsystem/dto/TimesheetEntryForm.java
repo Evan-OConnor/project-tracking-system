@@ -13,6 +13,8 @@ public class TimesheetEntryForm {
     @NotNull(message = "Project is required")
     private Long projectId;
 
+    private String projectName;
+
     @NotNull(message = "Work description is required")
     private Long workDescriptionId;
 
@@ -38,6 +40,8 @@ public class TimesheetEntryForm {
         return projectId;
     }
 
+    public String getProjectName() {return projectName;}
+
     public Long getWorkDescriptionId() {return workDescriptionId;}
 
     public String getOtherDescription() {return otherDescription;}
@@ -48,6 +52,8 @@ public class TimesheetEntryForm {
 
     // Setters
     public void setId(Long id) {this.id = id;}
+
+    public void setProjectName(String projectName) {this.projectName = projectName;}
 
     public void setProjectId(Long projectId) {this.projectId = projectId;}
 

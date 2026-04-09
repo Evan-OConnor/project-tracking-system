@@ -22,6 +22,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
     @EntityGraph(attributePaths = {"status"})
     List<Project> findTop6ByOrderByStartDateDescIdDesc();
 
+    Optional<Project> findFirstByTitleContainingIgnoreCase(String title);
+
+    List<Project> findByTitleContainingIgnoreCase(String q);
+
     // Used by ContactService
     boolean existsByClientContactId(Long contactId);
     boolean existsBySolicitorContactId(Long contactId);

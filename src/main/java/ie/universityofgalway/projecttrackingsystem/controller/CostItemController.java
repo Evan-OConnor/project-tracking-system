@@ -1,7 +1,9 @@
 package ie.universityofgalway.projecttrackingsystem.controller;
 
+import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import ie.universityofgalway.projecttrackingsystem.dto.CostItemForm;
 import ie.universityofgalway.projecttrackingsystem.domain.core.CostItem;
+import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectRepository;
 import ie.universityofgalway.projecttrackingsystem.service.CostItemService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,33 +12,49 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/cost-items")
 public class CostItemController extends BaseController<CostItem, CostItemForm> {
 
     private final CostItemService costItemService;
+    private final ProjectRepository projectRepository;
 
     // Constructor
-    public CostItemController(CostItemService costItemService) {
+    public CostItemController(CostItemService costItemService, ProjectRepository projectRepository) {
         super(costItemService);
         this.costItemService = costItemService;
+        this.projectRepository = projectRepository;
     }
 
     // Base Controller
     @Override
-    protected String getListView() {return "costitems/list";}
+    protected String getListView() {
+        return "costitems/list";
+    }
 
     @Override
-    protected String getDetailsView() {return "costitems/details";}
+    protected String getDetailsView() {
+        return "costitems/details";
+    }
 
     @Override
-    protected String getBaseUrl() {return "/cost-items";}
+    protected String getBaseUrl() {
+        return "/cost-items";
+    }
 
     @Override
-    protected String getListAttributeName() {return "costItems";}
+    protected String getListAttributeName() {
+        return "costItems";
+    }
 
     @Override
-    protected String getEntityAttributeName() {return "costItem";}
+    protected String getEntityAttributeName() {
+        return "costItem";
+    }
 
     // List
     @Override
@@ -106,4 +124,18 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
         return "costitems/form";
     }
 
+    @GetMapping("/projects/search")
+    @ResponseBody
+    public List<Map<String, Object>> searchProjects(@RequestParam String q) {
+        return projectRepository
+                .findByTitleContainingIgnoreCase(q)
+                .stream()
+                .map(p -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", p.getId());
+                    map.put("name", p.getTitle());
+                    return map;
+                })
+                .toList();
+    }
 }

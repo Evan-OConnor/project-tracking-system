@@ -19,13 +19,30 @@
         <input type="hidden" th:field="*{id}"/>
 
         <!-- Project -->
-        <div class="mb-3">
+        <div class="mb-3 position-relative">
             <label class="form-label">Project</label>
-            <select th:field="*{projectId}" class="form-select" required>
-                <option value="" disabled selected>Select a project</option>
-                <option th:each="p : ${projects}" th:value="${p.id}" th:text="${p.title}"></option>
-            </select>
-            <div class="text-danger" th:if="${#fields.hasErrors('projectId')}" th:errors="*{projectId}"></div>
+
+            <!-- Visible input -->
+            <input type="text"
+                   id="projectInput"
+                   th:field="*{projectName}"
+                   class="form-control"
+                   placeholder="Search project..."
+                   required>
+
+            <input type="hidden"
+                   id="projectId"
+                   th:field="*{projectId}">
+
+            <!-- Suggestions -->
+            <ul id="suggestions"
+                class="list-group position-absolute w-100"
+                style="z-index: 1000;"></ul>
+
+            <div class="text-danger"
+                 th:if="${#fields.hasErrors('projectId')}"
+                 th:errors="*{projectId}">
+            </div>
         </div>
 
         <!-- Employee -->

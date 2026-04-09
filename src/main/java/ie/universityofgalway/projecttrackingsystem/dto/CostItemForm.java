@@ -13,6 +13,8 @@ public class CostItemForm {
     @NotNull(message = "Project is required")
     private Long projectId;
 
+    private String projectName;
+
     @NotNull(message = "Employee is required")
     private Long employeeId;
 
@@ -33,10 +35,14 @@ public class CostItemForm {
     @NotNull(message = "Type is required")
     private CostItem.Type type;
 
+
+
     // Getters
     public Long getId() { return id; }
 
-    public Long getProjectId() { return projectId; }
+    public Long getProjectId() {return projectId;}
+
+    public String getProjectName() { return projectName; }
 
     public Long getEmployeeId() { return employeeId; }
 
@@ -54,7 +60,9 @@ public class CostItemForm {
 
     public void setId(Long id) { this.id = id; }
 
-    public void setProjectId(Long projectId) { this.projectId = projectId; }
+    public void setProjectId(Long projectId) {this.projectId = projectId;}
+
+    public void setProjectName(String projectId) { this.projectName = projectName; }
 
     public void setEmployeeId(Long employeeId) { this.employeeId = employeeId; }
 

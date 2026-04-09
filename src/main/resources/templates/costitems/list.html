@@ -11,7 +11,6 @@
 
 <div class="container mt-4">
 
-    ```
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="mb-0">Expenses & Outlays</h1>
@@ -42,6 +41,7 @@
                 <th>Amount (€)</th>
                 <th>Type</th>
                 <th>Supplier</th>
+                <th>Billed</th>
                 <th class="text-end">Actions</th>
             </tr>
             </thead>
@@ -75,6 +75,12 @@
                 <td th:text="${item.supplierContactName} ?: 'N/A'">
                     Supplier X
                 </td>
+
+                <td>
+                    <span th:if="${item.billed}" class="badge bg-success">Billed</span>
+                    <span th:if="${!item.billed}" class="badge bg-warning text-dark">Unbilled</span>
+                </td>
+
 
                 <td class="text-end">
 
@@ -112,7 +118,7 @@
             </tr>
 
             <tr th:if="${#lists.isEmpty(costItems)}">
-                <td colspan="8" class="text-center text-muted py-4">
+                <td colspan="9" class="text-center text-muted py-4">
                     No expenses or outlays recorded yet.
                 </td>
             </tr>

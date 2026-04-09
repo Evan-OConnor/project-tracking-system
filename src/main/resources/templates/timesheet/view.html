@@ -11,19 +11,42 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <main class="container mt-4" style="max-width: 900px;">
+
     <div class="d-flex justify-content-between align-items-start">
+
         <div>
             <h1 class="mb-1" th:text="${entry.projectTitle}">Project Title</h1>
-            <p class="text-muted mb-0">Timesheet Entry ID: <span th:text="${entry.id}">1</span></p>
+            <p class="text-muted mb-0">
+                Timesheet Entry ID: <span th:text="${entry.id}">1</span>
+            </p>
         </div>
+
         <div class="d-flex gap-2">
-            <a class="btn btn-outline-primary" th:href="@{/timesheet-entries/{id}/edit(id=${entry.id})}">Edit</a>
-            <a class="btn btn-outline-secondary" th:href="@{/timesheet-entries}">Back</a>
-            <button id="deleteBtn" class="btn btn-outline-danger" type="button"
+
+            <!-- Edit (ONLY if NOT billed) -->
+            <a class="btn btn-outline-primary"
+               th:if="${!entry.billed}"
+               th:href="@{/timesheet-entries/{id}/edit(id=${entry.id})}">
+                Edit
+            </a>
+
+            <!-- Back (ALWAYS visible) -->
+            <a class="btn btn-outline-secondary"
+               th:href="@{/timesheet-entries}">
+                Back
+            </a>
+
+            <!-- Delete (ONLY if NOT billed) -->
+            <button th:if="${!entry.billed}"
+                    id="deleteBtn"
+                    class="btn btn-outline-danger"
+                    type="button"
                     th:attr="data-id=${entry.id}">
                 Delete
             </button>
+
         </div>
+
     </div>
 
     <div class="card mt-4">
@@ -36,13 +59,17 @@
                 <dd class="col-sm-9" th:text="${entry.workDescription}">Description of work</dd>
 
                 <dt class="col-sm-3">Date</dt>
-                <dd class="col-sm-9" th:text="${#temporals.format(entry.entryDate, 'yyyy-MM-dd')}">2026-02-17</dd>
+                <dd class="col-sm-9"
+                    th:text="${#temporals.format(entry.entryDate, 'yyyy-MM-dd')}">
+                    2026-02-17
+                </dd>
 
                 <dt class="col-sm-3">Hours</dt>
                 <dd class="col-sm-9" th:text="${entry.hours}">0.00</dd>
             </dl>
         </div>
     </div>
+
 </main>
 
 <!-- Toast Container -->
@@ -50,7 +77,8 @@
     <div id="appToast" class="toast align-items-center text-white bg-success border-0">
         <div class="d-flex">
             <div class="toast-body" id="toastMessage"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
         </div>
     </div>
 </div>
