@@ -34,11 +34,11 @@ public class ProjectSpecification {
                 );
             }
             // Status filter
-            if (criteria.getStatusId() != null) {
+            if (criteria.getStatus() != null && !criteria.getStatus().isBlank()) {
                 predicates = cb.and(predicates,
                         cb.equal(
-                                root.get("status").get("id"),
-                                criteria.getStatusId()
+                                cb.upper(root.get("status").get("name")),
+                                criteria.getStatus()
                         )
                 );
             }

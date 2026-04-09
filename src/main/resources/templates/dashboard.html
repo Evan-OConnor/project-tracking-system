@@ -350,7 +350,7 @@
                 <div class="row g-3">
                     <div class="col-4 col-md-12">
                         <a class="text-decoration-none text-reset d-block"
-                           th:href="@{/projects/search(statusId=1)}">
+                           th:href="@{/projects/search(status='ACTIVE')}">
                             <div class="status-mini-card status-mini-active">
                                 <div class="status-mini-value" th:text="${activeProjectCount}">0</div>
                                 <p class="status-mini-label">Active Projects</p>
@@ -360,7 +360,7 @@
 
                     <div class="col-4 col-md-12">
                         <a class="text-decoration-none text-reset d-block"
-                           th:href="@{/projects/search(statusId=2)}">
+                           th:href="@{/projects/search(status='COMPLETED')}">
                             <div class="status-mini-card status-mini-completed">
                                 <div class="status-mini-value" th:text="${completedProjectCount}">0</div>
                                 <p class="status-mini-label">Completed Projects</p>
@@ -370,7 +370,7 @@
 
                     <div class="col-4 col-md-12">
                         <a class="text-decoration-none text-reset d-block"
-                           th:href="@{/projects/search(statusId=3)}">
+                           th:href="@{/projects/search(status='CANCELLED')}">
                             <div class="status-mini-card status-mini-cancelled">
                                 <div class="status-mini-value" th:text="${cancelledProjectCount}">0</div>
                                 <p class="status-mini-label">Cancelled Projects</p>
@@ -403,7 +403,7 @@
                     <td class="ps-4 fw-medium recent-projects-name" th:text="${project.title}">Project Title</td>
                     <td>
                         <span class="recent-status-badge"
-                              th:classappend="${project.status != null && project.status.name == 'IN_PROGRESS'} ? ' recent-status-active' : (${project.status != null && project.status.name == 'COMPLETED'} ? ' recent-status-completed' : ' recent-status-cancelled')"
+                              th:classappend="${project.status != null && project.status.name == 'ACTIVE'} ? ' recent-status-active' : (${project.status != null && project.status.name == 'COMPLETED'} ? ' recent-status-completed' : ' recent-status-cancelled')"
                               th:text="${project.status != null ? project.status.name : 'UNKNOWN'}">
                         </span>
                     </td>

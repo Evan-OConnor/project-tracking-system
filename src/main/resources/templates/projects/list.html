@@ -56,10 +56,10 @@
                 </div>
 
                 <div class="col-md-2">
-                    <select th:field="*{statusId}" class="form-select">
+                    <select th:field="*{status}" class="form-select">
                         <option value="">Any Status</option>
                         <option th:each="status : ${statuses}"
-                                th:value="${status.id}"
+                                th:value="${status.name}"
                                 th:text="${status.name}">
                         </option>
                     </select>
