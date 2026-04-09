@@ -180,4 +180,16 @@ public class ProjectService {
                 List.of("IN_PROGRESS")
         );
     }
+
+    public long getTotalProjectCount() {
+        return projectRepository.count();
+    }
+
+    public long getProjectCountByStatus(String statusName) {
+        return projectRepository.countByStatus_NameIn(List.of(statusName));
+    }
+
+    public List<Project> getRecentProjects() {
+        return projectRepository.findTop6ByOrderByStartDateDescIdDesc();
+    }
 }

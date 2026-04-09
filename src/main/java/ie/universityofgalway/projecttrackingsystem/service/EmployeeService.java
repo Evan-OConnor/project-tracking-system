@@ -3,6 +3,7 @@ package ie.universityofgalway.projecttrackingsystem.service;
 import ie.universityofgalway.projecttrackingsystem.domain.core.Employee;
 import ie.universityofgalway.projecttrackingsystem.domain.security.SystemUser;
 import ie.universityofgalway.projecttrackingsystem.dto.EmployeeView;
+import ie.universityofgalway.projecttrackingsystem.repository.core.EmployeeRepository;
 import ie.universityofgalway.projecttrackingsystem.repository.security.SystemUserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,9 +15,12 @@ import java.util.List;
 public class EmployeeService {
 
     private final SystemUserRepository systemUserRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public EmployeeService(SystemUserRepository systemUserRepository) {
+    public EmployeeService(SystemUserRepository systemUserRepository,
+                           EmployeeRepository employeeRepository) {
         this.systemUserRepository = systemUserRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     public List<EmployeeView> searchSummaries(String query) {
@@ -53,5 +57,9 @@ public class EmployeeService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return user.getEmployee();
+    }
+
+    public long getTotalEmployeeCount() {
+        return employeeRepository.count();
     }
 }

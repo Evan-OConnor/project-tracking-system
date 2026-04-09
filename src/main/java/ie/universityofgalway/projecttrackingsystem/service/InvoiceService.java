@@ -204,6 +204,12 @@ public class InvoiceService {
         return vatRateRepo.findAll();
     }
 
+    public long getOutstandingInvoiceCount() {
+        return invoiceRepo.findByStatusIn(
+                List.of(InvoiceStatus.GENERATED, InvoiceStatus.PARTIALLY_PAID)
+        ).size();
+    }
+
     private String generateInvoiceNumber(Long invoiceId, LocalDate invoiceDate) {
         return "INV-" + invoiceDate.getYear() + "-" +
                 String.format("%06d", invoiceId);
