@@ -1,45 +1,133 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Employees</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body {
+            background: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .employees-main {
+            padding: 40px 0;
+        }
+
+        .employees-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .projects-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+
+        .projects-subtitle {
+            color: #64748b;
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+
+        .employees-search-wrap {
+            max-width: 640px;
+            margin-bottom: 1rem;
+        }
+
+        .employees-search-wrap .input-group-text {
+            padding: 6px 10px;
+        }
+
+        .projects-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .projects-table {
+            margin-bottom: 0;
+        }
+
+        .projects-table th {
+            font-size: 0.76rem;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 700;
+            border-bottom-color: #e5e7eb;
+        }
+
+        .projects-table th,
+        .projects-table td {
+            padding-top: 0.8rem;
+            padding-bottom: 0.8rem;
+            vertical-align: middle;
+        }
+
+        .recent-projects-name {
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container mt-4">
+<main class="container employees-main">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>Employees</h1>
-    </div>
+    <section class="employees-header">
+        <h1 class="projects-title">Employees</h1>
+        <p class="projects-subtitle">View employee information.</p>
+    </section>
 
     <!-- Search box -->
-    <div class="mb-3">
-        <input type="text" id="searchInput" class="form-control" placeholder="Search employees by name or ID...">
+    <div class="employees-search-wrap">
+        <div class="input-group">
+            <span class="input-group-text" id="search-addon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search employees by name or ID...">
+        </div>
     </div>
 
-    <div class="table-responsive">
-        <table id="employeesTable" class="table table-striped align-middle">
+    <div class="projects-card">
+        <div class="table-responsive">
+            <table id="employeesTable" class="table table-striped align-middle projects-table">
             <thead>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Role</th>
+                <th>Email</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="e : ${employees}">
                 <td th:text="${e.id}">1</td>
-                <td th:text="${e.name}">John Doe</td>
+                <td class="recent-projects-name" th:text="${e.name}">John Doe</td>
+                <td class="recent-projects-name text-uppercase" th:text="${#strings.isEmpty(e.role) ? '-' : e.role}">-</td>
+                <td class="recent-projects-name" th:text="${T(java.lang.String).format('U%06d@Aardvark.ie', e.id)}">U000001@Aardvark.ie</td>
             </tr>
             <tr th:if="${#lists.isEmpty(employees)}">
-                <td colspan="2" class="text-center text-muted">No employees found.</td>
+                <td colspan="4" class="text-center text-muted">No employees found.</td>
             </tr>
             </tbody>
         </table>
+        </div>
     </div>
 
-</div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/employees/list.js}"></script>
