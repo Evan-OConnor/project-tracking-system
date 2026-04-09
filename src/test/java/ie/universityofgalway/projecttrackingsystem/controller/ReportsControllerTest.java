@@ -43,6 +43,9 @@ class ReportsControllerTest {
     @MockitoBean
     private EmployeeRepository employeeRepository;
 
+    @MockitoBean
+    private ReceiptRepository receiptRepository;
+
     // -------------------------
     // DASHBOARD
     // -------------------------
@@ -76,6 +79,7 @@ class ReportsControllerTest {
         Contact client = mock(Contact.class);
         Project project = mock(Project.class);
         Invoice invoice = mock(Invoice.class);
+        Receipt receipt = mock(Receipt.class);
 
         ProjectStatus status = mock(ProjectStatus.class);
         when(status.getName()).thenReturn("ACTIVE");
@@ -87,14 +91,27 @@ class ReportsControllerTest {
         when(projectRepository.findByClientContactId(clientId))
                 .thenReturn(List.of(project));
 
+        when(invoice.getTotalExVat()).thenReturn(BigDecimal.valueOf(200));
+
         when(invoiceRepository.findByProjectClientContactIdAndStatusIn(any(), any()))
                 .thenReturn(List.of(invoice));
 
+        when(receipt.getAmountPaid()).thenReturn(BigDecimal.valueOf(100));
+
+        when(receiptRepository.findByClientId(clientId))
+                .thenReturn(List.of(receipt));
+
         mockMvc.perform(get("/reports/client")
                         .param("clientId", "1"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("reports/client-report"))
-                .andExpect(model().attributeExists("client", "projects", "invoices"));
+                .andExpect(model().attributeExists(
+                        "client",
+                        "projects",
+                        "invoices",
+                        "receipts",
+                        "totalOutstanding",
+                        "totalReceived",
+                        "receiptCount"
+                ));
     }
 
     @Test

@@ -27,17 +27,20 @@ public class ReportsController {
     private final TimesheetEntryRepository timesheetRepository;
     private final ContactRepository clientRepository;
     private final EmployeeRepository employeeRepository;
+    private final ReceiptRepository receiptRepository;
 
     public ReportsController(ProjectRepository projectRepository,
                              InvoiceRepository invoiceRepository,
                              TimesheetEntryRepository timesheetRepository,
                              ContactRepository clientRepository,
-                             EmployeeRepository employeeRepository) {
+                             EmployeeRepository employeeRepository,
+                             ReceiptRepository receiptRepository) {
         this.projectRepository = projectRepository;
         this.invoiceRepository = invoiceRepository;
         this.timesheetRepository = timesheetRepository;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
+        this.receiptRepository = receiptRepository;
     }
 
     // Dashboard
@@ -67,9 +70,25 @@ public class ReportsController {
                         List.of(InvoiceStatus.GENERATED, InvoiceStatus.PARTIALLY_PAID)
                 );
 
+        List<Receipt> receipts = receiptRepository.findByClientId(clientId);
+
+        int receiptCount = receipts.size();
+
+        double totalReceived = receipts.stream()
+                .mapToDouble(r -> r.getAmountPaid() != null ? r.getAmountPaid().doubleValue() : 0.0)
+                .sum();
+
+        double totalOutstanding = outstandingInvoices.stream()
+                .mapToDouble(i -> i.getTotalExVat().doubleValue())
+                .sum();
+
+        model.addAttribute("totalOutstanding", totalOutstanding);
         model.addAttribute("client", client);
         model.addAttribute("projects", projects);
         model.addAttribute("invoices", outstandingInvoices);
+        model.addAttribute("receipts", receipts);
+        model.addAttribute("receiptCount", receiptCount);
+        model.addAttribute("totalReceived", totalReceived);
 
         return "reports/client-report";
     }

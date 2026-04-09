@@ -33,4 +33,10 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
             String prefix
     );
 
+    @Query("""
+    SELECT r FROM Receipt r
+    WHERE r.invoice.project.clientContact.id = :clientId
+""")
+    List<Receipt> findByClientId(Long clientId);
+
 }

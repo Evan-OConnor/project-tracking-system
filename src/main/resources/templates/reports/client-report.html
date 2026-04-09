@@ -69,7 +69,28 @@
             </table>
         </div>
 
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h6>Total Receipts</h6>
+                <h4 th:text="${receiptCount}">0</h4>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h6>Total Received (€)</h6>
+                <h4 th:text="'€' + ${#numbers.formatDecimal(totalReceived,1,'COMMA',2,'POINT')}">€0.00</h4>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h6>Outstanding (€)</h6>
+                <h4 th:text="'€' + ${#numbers.formatDecimal(totalOutstanding,1,'COMMA',2,'POINT')}">€0.00</h4>
+            </div>
+        </div>
     </div>
+
 
 </main>
 
