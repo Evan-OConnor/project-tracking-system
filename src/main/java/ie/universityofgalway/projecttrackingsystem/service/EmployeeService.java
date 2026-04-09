@@ -29,7 +29,8 @@ public class EmployeeService {
                 .stream()
                 .map(u -> new EmployeeView(
                         u.getEmployee().getId(),
-                        u.getEmployee().getName()
+                        u.getEmployee().getName(),
+                        (u.getRole() != null && u.getRole().getName() != null) ? u.getRole().getName() : "-"
                 ))
                 .toList();
     }
@@ -40,7 +41,8 @@ public class EmployeeService {
                 .stream()
                 .map(u -> new EmployeeView(
                         u.getEmployee().getId(),
-                        u.getEmployee().getName()
+                        u.getEmployee().getName(),
+                        (u.getRole() != null && u.getRole().getName() != null) ? u.getRole().getName() : "-"
                 ))
                 .toList();
     }
