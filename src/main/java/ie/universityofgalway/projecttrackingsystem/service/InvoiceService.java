@@ -5,6 +5,7 @@ import ie.universityofgalway.projecttrackingsystem.domain.lookup.InvoiceStatus;
 import ie.universityofgalway.projecttrackingsystem.domain.lookup.VatRate;
 import ie.universityofgalway.projecttrackingsystem.dto.InvoiceDTO;
 import ie.universityofgalway.projecttrackingsystem.dto.InvoiceLineItemDTO;
+import ie.universityofgalway.projecttrackingsystem.dto.InvoiceSearchDTO;
 import ie.universityofgalway.projecttrackingsystem.repository.core.*;
 import ie.universityofgalway.projecttrackingsystem.repository.lookup.VatRateRepository;
 
@@ -348,5 +349,21 @@ public class InvoiceService {
                 totalDiscount,
                 effectivePaid
         );
+    }
+
+    public List<InvoiceSearchDTO> searchOutstandingInvoices(String query) {
+        return invoiceRepo
+                .searchOutstandingInvoices(
+                        query,
+                        List.of(InvoiceStatus.GENERATED, InvoiceStatus.PARTIALLY_PAID)
+                )
+                .stream()
+                .map(i -> new InvoiceSearchDTO(
+                        i.getId(),
+                        i.getInvoiceNumber(),
+                        i.getProject().getTitle(),
+                        i.getTotalExVat()
+                ))
+                .toList();
     }
 }

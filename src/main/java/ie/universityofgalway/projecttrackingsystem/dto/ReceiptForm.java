@@ -13,6 +13,8 @@ public class ReceiptForm {
     @NotNull(message = "Invoice must be selected")
     private Long invoiceId;
 
+    private String invoiceNumber;
+
     private String receiptNumber;
 
     @NotNull(message = "Date received is required")
@@ -41,6 +43,8 @@ public class ReceiptForm {
     public Long getInvoiceId() {
         return invoiceId;
     }
+
+    public String getInvoiceNumber(){ return invoiceNumber;}
 
     public String getReceiptNumber() {
         return receiptNumber;
@@ -71,6 +75,8 @@ public class ReceiptForm {
     public void setInvoiceId(Long invoiceId) {
         this.invoiceId = invoiceId;
     }
+
+    public void setInvoiceNumber(String invoiceNumber){this.invoiceNumber = invoiceNumber;}
 
     public void setReceiptNumber(String receiptNumber) {
         this.receiptNumber = receiptNumber;

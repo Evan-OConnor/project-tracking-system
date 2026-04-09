@@ -21,13 +21,11 @@ public class ProjectController  {
 
     private final ProjectService projectService;
     private final ProjectQueryService projectQueryService;
-    private final ContactRepository contactRepository;
 
     public ProjectController(ProjectService projectService,
-                             ProjectQueryService projectQueryService, ContactRepository contactRepository) {
+                             ProjectQueryService projectQueryService) {
         this.projectService = projectService;
         this.projectQueryService = projectQueryService;
-        this.contactRepository = contactRepository;
     }
 
     // New Form
@@ -58,6 +56,18 @@ public class ProjectController  {
                          BindingResult bindingResult,
                          Model model,
                          RedirectAttributes redirectAttributes) {
+
+        if (form.getClientId() == null) {
+            bindingResult.rejectValue("clientId", "error.clientId", "Client is required");
+        }
+
+        if (form.getSolicitorId() != null && form.getSolicitorId().equals(form.getClientId())) {
+            bindingResult.rejectValue("solicitorId", "error", "Solicitor cannot be the same as client");
+        }
+
+        if (form.getInsuranceCompanyId() != null && form.getInsuranceCompanyId().equals(form.getClientId())) {
+            bindingResult.rejectValue("solicitorId", "error", "Insurance company cannot be the same as client");
+        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("mode", "new");
@@ -130,6 +140,18 @@ public class ProjectController  {
                          BindingResult bindingResult,
                          Model model,
                          RedirectAttributes redirectAttributes) {
+
+        if (form.getClientId() == null) {
+            bindingResult.rejectValue("clientId", "error.clientId", "Client is required");
+        }
+
+        if (form.getSolicitorId() != null && form.getSolicitorId().equals(form.getClientId())) {
+            bindingResult.rejectValue("solicitorId", "error", "Solicitor cannot be the same as client");
+        }
+
+        if (form.getInsuranceCompanyId() != null && form.getInsuranceCompanyId().equals(form.getClientId())) {
+            bindingResult.rejectValue("solicitorId", "error", "Insurance company cannot be the same as client");
+        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("mode", "edit");

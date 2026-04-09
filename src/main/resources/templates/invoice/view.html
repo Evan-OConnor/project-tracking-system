@@ -75,13 +75,28 @@
 
         </div>
 
-        <div>
+        <div class="d-flex gap-2">
 
+            <!-- Back -->
             <a class="btn btn-outline-secondary"
                th:href="@{/invoices}">
                 Back
             </a>
 
+            <!-- 🔥 PAY BUTTON -->
+            <a class="btn btn-success"
+               th:if="${invoice.outstanding > 0}"
+               th:href="@{/receipts/new(invoiceId=${invoice.invoiceId})}">
+                Pay Invoice
+            </a>
+
+            <!-- Optional: show Paid -->
+            <span class="badge bg-success align-self-center"
+                  th:if="${invoice.outstanding == 0}">
+        Fully Paid
+    </span>
+
+            <!-- Delete -->
             <form th:action="@{'/invoices/' + ${invoice.invoiceId} + '/delete'}"
                   method="post"
                   th:if="${invoice.status.name() != 'PAID' and invoice.status.name() != 'PARTIALLY_PAID'}"
@@ -96,8 +111,6 @@
                 </button>
 
             </form>
-
-
 
         </div>
 

@@ -20,7 +20,8 @@ public class ClientApiController {
 
     @GetMapping("/search")
     public List<ClientDto> search(@RequestParam String query) {
-        return contactRepository.findByNameContainingIgnoreCase(query)
+        return contactRepository
+                .findByNameContainingIgnoreCaseOrPhoneContaining(query, query)
                 .stream()
                 .map(c -> new ClientDto(c.getId(), c.getName()))
                 .toList();
