@@ -13,8 +13,260 @@
 
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 
+    <style>
+        .dashboard-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+
+        .dashboard-subtitle {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .summary-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 1.25rem;
+            background: #fff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .summary-label {
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0;
+            line-height: 1.1;
+        }
+
+        .summary-icon {
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .summary-icon-blue { background: white; color: #2563eb; }
+        .summary-icon-cyan { background: white; color: #0891b2; }
+        .summary-icon-green { background: white; color: #16a34a; }
+        .summary-icon-indigo { background: white; color: #4f46e5; }
+
+        .quick-actions-panel {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+            padding: 1.25rem;
+        }
+
+        .quick-actions-title {
+            color: #111827;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.9rem;
+        }
+
+        .quick-action-link {
+            display: block;
+            width: 100%;
+            border-radius: 12px;
+            padding: 0.72rem 0.9rem;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 1.64rem;
+            background: #F1F5F9;
+            color: #0F172A;
+            border: 1px solid #CBD5F5;
+            transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+        }
+
+        .quick-action-link:last-child {
+            margin-bottom: 0;
+        }
+
+        .quick-action-link:hover {
+            background: #E2E8F0;
+            color: #0F172A;
+            border-color: #CBD5F5;
+        }
+
+        .quick-action-link:active,
+        .quick-action-link:focus-visible {
+            background: #CBD5E1;
+            color: #0F172A;
+        }
+
+        .project-status-panel {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+            padding: 1.25rem;
+            height: 100%;
+        }
+
+        .project-status-title {
+            color: #111827;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.9rem;
+        }
+
+        .status-mini-card {
+            border-radius: 12px;
+            padding: 0.95rem;
+            text-align: center;
+        }
+
+        .status-mini-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 0.2rem;
+        }
+
+        .status-mini-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        .status-mini-active {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-mini-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-mini-cancelled {
+            background: #ffe4d6;
+            color: #c2410c;
+        }
+
+        .recent-projects-panel {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .recent-projects-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .recent-projects-title {
+            color: #111827;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .recent-projects-table {
+            margin-bottom: 0;
+        }
+
+        .recent-projects-table th {
+            font-size: 0.76rem;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 700;
+            border-bottom-color: #e5e7eb;
+        }
+
+        .recent-projects-table td {
+            vertical-align: middle;
+        }
+
+        .recent-projects-date {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .recent-projects-name {
+            font-size: 0.9rem;
+        }
+
+        .recent-view-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: #2563EB;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .recent-view-link:hover {
+            color: #1D4ED8;
+            text-underline-offset: 2px;
+        }
+
+        .recent-status-badge {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 0.15rem 0.55rem;
+            font-size: 0.74rem;
+            font-weight: 600;
+        }
+
+        .recent-status-active {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .recent-status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .recent-status-cancelled {
+            background: #ffe4d6;
+            color: #c2410c;
+        }
+
+        .recent-projects-footer {
+            padding: 0.85rem 1.25rem;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .recent-projects-footer a {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: #1d4ed8;
+        }
+
+        .recent-projects-footer a:hover {
+            color: #1e40af;
+        }
+    </style>
+
 </head>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <body>
 
 <!-- Navbar -->
@@ -22,62 +274,165 @@
 
 <main class="container dashboard">
 
-    <!-- Active Projects -->
-    <div class="card-clean mb-4 text-center">
-        <h5 class="text-muted">Active Projects</h5>
-        <div class="stat-number" th:text="${activeProjectCount}">0</div>
+    <section class="dashboard-header">
+        <h1 class="dashboard-title">Dashboard</h1>
+        <p class="dashboard-subtitle">Welcome back. Here's your project tracking overview.</p>
+    </section>
 
-        <a th:href="@{/projects}" class="btn btn-primary mt-3">
-            View Projects
-        </a>
-    </div>
-
-    <!-- Module Buttons -->
-    <div class="card-clean">
-        <h5 class="mb-4 text-center">Quick Access</h5>
-
-        <div class="row g-3">
-
-            <div class="col-md-4">
-                <a th:href="@{/projects}" class="btn btn-light w-100 module-btn">
-                    📁 Projects
-                </a>
+    <!-- Top Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="summary-card d-flex justify-content-between align-items-start h-100">
+                <div>
+                    <p class="summary-label">Total Projects</p>
+                    <p class="summary-value" th:text="${totalProjectCount}">0</p>
+                </div>
+                <span class="summary-icon summary-icon-blue" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-check-icon lucide-folder-check"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="m9 13 2 2 4-4"/></svg>
+                </span>
             </div>
+        </div>
 
-            <div class="col-md-4">
-                <a th:href="@{/contacts}" class="btn btn-light w-100 module-btn">
-                    👥 Contacts
-                </a>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="summary-card d-flex justify-content-between align-items-start h-100">
+                <div>
+                    <p class="summary-label">Outstanding Invoices</p>
+                    <p class="summary-value" th:text="${outstandingInvoiceCount}">0</p>
+                </div>
+                <span class="summary-icon summary-icon-indigo" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock4-icon lucide-clock-4"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </span>
             </div>
+        </div>
 
-            <div class="col-md-4">
-                <a th:href="@{/timesheet-entries}" class="btn btn-light w-100 module-btn">
-                    ⏱ Timesheets
-                </a>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="summary-card d-flex justify-content-between align-items-start h-100">
+                <div>
+                    <p class="summary-label">Contacts</p>
+                    <p class="summary-value" th:text="${contactCount}">0</p>
+                </div>
+                <span class="summary-icon summary-icon-cyan" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-icon lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
+                </span>
             </div>
+        </div>
 
-            <div class="col-md-4">
-                <a th:href="@{/cost-items}" class="btn btn-light w-100 module-btn">
-                    💸 Expenses
-                </a>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="summary-card d-flex justify-content-between align-items-start h-100">
+                <div>
+                    <p class="summary-label">Employees</p>
+                    <p class="summary-value" th:text="${employeeCount}">0</p>
+                </div>
+                <span class="summary-icon summary-icon-green" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-user-icon lucide-file-user"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M16 22a4 4 0 0 0-8 0"/><circle cx="12" cy="15" r="3"/></svg>
+                </span>
             </div>
-
-            <div class="col-md-4">
-                <a th:href="@{/invoices}" class="btn btn-light w-100 module-btn">
-                    🧾 Invoices
-                </a>
-            </div>
-
-            <div class="col-md-4">
-                <a th:href="@{/reports}" class="btn btn-light w-100 module-btn">
-                    📊 Reports
-                </a>
-            </div>
-
         </div>
     </div>
 
+    <!-- Middle Section -->
+    <section class="row g-3 mb-4">
+        <div class="col-12 col-lg-4">
+            <div class="quick-actions-panel h-100">
+                <h2 class="quick-actions-title">Quick Actions</h2>
+
+                <a class="quick-action-link" th:href="@{/projects/new}">Create Project</a>
+                <a class="quick-action-link" th:href="@{/contacts/new}">Add Contact</a>
+                <a class="quick-action-link" th:href="@{/timesheet-entries/new}">Add Timesheet Entry</a>
+                <a class="quick-action-link" th:href="@{/cost-items/new}">Add Expense / Outlay</a>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-8">
+            <div class="project-status-panel">
+                <h2 class="project-status-title">Project Status</h2>
+
+                <div class="row g-3">
+                    <div class="col-4 col-md-12">
+                        <a class="text-decoration-none text-reset d-block"
+                           th:href="@{/projects/search(statusId=1)}">
+                            <div class="status-mini-card status-mini-active">
+                                <div class="status-mini-value" th:text="${activeProjectCount}">0</div>
+                                <p class="status-mini-label">Active Projects</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-4 col-md-12">
+                        <a class="text-decoration-none text-reset d-block"
+                           th:href="@{/projects/search(statusId=2)}">
+                            <div class="status-mini-card status-mini-completed">
+                                <div class="status-mini-value" th:text="${completedProjectCount}">0</div>
+                                <p class="status-mini-label">Completed Projects</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-4 col-md-12">
+                        <a class="text-decoration-none text-reset d-block"
+                           th:href="@{/projects/search(statusId=3)}">
+                            <div class="status-mini-card status-mini-cancelled">
+                                <div class="status-mini-value" th:text="${cancelledProjectCount}">0</div>
+                                <p class="status-mini-label">Cancelled Projects</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Projects -->
+    <section class="recent-projects-panel mb-4">
+        <div class="recent-projects-header">
+            <h2 class="recent-projects-title">Recent Projects</h2>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table recent-projects-table align-middle">
+                <thead>
+                <tr>
+                    <th class="ps-4">Project Name</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th class="text-end pe-4">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="project : ${recentProjects}">
+                    <td class="ps-4 fw-medium recent-projects-name" th:text="${project.title}">Project Title</td>
+                    <td>
+                        <span class="recent-status-badge"
+                              th:classappend="${project.status != null && project.status.name == 'IN_PROGRESS'} ? ' recent-status-active' : (${project.status != null && project.status.name == 'COMPLETED'} ? ' recent-status-completed' : ' recent-status-cancelled')"
+                              th:text="${project.status != null ? project.status.name : 'UNKNOWN'}">
+                        </span>
+                    </td>
+                    <td class="recent-projects-date" th:text="${project.startDate != null ? #temporals.format(project.startDate, 'yyyy-MM-dd') : '-'}">2026-01-01</td>
+                    <td class="text-end pe-4">
+                        <a class="recent-view-link" th:href="@{/projects/{id}(id=${project.id})}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <span>View</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(recentProjects)}">
+                    <td colspan="4" class="text-center text-muted py-4">No recent projects available.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="recent-projects-footer">
+            <a th:href="@{/projects}">View All Projects -&gt;</a>
+        </div>
+    </section>
+
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
