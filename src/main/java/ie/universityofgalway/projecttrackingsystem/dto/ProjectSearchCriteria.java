@@ -11,6 +11,7 @@ public class ProjectSearchCriteria {
     private String title;
     private String clientContactName;
     private Long statusId;
+    private String status;
     private Long categoryId;
 
     @DateTimeFormat (pattern = "yyyy-MM-dd")
@@ -34,6 +35,10 @@ public class ProjectSearchCriteria {
 
     public Long getStatusId() {
         return statusId;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public Long getCategoryId() {return categoryId;}
@@ -68,6 +73,10 @@ public class ProjectSearchCriteria {
         this.statusId = statusId;
     }
 
+    public void setStatus(String status) {
+        this.status = status == null ? null : status.trim().toUpperCase();
+    }
+
     public void setCategoryId(Long categoryId) {this.categoryId = categoryId;}
 
     public void setStartDateFrom(LocalDate startDateFrom) {
@@ -93,6 +102,7 @@ public class ProjectSearchCriteria {
         return (title == null || title.isBlank())
                 && clientContactName == null
                 && statusId == null
+                && (status == null || status.isBlank())
                 && startDateFrom == null
                 && startDateTo == null
                 && hasInvoices == null

@@ -15,6 +15,8 @@ import java.util.List;
 @Transactional
 public class ProjectService {
 
+    private static final String ACTIVE_STATUS = "ACTIVE";
+
     private final ProjectRepository projectRepository;
     private final ProjectCategoryRepository categoryRepository;
     private final ProjectStatusRepository statusRepository;
@@ -59,10 +61,10 @@ public class ProjectService {
 
         project.setClientContact(client);
 
-        ProjectStatus inProgress = statusRepository.findByName("IN_PROGRESS")
+        ProjectStatus activeStatus = statusRepository.findByName(ACTIVE_STATUS)
                 .orElseThrow(() -> new IllegalStateException("Default status not found"));
 
-        project.setStatus(inProgress);
+        project.setStatus(activeStatus);
 
         return projectRepository.save(project);
     }
@@ -163,7 +165,7 @@ public class ProjectService {
     }
     public long getActiveProjectCount() {
         return projectRepository.countByStatus_NameIn(
-                List.of("IN_PROGRESS")
+                List.of(ACTIVE_STATUS)
         );
     }
 

@@ -5,7 +5,7 @@ INSERT INTO project_category (name) VALUES
 
 
 INSERT INTO project_status (name) VALUES
-    ('IN_PROGRESS'),
+    ('ACTIVE'),
     ('COMPLETED'),
     ('CANCELLED');
 
