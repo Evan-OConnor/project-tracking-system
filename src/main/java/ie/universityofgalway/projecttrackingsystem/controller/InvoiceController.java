@@ -61,16 +61,28 @@ public class InvoiceController {
 
     // Generate Invoice
     @PostMapping("/generate")
-    public String generateInvoice(@RequestParam Long projectId,
+    public String generateInvoice(@RequestParam(required = false) String projectId,
                                   RedirectAttributes redirectAttributes) {
 
-        try {
-            if (projectId == null) {
-                throw new IllegalArgumentException("Project ID is required");
-            }
+        if (projectId == null || projectId.isBlank()) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", "Please select a valid project from the list."
+            );
+            return "redirect:/invoices/generate";
+        }
 
-            InvoiceDTO invoice =
-                    invoiceService.generateInvoice(projectId);
+        Long id;
+        try {
+            id = Long.parseLong(projectId);
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", "Invalid project selected."
+            );
+            return "redirect:/invoices/generate";
+        }
+
+        try {
+            InvoiceDTO invoice = invoiceService.generateInvoice(id);
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",
@@ -80,7 +92,7 @@ public class InvoiceController {
             return "redirect:/invoices/" + invoice.getInvoiceId();
 
         } catch (IllegalStateException ex) {
-            // Business rule failure (e.g. invoice already exists)
+
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
                     ex.getMessage()
@@ -89,7 +101,7 @@ public class InvoiceController {
             return "redirect:/invoices/generate";
 
         } catch (Exception ex) {
-            // Unexpected errors (DB, concurrency, etc.)
+
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
                     "Something went wrong while generating the invoice."

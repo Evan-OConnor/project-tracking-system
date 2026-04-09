@@ -7,9 +7,11 @@ import ie.universityofgalway.projecttrackingsystem.repository.core.*;
 import ie.universityofgalway.projecttrackingsystem.service.ContactService;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -55,8 +57,7 @@ public class ReportsController {
         }
 
         var client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
-
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
 
         List<Project> projects = projectRepository.findByClientContactId(clientId);
 
