@@ -64,6 +64,18 @@
             margin-bottom: 1rem;
         }
 
+        .projects-card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.35rem;
+        }
+
         .projects-table-card {
             overflow: hidden;
         }
@@ -298,6 +310,7 @@
 
     <!-- Advanced Search -->
     <div class="projects-card projects-filter-card">
+        <h2 class="section-title">Search &amp; Filter</h2>
         <form th:action="@{/projects/search}"
               method="get"
               th:object="${criteria}"
@@ -389,6 +402,9 @@
 
     <!-- Table -->
     <div class="projects-card projects-table-card">
+        <div class="projects-card-header">
+            <h2 class="section-title mb-0">Projects (<span th:text="${#lists.size(projects)}">0</span>)</h2>
+        </div>
         <div class="table-responsive">
             <table id="projectsTable" class="table table-striped align-middle projects-table">
 
