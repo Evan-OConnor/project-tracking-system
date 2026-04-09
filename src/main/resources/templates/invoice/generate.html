@@ -38,32 +38,29 @@
                        th:name="${_csrf.parameterName}"
                        th:value="${_csrf.token}" />
 
-                <!-- PROJECT SELECT -->
+                <!-- PROJECT SEARCH -->
+                <div class="mb-3 position-relative">
 
-                <div class="mb-3">
+                    <label class="form-label">Project</label>
 
-                    <label for="projectId" class="form-label">
-                        Project
-                    </label>
+                    <!-- Visible search -->
+                    <input type="text"
+                           id="projectInput"
+                           class="form-control"
+                           placeholder="Search project..."
+                           required>
 
-                    <select id="projectId"
-                            name="projectId"
-                            class="form-select"
-                            required>
+                    <!-- Hidden ID -->
+                    <input type="hidden"
+                           id="projectId"
+                           name="projectId">
 
-                        <option value="" disabled selected>
-                            Select a project
-                        </option>
-
-                        <option th:each="p : ${projects}"
-                                th:value="${p.id}"
-                                th:text="${p.title}">
-                        </option>
-
-                    </select>
+                    <!-- Suggestions -->
+                    <ul id="projectSuggestions"
+                        class="list-group position-absolute w-100"
+                        style="z-index:1000;"></ul>
 
                 </div>
-
                 <!-- INFO MESSAGE -->
 
                 <div class="alert alert-info">
@@ -87,6 +84,6 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<script th:src="@{/js/invoice/form.js}"></script>
 </body>
 </html>

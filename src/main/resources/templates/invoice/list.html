@@ -145,6 +145,13 @@
                         View
                     </a>
 
+                    <!--PAY BUTTON -->
+                    <a class="btn btn-sm btn-success"
+                       th:if="${inv.outstanding > 0}"
+                       th:href="@{/receipts/new(invoiceId=${inv.invoiceId})}">
+                        Pay
+                    </a>
+
                     <!-- Delete (Void) Button -->
                     <form th:action="@{/invoices/{id}/delete(id=${inv.invoiceId})}"
                           method="post"

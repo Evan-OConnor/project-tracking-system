@@ -1,6 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.controller;
 
 import ie.universityofgalway.projecttrackingsystem.dto.InvoiceDTO;
+import ie.universityofgalway.projecttrackingsystem.dto.InvoiceSearchDTO;
 import ie.universityofgalway.projecttrackingsystem.service.InvoiceService;
 
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +21,6 @@ public class InvoiceRestController {
         this.invoiceService = invoiceService;
     }
 
-    //Search
-    @GetMapping("/search")
-    public List<InvoiceDTO> searchInvoices(@RequestParam String query) {
-        return invoiceService.searchInvoices(query);
-    }
-
     // Get invoice summary
     @GetMapping("/{id}/summary")
     public InvoiceDTO getInvoiceSummary(@PathVariable Long id) {
@@ -43,5 +38,10 @@ public class InvoiceRestController {
         data.put("discount", BigDecimal.ZERO);
 
         return data;
+    }
+
+    @GetMapping("/search")
+    public List<InvoiceSearchDTO> search(@RequestParam String query) {
+        return invoiceService.searchOutstandingInvoices(query);
     }
 }

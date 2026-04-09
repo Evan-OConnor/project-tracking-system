@@ -100,28 +100,22 @@
     <h5 class="mt-4">Contacts</h5>
 
     <!-- Client -->
-    <!-- Client -->
     <div class="mb-3">
       <label class="form-label">
         Client <span class="text-danger">*</span>
       </label>
 
-      <!-- Visible input -->
       <input type="text"
-             id="clientSearch"
-             class="form-control"
+             class="form-control client-search"
+             data-target-id="clientId"
+             data-results-id="clientResults"
+             data-mode="select"
              th:value="*{clientName}"
-             placeholder="Search client..."
-             autocomplete="off"
-             required>
+             placeholder="Search client...">
 
-      <!-- Hidden ID (THIS is what gets submitted) -->
-      <input type="hidden"
-             th:field="*{clientId}"
-             id="clientId">
+      <input type="hidden" th:field="*{clientId}" id="clientId">
 
-      <!-- Results list -->
-      <ul id="clientResults" class="list-group mt-2"></ul>
+      <div id="clientResults" class="list-group mt-2"></div>
 
       <!-- Add new -->
       <div class="mt-2">
@@ -133,6 +127,7 @@
         </a>
       </div>
 
+      <!-- Validation -->
       <div class="invalid-feedback d-block"
            th:if="${#fields.hasErrors('clientId')}"
            th:errors="*{clientId}">
@@ -140,49 +135,29 @@
     </div>
 
     <!-- Solicitor + Insurance -->
-    <div class="row">
+    <input type="text"
+           class="form-control client-search"
+           data-target-id="solicitorId"
+           data-results-id="solicitorResults"
+           data-mode="select"
+           th:value="*{solicitorContactName}"
+           placeholder="Search solicitor...">
 
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Solicitor (optional)</label>
+    <input type="hidden" th:field="*{solicitorId}" id="solicitorId">
 
-        <input class="form-control"
-               list="solicitors-list"
-               th:field="*{solicitorContactName}"
-               placeholder="Solicitor name"
-               autocomplete="off"
-               th:classappend="${#fields.hasErrors('solicitorContactName')} ? ' is-invalid'">
+    <div id="solicitorResults" class="list-group mt-2"></div>
 
-        <datalist id="solicitors-list">
-          <option th:each="c : ${contacts}" th:value="${c.name}"></option>
-        </datalist>
+    <input type="text"
+           class="form-control client-search"
+           data-target-id="insuranceCompanyId"
+           data-results-id="insuranceResults"
+           data-mode="select"
+           th:value="*{insuranceCompanyContactName}"
+           placeholder="Search insurance company...">
 
-        <div class="invalid-feedback"
-             th:if="${#fields.hasErrors('solicitorContactName')}"
-             th:errors="*{solicitorContactName}">
-        </div>
-      </div>
+    <input type="hidden" th:field="*{insuranceCompanyId}" id="insuranceCompanyId">
 
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Insurance Company (optional)</label>
-
-        <input class="form-control"
-               list="insurance-list"
-               th:field="*{insuranceCompanyContactName}"
-               placeholder="Insurance company"
-               autocomplete="off"
-               th:classappend="${#fields.hasErrors('insuranceCompanyContactName')} ? ' is-invalid'">
-
-        <datalist id="insurance-list">
-          <option th:each="c : ${contacts}" th:value="${c.name}"></option>
-        </datalist>
-
-        <div class="invalid-feedback"
-             th:if="${#fields.hasErrors('insuranceCompanyContactName')}"
-             th:errors="*{insuranceCompanyContactName}">
-        </div>
-      </div>
-
-    </div>
+    <div id="insuranceResults" class="list-group mt-2"></div>
 
     <!-- Title -->
     <div class="mb-3">
@@ -255,7 +230,7 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/project/form.js}"></script>
+<script th:src="@{/js/client-search.js}"></script>
 
 </body>
 </html>

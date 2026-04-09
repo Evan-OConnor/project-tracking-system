@@ -140,6 +140,13 @@ public class ProjectQueryService {
         );
     }
 
+    public List<ProjectSearchDTO> searchProjectsForAutocomplete(String query) {
+        return projectRepository.findByTitleContainingIgnoreCase(query)
+                .stream()
+                .map(p -> new ProjectSearchDTO(p.getId(), p.getTitle()))
+                .toList();
+    }
+
     // Lookups
     public void loadFormLookups(Model model) {
         model.addAttribute("categories", categoryRepository.findAll());

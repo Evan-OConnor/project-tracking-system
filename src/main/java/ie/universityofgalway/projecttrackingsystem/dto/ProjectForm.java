@@ -23,8 +23,12 @@ public class ProjectForm {
     @Size(max = 255, message = "Solicitor name must be less than 255 characters")
     private String solicitorContactName;
 
+    private Long solicitorId;
+
     @Size(max = 255, message = "Insurance company name must be less than 255 characters")
     private String insuranceCompanyContactName;
+
+    private Long insuranceCompanyId;
 
     @NotBlank(message = "Project title is required")
     @Size(max = 80, message = "Project title must be 80 characters or fewer")
@@ -61,9 +65,13 @@ public class ProjectForm {
         return solicitorContactName;
     }
 
+    public Long getSolicitorId() {return solicitorId;}
+
     public String getInsuranceCompanyContactName() {
         return insuranceCompanyContactName;
     }
+
+    public Long getInsuranceCompanyId() {return insuranceCompanyId;}
 
     public String getTitle() {
         return title;
@@ -84,9 +92,7 @@ public class ProjectForm {
         this.categoryId = categoryId;
     }
 
-    public void setStatusId(Long statusId) {
-        this.statusId = statusId;
-    }
+    public void setStatusId(Long statusId) {this.statusId = statusId;}
 
     public void setClientId(Long clientId) {this.clientId = clientId;}
 
@@ -94,7 +100,11 @@ public class ProjectForm {
 
     public void setSolicitorContactName(String solicitorContactName) {this.solicitorContactName = trim(solicitorContactName);}
 
+    public void setSolicitorId(Long solicitorId) {this.solicitorId = solicitorId;}
+
     public void setInsuranceCompanyContactName(String insuranceCompanyContactName) {this.insuranceCompanyContactName = trim(insuranceCompanyContactName);}
+
+    public void setInsuranceCompanyId(Long insuranceCompanyId) {this.insuranceCompanyId = insuranceCompanyId;}
 
     public void setTitle(String title) {
         this.title = trim(title);

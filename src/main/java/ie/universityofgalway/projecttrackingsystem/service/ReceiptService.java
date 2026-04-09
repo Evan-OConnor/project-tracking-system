@@ -213,6 +213,9 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
 
         // Rule
         BigDecimal expectedAmount = outstanding.subtract(form.getDiscount());
-        form.setAmountPaid(expectedAmount);
+
+        if (form.getAmountPaid().compareTo(expectedAmount) > 0) {
+            throw new IllegalStateException("Amount paid cannot exceed outstanding balance after discount");
+        }
     }
 }

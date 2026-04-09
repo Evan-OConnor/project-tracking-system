@@ -64,10 +64,10 @@ public class ContactService implements BaseService<Contact, ContactForm> {
     }
 
     // Search
-    public List<Contact> searchByName(String query) {
-        return contactRepository.findByNameContainingIgnoreCase(query);
+    public List<Contact> searchByNameOrEmail(String query) {
+        return contactRepository
+                .findByNameContainingIgnoreCaseOrPhoneContaining(query, query);
     }
-
     // Create
     @Override
     public Contact create(ContactForm form) {

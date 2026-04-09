@@ -1,6 +1,7 @@
 package ie.universityofgalway.projecttrackingsystem.controller;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.Receipt;
+import ie.universityofgalway.projecttrackingsystem.dto.InvoiceDTO;
 import ie.universityofgalway.projecttrackingsystem.dto.ReceiptForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.InvoiceRepository;
 import ie.universityofgalway.projecttrackingsystem.service.BaseService;
@@ -79,7 +80,7 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
 
     // New Receipt
     @GetMapping("/new")
-    public String newReceipt(Model model) {
+    public String newReceipt(@RequestParam(required = false) Long invoiceId,Model model) {
 
         ReceiptForm form = new ReceiptForm();
         form.setDateReceived(LocalDate.now());
@@ -87,9 +88,17 @@ public class ReceiptController extends BaseController<Receipt, ReceiptForm> {
         form.setAmountPaid(BigDecimal.ZERO);
         form.setPaymentMethod("Bank Transfer");
 
-        model.addAttribute(getEntityAttributeName(), form);
+        if (invoiceId != null) {
+            form.setInvoiceId(invoiceId);
 
-        return getDetailsView();
+            invoiceRepository.findById(invoiceId).ifPresent(invoice -> {
+                form.setInvoiceNumber(invoice.getInvoiceNumber()); // display only
+            });
+        }
+
+        model.addAttribute("receipt", form);
+
+        return "receipts/form";
     }
 
     // Create Receipt

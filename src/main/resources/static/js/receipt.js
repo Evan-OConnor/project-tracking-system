@@ -2,7 +2,7 @@ console.log("Receipts JS loaded");
 
 document.addEventListener("DOMContentLoaded", function () {
 
-   // Receipt Search
+    // Receipt Table Search
     const container = document.querySelector(".container");
     const table = document.querySelector("table");
     const tableBody = document.querySelector("table tbody");
@@ -40,71 +40,119 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-     //  Invoice autofills receipt form
-     const invoiceSelect = document.getElementById("invoiceSelect");
+    // Invoice Search
+    const invoiceInput = document.getElementById("invoiceInput");
+    const invoiceIdInput = document.getElementById("invoiceId");
+    const suggestions = document.getElementById("invoiceSuggestions");
 
-     const totalField = document.getElementById("invoiceTotal");
-     const outstandingField = document.getElementById("outstandingBalance");
-     const amountPaidField = document.getElementById("amountPaid");
-     const discountField = document.getElementById("discount");
+    const totalField = document.getElementById("invoiceTotal");
+    const outstandingField = document.getElementById("outstandingBalance");
+    const amountPaidField = document.getElementById("amountPaid");
+    const discountField = document.getElementById("discount");
 
-     if (!invoiceSelect) return;
+    if (!invoiceInput || !suggestions) return;
 
-     // Detect edit mode
-     const isEdit = amountPaidField && amountPaidField.value && amountPaidField.value !== "0";
+    let debounceTimer;
 
-     // Function to load invoice data
-     function loadInvoiceSummary(invoiceId) {
+    // Detect edit mode
+    const isEdit = amountPaidField && amountPaidField.value && amountPaidField.value !== "0";
 
-         if (!invoiceId) return;
+    invoiceInput.addEventListener("input", function () {
 
-         console.log("Loading invoice:", invoiceId);
+        const query = this.value;
 
-         fetch(`/api/invoices/${invoiceId}/summary`)
-             .then(res => res.json())
-             .then(data => {
+        // reset ID when typing
+        invoiceIdInput.value = "";
 
-                 console.log("Invoice summary:", data);
+        clearTimeout(debounceTimer);
 
-                 const total = parseFloat(data.grossTotal || 0);
-                 const outstanding = parseFloat(data.outstanding || 0);
+        debounceTimer = setTimeout(() => {
 
-                 // Always update these
-                 if (totalField) totalField.value = total.toFixed(2);
-                 if (outstandingField) outstandingField.value = outstanding.toFixed(2);
+            if (query.length < 2) {
+                suggestions.innerHTML = "";
+                return;
+            }
 
-                 // ONLY autofill amount on CREATE
+            fetch("/api/invoices/search?query=" + encodeURIComponent(query))
+                .then(res => res.json())
+                .then(data => {
+
+                    suggestions.innerHTML = "";
+
+                    data.forEach(item => {
+
+                        const li = document.createElement("li");
+                        li.className = "list-group-item list-group-item-action";
+                        li.style.cursor = "pointer";
+
+                        li.textContent =
+                            item.invoiceNumber + " - " +
+                            item.projectTitle + " (€" + item.amount + ")";
+
+                        li.onclick = () => {
+                            invoiceInput.value = item.invoiceNumber;
+                            invoiceIdInput.value = item.id;
+                            suggestions.innerHTML = "";
+
+
+                            loadInvoiceSummary(item.id);
+                        };
+
+                        suggestions.appendChild(li);
+                    });
+                });
+
+        }, 300);
+    });
+
+    // Invoice Autofill Logic
+    function loadInvoiceSummary(invoiceId) {
+
+        if (!invoiceId) return;
+
+        console.log("Loading invoice:", invoiceId);
+
+        fetch(`/api/invoices/${invoiceId}/summary`)
+            .then(res => res.json())
+            .then(data => {
+
+                console.log("Invoice summary:", data);
+
+                const total = parseFloat(data.grossTotal || 0);
+                const outstanding = parseFloat(data.outstanding || 0);
+
+                if (totalField) totalField.value = total.toFixed(2);
+                if (outstandingField) outstandingField.value = outstanding.toFixed(2);
+
+                // Only autofill on create
                 if (!isEdit) {
                     if (discountField) discountField.value = "0.00";
                     updateAmountPaid();
                 }
 
-             })
-             .catch(err => console.error("Autofill error:", err));
-     }
+            })
+            .catch(err => console.error("Autofill error:", err));
+    }
 
-     function updateAmountPaid() {
-         if (!outstandingField || !amountPaidField || !discountField) return;
+    function updateAmountPaid() {
+        if (!outstandingField || !amountPaidField || !discountField) return;
 
-         const outstanding = parseFloat(outstandingField.value) || 0;
-         const discount = parseFloat(discountField.value) || 0;
+        const outstanding = parseFloat(outstandingField.value) || 0;
+        const discount = parseFloat(discountField.value) || 0;
 
-         const amountPaid = outstanding - discount;
+        const amountPaid = outstanding - discount;
 
-         amountPaidField.value = amountPaid.toFixed(2);
-     }
+        amountPaidField.value = amountPaid.toFixed(2);
+    }
 
-     if (discountField) {
-         discountField.addEventListener("input", updateAmountPaid);
-     }
+    if (discountField) {
+        discountField.addEventListener("input", updateAmountPaid);
+    }
 
-     // Change event (user selects invoice)
-     invoiceSelect.addEventListener("change", function () {
-         loadInvoiceSummary(this.value);
-     });
+    setTimeout(() => {
+        if (invoiceIdInput && invoiceIdInput.value) {
+            loadInvoiceSummary(invoiceIdInput.value);
+        }
+    }, 100);
 
-     // Run on page load (important for edit form)
-     setTimeout(() => {
-         loadInvoiceSummary(invoiceSelect.value);
-     }, 100);
-   });
+});

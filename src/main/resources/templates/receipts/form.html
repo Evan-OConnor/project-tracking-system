@@ -43,36 +43,28 @@
           method="post"
           novalidate>
 
-        <input type="hidden" th:field="*{id}">
-
         <!-- Invoice -->
-        <div class="mb-3">
+        <div class="mb-3 position-relative">
 
-            <label class="form-label fw-semibold">Invoice</label>
+            <label class="form-label">Invoice</label>
 
-            <select id="invoiceSelect"
-                    th:field="*{invoiceId}"
-                    th:classappend="${#fields.hasErrors('invoiceId')} ? 'is-invalid'"
-                    class="form-select"
-                    th:disabled="${receipt.id != null}">
+            <!-- Search input -->
+            <input type="text"
+                   id="invoiceInput"
+                   class="form-control"
+                   th:value="${receipt.invoiceNumber}"
+                   placeholder="Search invoice..."
+                   required>
 
-                <option value="">Select invoice</option>
-
-                <option th:each="inv : ${invoices}"
-                        th:value="${inv.id}"
-                        th:text="${inv.invoiceNumber}">
-                </option>
-
-            </select>
-
-            <div class="invalid-feedback"
-                 th:if="${#fields.hasErrors('invoiceId')}"
-                 th:errors="*{invoiceId}">
-            </div>
-
+            <!-- Hidden ID (BOUND TO FORM) -->
             <input type="hidden"
-                   th:field="*{invoiceId}"
-                   th:if="${receipt.id != null}">
+                   id="invoiceId"
+                   th:field="*{invoiceId}">
+
+            <!-- Suggestions -->
+            <ul id="invoiceSuggestions"
+                class="list-group position-absolute w-100"
+                style="z-index:1000;"></ul>
 
         </div>
 

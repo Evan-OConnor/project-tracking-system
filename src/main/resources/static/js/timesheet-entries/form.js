@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        fetch("/cost-items/projects/search?q=" + query) // reuse endpoint
+      fetch("/api/projects/search?query=" + encodeURIComponent(query))
             .then(res => res.json())
             .then(data => {
                 suggestions.innerHTML = "";
@@ -25,10 +25,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     let li = document.createElement("li");
                     li.className = "list-group-item list-group-item-action";
                     li.style.cursor = "pointer";
-                    li.textContent = item.name;
+                    li.textContent = item.title;
 
                     li.onclick = () => {
-                        projectInput.value = item.name;
+                        projectInput.value = item.title;
                         projectIdInput.value = item.id;
                         suggestions.innerHTML = "";
                     };

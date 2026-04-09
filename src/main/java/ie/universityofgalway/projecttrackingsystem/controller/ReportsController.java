@@ -25,20 +25,17 @@ public class ReportsController {
     private final TimesheetEntryRepository timesheetRepository;
     private final ContactRepository clientRepository;
     private final EmployeeRepository employeeRepository;
-    private final ContactService contactService;
 
     public ReportsController(ProjectRepository projectRepository,
                              InvoiceRepository invoiceRepository,
                              TimesheetEntryRepository timesheetRepository,
                              ContactRepository clientRepository,
-                             EmployeeRepository employeeRepository,
-                             ContactService contactService) {
+                             EmployeeRepository employeeRepository) {
         this.projectRepository = projectRepository;
         this.invoiceRepository = invoiceRepository;
         this.timesheetRepository = timesheetRepository;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
-        this.contactService = contactService;
     }
 
     // Dashboard
@@ -51,9 +48,15 @@ public class ReportsController {
 
     // CLIENT REPORT
     @GetMapping("/client")
-    public String clientReport(@RequestParam Long clientId, Model model) {
+    public String clientReport(@RequestParam(required = false) Long clientId, Model model) {
 
-        var client = clientRepository.findById(clientId).orElse(null);
+        if (clientId == null) {
+            return "redirect:/reports?error=selectClient";
+        }
+
+        var client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+
 
         List<Project> projects = projectRepository.findByClientContactId(clientId);
 
@@ -68,19 +71,6 @@ public class ReportsController {
         model.addAttribute("invoices", outstandingInvoices);
 
         return "reports/client-report";
-    }
-
-    // CLIENT SEARCH
-    @GetMapping("/clients/search")
-    public String searchClients(@RequestParam String query) {
-
-        List<Contact> clients = contactService.searchByName(query);
-
-        if (clients.isEmpty()) {
-            return "redirect:/reports?error=notfound";
-        }
-
-        return "redirect:/reports/client?clientId=" + clients.get(0).getId();
     }
 
     // ALL CLIENTS SUMMARY (JPQL GROUP BY)

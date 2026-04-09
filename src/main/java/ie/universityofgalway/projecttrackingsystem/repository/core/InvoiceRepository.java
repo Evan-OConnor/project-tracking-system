@@ -35,4 +35,15 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
         WHERE i.status IN :statuses
     """)
     List<Invoice> findOutstandingWithClient(@Param("statuses") List<InvoiceStatus> statuses);
+
+    @Query("""
+    SELECT i FROM Invoice i
+    JOIN i.project p
+    WHERE (LOWER(i.invoiceNumber) LIKE LOWER(CONCAT('%', :query, '%'))
+       OR LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')))
+    AND i.status IN :statuses
+""")
+    List<Invoice> searchOutstandingInvoices(@Param("query") String query,
+                                            @Param("statuses") List<InvoiceStatus> statuses);
+
 }

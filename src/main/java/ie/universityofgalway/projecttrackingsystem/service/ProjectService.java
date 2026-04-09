@@ -61,6 +61,18 @@ public class ProjectService {
 
         project.setClientContact(client);
 
+        if (form.getSolicitorId() != null) {
+            Contact solicitor = contactRepository.findById(form.getSolicitorId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid solicitor"));
+            project.setSolicitorContact(solicitor);
+        }
+
+        if (form.getInsuranceCompanyId() != null) {
+            Contact insurance = contactRepository.findById(form.getInsuranceCompanyId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid insurance company"));
+            project.setInsuranceCompanyContact(insurance);
+        }
+
         ProjectStatus activeStatus = statusRepository.findByName(ACTIVE_STATUS)
                 .orElseThrow(() -> new IllegalStateException("Default status not found"));
 
@@ -120,18 +132,18 @@ public class ProjectService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid client"));
         project.setClientContact(client);
 
-        if (form.getSolicitorContactName() != null && !form.getSolicitorContactName().isBlank()) {
-            project.setSolicitorContact(
-                    contactRepository.findByNameIgnoreCase(form.getSolicitorContactName()).orElse(null)
-            );
+        if (form.getSolicitorId() != null) {
+            Contact solicitor = contactRepository.findById(form.getSolicitorId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid solicitor"));
+            project.setSolicitorContact(solicitor);
         } else {
             project.setSolicitorContact(null);
         }
 
-        if (form.getInsuranceCompanyContactName() != null && !form.getInsuranceCompanyContactName().isBlank()) {
-            project.setInsuranceCompanyContact(
-                    contactRepository.findByNameIgnoreCase(form.getInsuranceCompanyContactName()).orElse(null)
-            );
+        if (form.getInsuranceCompanyId() != null) {
+            Contact insurance = contactRepository.findById(form.getInsuranceCompanyId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid insurance"));
+            project.setInsuranceCompanyContact(insurance);
         } else {
             project.setInsuranceCompanyContact(null);
         }
@@ -150,10 +162,12 @@ public class ProjectService {
         form.setClientName(project.getClientContact().getName());
 
         if (project.getSolicitorContact() != null) {
+            form.setSolicitorId(project.getSolicitorContact().getId());
             form.setSolicitorContactName(project.getSolicitorContact().getName());
         }
 
         if (project.getInsuranceCompanyContact() != null) {
+            form.setInsuranceCompanyId(project.getInsuranceCompanyContact().getId());
             form.setInsuranceCompanyContactName(project.getInsuranceCompanyContact().getName());
         }
 
