@@ -83,34 +83,62 @@
             margin-bottom: 0.9rem;
         }
 
+        .quick-actions-list {
+            display: block;
+        }
+
         .quick-action-link {
             display: block;
             width: 100%;
-            border-radius: 12px;
             padding: 0.72rem 0.9rem;
+            border-radius: 12px;
             text-decoration: none;
             font-weight: 600;
+            cursor: pointer;
             margin-bottom: 1.64rem;
-            background: #F1F5F9;
-            color: #0F172A;
-            border: 1px solid #CBD5F5;
-            transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+            transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
         }
 
         .quick-action-link:last-child {
             margin-bottom: 0;
         }
 
-        .quick-action-link:hover {
-            background: #E2E8F0;
-            color: #0F172A;
-            border-color: #CBD5F5;
+        .btn-secondary-soft {
+            background: #e0edff;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.08);
         }
 
-        .quick-action-link:active,
-        .quick-action-link:focus-visible {
-            background: #CBD5E1;
-            color: #0F172A;
+        .btn-secondary-soft:hover {
+            background: #c7ddff;
+            color: #1e40af;
+            border-color: #60a5fa;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.12);
+        }
+
+        .btn-secondary-soft:focus-visible {
+            background: #c7ddff;
+            color: #1e40af;
+            border-color: #60a5fa;
+            outline: 2px solid #60a5fa;
+            outline-offset: 2px;
+        }
+
+        .btn-secondary-soft:active {
+            background: #b8d2ff;
+            color: #1e40af;
+            border-color: #60a5fa;
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.1);
+        }
+
+        .quick-action-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.45rem;
+            vertical-align: text-bottom;
         }
 
         .project-status-panel {
@@ -288,7 +316,7 @@
                     <p class="summary-value" th:text="${totalProjectCount}">0</p>
                 </div>
                 <span class="summary-icon summary-icon-blue" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-check-icon lucide-folder-check"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="m9 13 2 2 4-4"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-check-icon lucide-folder-check"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="m9 13 2 2 4-4"/></svg>
                 </span>
             </div>
         </div>
@@ -308,7 +336,7 @@
         <div class="col-12 col-md-6 col-xl-3">
             <div class="summary-card d-flex justify-content-between align-items-start h-100">
                 <div>
-                    <p class="summary-label">Contacts</p>
+                    <p class="summary-label">Total Contacts</p>
                     <p class="summary-value" th:text="${contactCount}">0</p>
                 </div>
                 <span class="summary-icon summary-icon-cyan" aria-hidden="true">
@@ -320,7 +348,7 @@
         <div class="col-12 col-md-6 col-xl-3">
             <div class="summary-card d-flex justify-content-between align-items-start h-100">
                 <div>
-                    <p class="summary-label">Employees</p>
+                    <p class="summary-label">Total Employees</p>
                     <p class="summary-value" th:text="${employeeCount}">0</p>
                 </div>
                 <span class="summary-icon summary-icon-green" aria-hidden="true">
@@ -336,10 +364,37 @@
             <div class="quick-actions-panel h-100">
                 <h2 class="quick-actions-title">Quick Actions</h2>
 
-                <a class="quick-action-link" th:href="@{/projects/new}">Create Project</a>
-                <a class="quick-action-link" th:href="@{/contacts/new}">Add Contact</a>
-                <a class="quick-action-link" th:href="@{/timesheet-entries/new}">Add Timesheet Entry</a>
-                <a class="quick-action-link" th:href="@{/cost-items/new}">Add Expense / Outlay</a>
+                <div class="quick-actions-list">
+                    <a class="quick-action-link btn-secondary-soft w-100" th:href="@{/projects/new}">
+                        <svg class="quick-action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M12 5v14"/>
+                            <path d="M5 12h14"/>
+                        </svg>
+                        <span>Create Project</span>
+                    </a>
+                    <a class="quick-action-link btn-secondary-soft w-100" th:href="@{/contacts/new}">
+                        <svg class="quick-action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M19 8v6"/>
+                            <path d="M22 11h-6"/>
+                        </svg>
+                        <span>Add Contact</span>
+                    </a>
+                    <a class="quick-action-link btn-secondary-soft w-100" th:href="@{/timesheet-entries/new}">
+                        <svg class="quick-action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 10v2.2l1.6 1"/><path d="m16.13 7.66-.81-4.05a2 2 0 0 0-2-1.61h-2.68a2 2 0 0 0-2 1.61l-.78 4.05"/><path d="m7.88 16.36.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05"/><circle cx="12" cy="12" r="6"/></svg>
+                        <span>Add Timesheet Entry</span>
+                    </a>
+                    <a class="quick-action-link btn-secondary-soft w-100" th:href="@{/cost-items/new}">
+                        <svg class="quick-action-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M3 3v18h18"/>
+                            <path d="M7 14h2"/>
+                            <path d="M7 10h6"/>
+                            <path d="M7 6h10"/>
+                        </svg>
+                        <span>Add Expense / Outlay</span>
+                    </a>
+                </div>
             </div>
         </div>
 
