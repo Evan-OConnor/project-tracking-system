@@ -3,18 +3,11 @@ console.log("Receipts JS loaded");
 document.addEventListener("DOMContentLoaded", function () {
 
     // Receipt Table Search
-    const container = document.querySelector(".container");
+    const tableSearch = document.getElementById("receiptSearch");
     const table = document.querySelector("table");
     const tableBody = document.querySelector("table tbody");
 
-    if (container && table && tableBody) {
-
-        const tableSearch = document.createElement("input");
-        tableSearch.type = "text";
-        tableSearch.placeholder = "Search receipts...";
-        tableSearch.className = "form-control mb-3";
-
-        container.insertBefore(tableSearch, table.parentElement);
+    if (tableSearch && table && tableBody) {
 
         const rows = tableBody.querySelectorAll("tr");
 
