@@ -43,6 +43,8 @@
           method="post"
           novalidate>
 
+        <input type="hidden" id="isEdit" th:value="${receipt.id != null}">
+
         <!-- Invoice -->
         <div class="mb-3 position-relative">
 

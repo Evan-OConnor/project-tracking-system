@@ -149,10 +149,26 @@ document.addEventListener("DOMContentLoaded", function () {
         discountField.addEventListener("input", updateAmountPaid);
     }
 
+    if (amountPaidField) {
+        amountPaidField.addEventListener("input", updateOutstanding);
+    }
+
     setTimeout(() => {
         if (invoiceIdInput && invoiceIdInput.value) {
             loadInvoiceSummary(invoiceIdInput.value);
         }
     }, 100);
+
+    function updateOutstanding() {
+        if (!outstandingField || !amountPaidField || !discountField) return;
+
+        const total = parseFloat(totalField.value) || 0;
+        const amountPaid = parseFloat(amountPaidField.value) || 0;
+        const discount = parseFloat(discountField.value) || 0;
+
+        const outstanding = total - (amountPaid + discount);
+
+        outstandingField.value = Math.max(outstanding, 0).toFixed(2);
+    }
 
 });

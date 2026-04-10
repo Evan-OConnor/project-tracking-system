@@ -166,6 +166,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
 
         form.setId(receipt.getId());
         form.setInvoiceId(receipt.getInvoice().getId());
+        form.setInvoiceNumber(receipt.getInvoice().getInvoiceNumber());
         form.setReceiptNumber(receipt.getReceiptNumber());
         form.setDateReceived(receipt.getDateReceived());
         form.setDiscount(receipt.getDiscount());
@@ -202,14 +203,17 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
 
         // Only payments affect outstanding
         BigDecimal paid = receiptRepository.sumPaymentsByInvoiceId(invoice.getId());
+
         if (paid == null) paid = BigDecimal.ZERO;
 
-        BigDecimal outstanding = total.subtract(paid);
-
-        //  Discount cannot exceed outstanding
-        if (form.getDiscount().compareTo(outstanding) > 0) {
-            throw new IllegalStateException("Discount cannot exceed outstanding balance");
+        // subtract current receipt if editing
+        if (form.getId() != null) {
+            Receipt existing = receiptRepository.findById(form.getId()).orElse(null);
+            if (existing != null) {
+                paid = paid.subtract(existing.getAmountPaid());
+            }
         }
+        BigDecimal outstanding = total.subtract(paid);
 
         // Rule
         BigDecimal expectedAmount = outstanding.subtract(form.getDiscount());

@@ -30,6 +30,7 @@ public class CostItemForm {
 
     @NotNull(message = "Cost amount is required")
     @Positive(message = "Cost amount must be greater than 0")
+    @Digits(integer = 8, fraction = 2, message = "Cost amount must be less than 100,000,000.00 and have at most 2 decimal places")
     private BigDecimal costAmount;
 
     @NotNull(message = "Type is required")
@@ -62,7 +63,7 @@ public class CostItemForm {
 
     public void setProjectId(Long projectId) {this.projectId = projectId;}
 
-    public void setProjectName(String projectId) { this.projectName = projectName; }
+    public void setProjectName(String projectName) { this.projectName = projectName; }
 
     public void setEmployeeId(Long employeeId) { this.employeeId = employeeId; }
 
