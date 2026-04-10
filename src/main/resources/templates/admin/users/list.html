@@ -119,6 +119,16 @@
       color: #1d4ed8;
     }
 
+    .role-admin {
+      background: #ddd6fe;
+      color: #6d28d9;
+    }
+
+    .role-staff {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
     .action-icon-link {
       display: inline-flex;
       align-items: center;
@@ -228,12 +238,15 @@
     <tr th:each="u : ${users}">
       <td class="recent-projects-name" th:text="${u.username}">U000000</td>
       <td class="recent-projects-name" th:text="${u.employee.name}">Employee Name</td>
-      <td class="recent-projects-name" th:text="${u.role.name}">Role</td>
+      <td class="recent-projects-name">
+        <span class="status-pill role-admin" th:if="${u.username == seededAdminUsername}">SYSTEM ADMIN</span>
+        <span class="status-pill role-admin" th:if="${u.username != seededAdminUsername and u.role != null and u.role.name == 'ADMIN'}">ADMIN</span>
+        <span class="status-pill role-staff" th:if="${u.username != seededAdminUsername and (u.role == null or u.role.name != 'ADMIN')}">STAFF</span>
+      </td>
       <td class="recent-projects-name">
         <span class="status-pill" th:classappend="${u.active} ? ' badge-active' : ' badge-inactive'" th:text="${u.active} ? 'ACTIVE' : 'INACTIVE'" role="status" aria-live="polite"></span>
       </td>
       <td>
-        <span th:if="${u.username == seededAdminUsername}" class="status-pill badge-completed">SYSTEM ADMIN</span>
         <div th:if="${u.username != seededAdminUsername}" class="actions-wrap">
           <a class="action-icon-link" th:href="@{/admin/users/edit(employeeId=${u.employee.id})}">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-icon lucide-pencil" aria-hidden="true" focusable="false"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>

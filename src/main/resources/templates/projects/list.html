@@ -290,7 +290,7 @@
     <section class="d-flex justify-content-between align-items-center flex-wrap projects-header">
         <div>
             <h1 class="projects-title">Projects</h1>
-            <p class="projects-subtitle">Manage project records, statuses, and key details.</p>
+            <p class="projects-subtitle">Manage and track project records, statuses, and key details.</p>
         </div>
         <a class="btn btn-new-project" th:href="@{/projects/new}">+ New Project</a>
     </section>
@@ -310,7 +310,7 @@
 
     <!-- Advanced Search -->
     <div class="projects-card projects-filter-card">
-        <h2 class="section-title">Search &amp; Filter</h2>
+        <h2 class="section-title">Search &amp; Filter Projects</h2>
         <form th:action="@{/projects/search}"
               method="get"
               th:object="${criteria}"
