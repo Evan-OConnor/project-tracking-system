@@ -1,46 +1,242 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Page Not Found</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
     <style>
-        .error-container {
-            min-height: 60vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        body {
+            background: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
         }
+
+        .navbar.aardvark-navbar {
+            background-color: #0f172a;
+            border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+            min-height: 82px;
+            padding-top: 0.72rem;
+            padding-bottom: 0.72rem;
+        }
+
+        .aardvark-brand-icon {
+            width: 38px;
+            height: 38px;
+            background-color: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .navbar.aardvark-navbar .aardvark-brand-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .navbar.aardvark-navbar .aardvark-brand-text {
+            line-height: 1.2;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .navbar.aardvark-navbar .aardvark-brand-subtitle {
+            font-size: 0.76rem;
+            color: #60a5fa;
+            margin-top: 0.12rem;
+        }
+
+        .error-main {
+            min-height: calc(100vh - 82px);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 12rem 1rem 2.5rem;
+        }
+
+        .error-content {
+            width: 100%;
+            max-width: 560px;
+            text-align: center;
+        }
+
         .error-code {
-            font-size: 6rem;
-            font-weight: bold;
-            color: #ffc107;
+            font-size: 4.75rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #2563eb;
+            margin-bottom: 0.9rem;
+        }
+
+        .error-title {
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 0.75rem;
+        }
+
+        .error-subtitle {
+            color: #64748b;
+            font-size: 1.08rem;
+            margin-bottom: 1.65rem;
+        }
+
+        .error-info-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 1rem 1.15rem;
+            text-align: left;
+            margin-bottom: 1.35rem;
+        }
+
+        .error-info-label {
+            font-size: 0.88rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .error-path-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 0.22rem 0.62rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.55rem;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .error-helper-text {
+            color: #64748b;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        .error-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: #2563eb;
+            color: #fff;
+            border: 1px solid #2563eb;
+            border-radius: 12px;
+            padding: 0.62rem 1.12rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-primary-action:hover {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+            color: #fff;
+        }
+
+        .btn-secondary-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            color: #475569;
+            border-radius: 12px;
+            padding: 0.62rem 1.12rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .btn-secondary-action:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+            color: #334155;
+        }
+
+        .error-actions svg {
+            width: 16px;
+            height: 16px;
         }
     </style>
 </head>
 <body>
-    <!-- Self-contained navbar to avoid fragment resolution errors during error handling -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" th:href="@{/}">Aardvark Insurance Accessors</a>
-        </div>
-    </nav>
 
-    <div class="container mt-4">
-        <div class="error-container text-center">
-            <div class="error-code">404</div>
-            <h1 class="mb-3">Page Not Found</h1>
-            <p class="text-muted">The page you are looking for does not exist or has been moved.</p>
-
-            <div class="mt-4">
-                <a th:href="@{/}" class="btn btn-primary me-2">Go to Dashboard</a>
-                <button onclick="history.back()" class="btn btn-outline-secondary">Go Back</button>
+<nav class="navbar aardvark-navbar">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand d-flex align-items-center gap-3 me-4 text-decoration-none" th:href="@{/}">
+            <div class="aardvark-brand-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     aria-hidden="true" focusable="false">
+                    <path d="M12 16v5"/>
+                    <path d="M16 14v7"/>
+                    <path d="M20 10v11"/>
+                    <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15"/>
+                    <path d="M4 18v3"/>
+                    <path d="M8 14v7"/>
+                </svg>
             </div>
-        </div>
+            <div class="aardvark-brand-text">
+                <div class="aardvark-brand-title">Aardvark</div>
+                <div class="aardvark-brand-subtitle">Insurance Assessors</div>
+            </div>
+        </a>
     </div>
+</nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<main class="error-main">
+    <section class="error-content">
+        <div class="error-code">404</div>
+        <h1 class="error-title">Page Not Found</h1>
+        <p class="error-subtitle">The page you're looking for doesn't exist or has been moved.</p>
+
+        <div class="error-info-box" th:if="${path}">
+            <p class="error-info-label">Tried to access:</p>
+            <span class="error-path-badge" th:text="${path}">/unknown</span>
+            <p class="error-helper-text">This route doesn't exist in the Project Tracking System. Please use the navigation menu above or return to the dashboard.</p>
+        </div>
+
+        <div class="error-actions">
+            <a class="btn-primary-action" th:href="@{/}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M3 10.5 12 3l9 7.5"/>
+                    <path d="M5 10v10h14V10"/>
+                </svg>
+                <span>Go to Dashboard</span>
+            </a>
+            <button type="button" onclick="history.back()" class="btn-secondary-action">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="m12 19-7-7 7-7"/>
+                    <path d="M19 12H5"/>
+                </svg>
+                <span>Go Back</span>
+            </button>
+        </div>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
