@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -22,11 +23,14 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
 
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
+    private final InvoiceService invoiceService;
 
     public ReceiptService(ReceiptRepository receiptRepository,
-                          InvoiceRepository invoiceRepository) {
+                          InvoiceRepository invoiceRepository,
+                          InvoiceService invoiceService) {
         this.receiptRepository = receiptRepository;
         this.invoiceRepository = invoiceRepository;
+        this.invoiceService = invoiceService;
     }
 
     // List
@@ -65,7 +69,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
             throw new IllegalStateException("Invoice has already been paid");
         }
 
-        validateAmounts(form,invoice);
+        validateAmounts(form, invoice);
 
         //  TEMP value (DB requires NOT NULL)
         String tempNumber = "TEMP-" + java.util.UUID.randomUUID();
@@ -92,11 +96,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
 
         receipt = receiptRepository.save(receipt);
 
-        // mark invoice as paid
-        BigDecimal subtotal = invoice.getTotalExVat();
-        BigDecimal vatRate = new BigDecimal("0.23");
-        BigDecimal vatAmount = subtotal.multiply(vatRate);
-        BigDecimal total = subtotal.add(vatAmount);
+        BigDecimal total = invoiceService.calculateInvoiceTotal(invoice);
 
         BigDecimal totalPaid = receiptRepository.sumPaymentsByInvoiceId(invoice.getId());
         BigDecimal totalDiscount = receiptRepository.sumDiscountsByInvoiceId(invoice.getId());
@@ -113,8 +113,6 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         }
 
         invoiceRepository.save(invoice);
-
-
 
         return receipt;
     }
@@ -184,42 +182,31 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
 
     private void validateAmounts(ReceiptForm form, Invoice invoice) {
 
-        if (form.getDiscount() == null) {
-            form.setDiscount(BigDecimal.ZERO);
-        }
+        BigDecimal total = invoiceService.calculateInvoiceTotal(invoice);
 
-        if (form.getDiscount().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalStateException("Discount cannot be negative");
-        }
-
-        if (form.getAmountPaid() == null || form.getAmountPaid().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalStateException("Amount paid must be greater than zero");
-        }
-
-        BigDecimal subtotal = invoice.getTotalExVat();
-        BigDecimal vatRate = new BigDecimal("0.23");
-        BigDecimal vatAmount = subtotal.multiply(vatRate);
-        BigDecimal total = subtotal.add(vatAmount);
-
-        // Only payments affect outstanding
         BigDecimal paid = receiptRepository.sumPaymentsByInvoiceId(invoice.getId());
+        BigDecimal discounts = receiptRepository.sumDiscountsByInvoiceId(invoice.getId());
 
         if (paid == null) paid = BigDecimal.ZERO;
+        if (discounts == null) discounts = BigDecimal.ZERO;
 
         // subtract current receipt if editing
         if (form.getId() != null) {
             Receipt existing = receiptRepository.findById(form.getId()).orElse(null);
             if (existing != null) {
                 paid = paid.subtract(existing.getAmountPaid());
+                discounts = discounts.subtract(existing.getDiscount());
             }
         }
-        BigDecimal outstanding = total.subtract(paid);
 
-        // Rule
+        BigDecimal outstanding = total.subtract(paid.add(discounts));
+
         BigDecimal expectedAmount = outstanding.subtract(form.getDiscount());
 
         if (form.getAmountPaid().compareTo(expectedAmount) > 0) {
-            throw new IllegalStateException("Amount paid cannot exceed outstanding balance after discount");
+            throw new IllegalStateException(
+                    "Amount paid cannot exceed outstanding balance after discount"
+            );
         }
     }
 }

@@ -162,6 +162,10 @@ public class InvoiceService {
         return mapToDTO(invoice);
     }
 
+    public BigDecimal calculateInvoiceTotal(Invoice invoice) {
+        return mapToDTO(invoice).getGrossTotal();
+    }
+
     // Delete Invoice
     public void deleteInvoice(Long invoiceId) {
 
@@ -372,4 +376,5 @@ public class InvoiceService {
                 ))
                 .toList();
     }
+
 }
