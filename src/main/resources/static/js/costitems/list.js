@@ -1,32 +1,31 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-// Live Search
     const searchInput = document.getElementById("searchInput");
-    if (!searchInput) {
-        return;
-    }
 
-    const tableRows = document.querySelectorAll("table tbody tr");
+    if (!searchInput) return;
 
-    searchInput.addEventListener("keyup", function () {
+    searchInput.addEventListener("input", function () {
 
-        const filter = this.value.toLowerCase();
+        const filter = this.value.trim().toLowerCase();
+        const tableRows = document.querySelectorAll("#expensesandoutlaysTable tbody tr");
+
 
         tableRows.forEach(row => {
 
-            let match = false;
+            const idCell = row.cells[0];     // Column 1 (ID)
+            const projectCell = row.cells[1];   // Column 2 (Project)
 
-            row.querySelectorAll("td").forEach(td => {
-                if (td.textContent.toLowerCase().includes(filter)) {
-                    match = true;
-                }
-            });
+            if (!idCell || !projectCell) return;
+
+            const idText = idCell.textContent.trim().toLowerCase();
+            const projectText = projectCell.textContent.trim().toLowerCase();
+
+            const match =
+                idText.includes(filter) ||
+                projectText.includes(filter);
 
             row.style.display = match ? "" : "none";
-
         });
-
     });
 
 });
-

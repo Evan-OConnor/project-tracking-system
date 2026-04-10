@@ -3,35 +3,41 @@ console.log("Receipts JS loaded");
 document.addEventListener("DOMContentLoaded", function () {
 
     // Receipt Table Search
-    const tableSearch = document.getElementById("receiptSearch");
-    const table = document.querySelector("table");
-    const tableBody = document.querySelector("table tbody");
+   // Receipt Table Search
+   const tableSearch = document.getElementById("receiptSearch");
+   const table = document.querySelector("table");
+   const tableBody = document.querySelector("table tbody");
 
-    if (tableSearch && table && tableBody) {
+   if (tableSearch && table && tableBody) {
 
-        const rows = tableBody.querySelectorAll("tr");
+       const rows = tableBody.querySelectorAll("tr");
 
-        tableSearch.addEventListener("input", function () {
+       tableSearch.addEventListener("input", function () {
 
-            const filter = this.value.toLowerCase();
+           const filter = this.value.trim().toLowerCase();
 
-            rows.forEach(row => {
+           rows.forEach(row => {
 
-                if (row.querySelector("td[colspan]")) return;
+               // Skip empty/message rows
+               if (row.querySelector("td[colspan]")) return;
 
-                let match = false;
+               const numberCell = row.cells[0];   // Column 1 (Number)
+               const projectCell = row.cells[1];  // Column 2 (Project)
 
-                row.querySelectorAll("td").forEach(td => {
-                    if (td.textContent.toLowerCase().includes(filter)) {
-                        match = true;
-                    }
-                });
+               if (!numberCell || !projectCell) return;
 
-                row.style.display = match ? "" : "none";
-            });
+               const numberText = numberCell.textContent.toLowerCase();
+               const projectText = projectCell.textContent.toLowerCase();
 
-        });
-    }
+               const match =
+                   numberText.includes(filter) ||
+                   projectText.includes(filter);
+
+               row.style.display = match ? "" : "none";
+           });
+
+       });
+   }
 
     // Invoice Search
     const invoiceInput = document.getElementById("invoiceInput");

@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Live search
     if (searchInput) {
-        searchInput.addEventListener("keyup", function () {
+        searchInput.addEventListener("input", function () {
             const filter = this.value.trim().toLowerCase();
             const tableRows = document.querySelectorAll("#employeesTable tbody tr");
 

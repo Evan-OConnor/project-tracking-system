@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!searchInput) return;
 
-    searchInput.addEventListener("keyup", function () {
+    searchInput.addEventListener("input", function () {
 
         const filter = this.value.toLowerCase();
 

@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const tableRows = document.querySelectorAll("#contactsTable tr");
 
     if (searchInput) {
-        searchInput.addEventListener("keyup", function () {
+        searchInput.addEventListener("input", function () {
 
             const filter = this.value.toLowerCase();
 
