@@ -61,7 +61,7 @@ public class uiController {
 
     @GetMapping("/timesheets")
     public String timesheets() {
-        return "timesheets";
+        return "redirect:/timesheet-entries";
     }
 
     @GetMapping("/expenses")
