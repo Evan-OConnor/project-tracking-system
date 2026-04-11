@@ -39,4 +39,5 @@ public class WorkDescription {
         this.name = name;
     }
 
+    public void setId(Long id) {this.id = id;}
 }
