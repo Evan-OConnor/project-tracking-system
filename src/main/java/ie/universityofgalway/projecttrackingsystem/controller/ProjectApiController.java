@@ -18,6 +18,7 @@ public class ProjectApiController {
         this.projectQueryService = projectQueryService;
     }
 
+    // Project Search for Form
     @GetMapping("/search")
     public List<ProjectSearchDTO> search(@RequestParam String query) {
         return projectQueryService.searchProjectsForAutocomplete(query);

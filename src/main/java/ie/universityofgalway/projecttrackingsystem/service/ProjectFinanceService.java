@@ -21,6 +21,7 @@ public class ProjectFinanceService {
     private final ReceiptRepository receiptRepository;
     private final InvoiceRepository invoiceRepository;
 
+    // Constructor
     public ProjectFinanceService(CostItemRepository costItemRepository,
                                  TimesheetEntryRepository timesheetRepository,
                                  ReceiptRepository receiptRepository,
@@ -31,31 +32,35 @@ public class ProjectFinanceService {
         this.invoiceRepository = invoiceRepository;
     }
 
+    // Calculate Invoice Total
     private BigDecimal calculateInvoiceTotal(Invoice inv) {
         BigDecimal exVat = inv.getTotalExVat();
         BigDecimal vat = exVat.multiply(VAT_RATE);
         return exVat.add(vat);
     }
 
+    // Outlay Total
     public BigDecimal getOutlayTotal(Long projectId) {
         return Optional.ofNullable(
                 costItemRepository.sumByProjectAndType(projectId, CostItem.Type.OUTLAY)
         ).orElse(BigDecimal.ZERO);
     }
 
-
+    // Expense Total
     public BigDecimal getExpenseTotal(Long projectId) {
         return Optional.ofNullable(
                 costItemRepository.sumByProjectAndType(projectId, CostItem.Type.EXPENSE)
         ).orElse(BigDecimal.ZERO);
     }
 
+    // Timesheet Total
     public BigDecimal getLabourTotal(Long projectId) {
         return Optional.ofNullable(
                 timesheetRepository.sumChargesByProjectId(projectId)
         ).orElse(BigDecimal.ZERO);
     }
 
+    // Receipt Total
     public BigDecimal getReceiptsTotal(Long projectId) {
         return receiptRepository.findByInvoiceProjectId(projectId)
                 .stream()
@@ -65,6 +70,7 @@ public class ProjectFinanceService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    // Receipts total including discount
     public BigDecimal getEffectiveReceiptsTotal(Long projectId) {
         return receiptRepository.findByInvoiceProjectId(projectId)
                 .stream()
@@ -80,6 +86,7 @@ public class ProjectFinanceService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    // Discount Total
     public BigDecimal getDiscountsTotal(Long projectId) {
         return receiptRepository.findByInvoiceProjectId(projectId)
                 .stream()
@@ -87,6 +94,8 @@ public class ProjectFinanceService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+
+    // Total Invoiced
     public BigDecimal getTotalInvoiced(Project project) {
 
         return project.getInvoices().stream()
@@ -94,6 +103,7 @@ public class ProjectFinanceService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    // Outstanding total
     public BigDecimal getOutstandingInvoices(Project project) {
         BigDecimal totalInvoiced = getTotalInvoiced(project);
         BigDecimal totalSettled = getEffectiveReceiptsTotal(project.getId());

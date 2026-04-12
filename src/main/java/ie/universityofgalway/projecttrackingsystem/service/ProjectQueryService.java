@@ -28,6 +28,7 @@ public class ProjectQueryService {
     private final ProjectStatusRepository statusRepository;
     private final ContactRepository contactRepository;
 
+    // Constructor
     public ProjectQueryService(ProjectRepository projectRepository,
                                CostItemRepository costItemRepository,
                                TimesheetEntryService timesheetService,
@@ -123,6 +124,7 @@ public class ProjectQueryService {
         return view;
     }
 
+    // Project View Retrieve Details
     private ProjectView mapToView(Project project) {
 
         return new ProjectView(
@@ -140,6 +142,7 @@ public class ProjectQueryService {
         );
     }
 
+    // Project search for forms
     public List<ProjectSearchDTO> searchProjectsForAutocomplete(String query) {
         return projectRepository.findByTitleContainingIgnoreCase(query)
                 .stream()

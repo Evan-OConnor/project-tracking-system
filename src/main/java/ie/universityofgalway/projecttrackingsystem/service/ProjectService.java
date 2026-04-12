@@ -25,6 +25,7 @@ public class ProjectService {
     private final CostItemRepository costItemRepository;
     private final TimesheetEntryRepository timesheetRepository;
 
+    // Constructor
     public ProjectService(ProjectRepository projectRepository,
                           ProjectCategoryRepository categoryRepository,
                           ProjectStatusRepository statusRepository,
@@ -42,7 +43,7 @@ public class ProjectService {
         this.timesheetRepository = timesheetRepository;
     }
 
-    // Create
+    // Create Form
     public Project create(ProjectForm form) {
 
         Project project = new Project();
@@ -119,7 +120,6 @@ public class ProjectService {
         return mapToForm(project);
     }
     // Update
-
     public void updateEntity(Project project, ProjectForm form) {
 
         project.setCategory(categoryRepository.findById(form.getCategoryId())
@@ -153,6 +153,7 @@ public class ProjectService {
         project.setStartDate(form.getStartDate());
     }
 
+    // Project details to form
     public ProjectForm mapToForm(Project project) {
         ProjectForm form = new ProjectForm();
 
@@ -177,20 +178,25 @@ public class ProjectService {
 
         return form;
     }
+
+    // Active Projects
     public long getActiveProjectCount() {
         return projectRepository.countByStatus_NameIn(
                 List.of(ACTIVE_STATUS)
         );
     }
 
+    // Total Projects Count
     public long getTotalProjectCount() {
         return projectRepository.count();
     }
 
+    // Count by status
     public long getProjectCountByStatus(String statusName) {
         return projectRepository.countByStatus_NameIn(List.of(statusName));
     }
 
+    // Recent Projects
     public List<Project> getRecentProjects() {
         return projectRepository.findTop6ByOrderByStartDateDescIdDesc();
     }

@@ -11,14 +11,18 @@ public class ProjectReportDocumentService {
 
     private final ProjectReportDocumentRepository repository;
 
+    // Constructor
     public ProjectReportDocumentService(ProjectReportDocumentRepository repository) {
+
         this.repository = repository;
     }
 
+    // Project Documents
     public List<ProjectReportDocument> getDocumentsForProject(Long projectId) {
         return repository.findByProjectId(projectId);
     }
 
+    // Save Documents
     public ProjectReportDocument save(ProjectReportDocument document) {
         return repository.save(document);
     }
@@ -28,6 +32,7 @@ public class ProjectReportDocumentService {
                 .orElseThrow(() -> new RuntimeException("Document not found"));
     }
 
+    // Delete
     public void delete(Long id) {
         repository.deleteById(id);
     }

@@ -64,7 +64,7 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
         return getListView();
     }
 
-    //List
+    // View
     @Override
     @GetMapping("/{id:\\d+}")
     public String view(@PathVariable Long id, Model model) {
@@ -82,7 +82,7 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
         return "costitems/form";
     }
 
-    // Create or Update
+    // Create or Update Save
     @PostMapping
     public String saveCostItem(@Valid @ModelAttribute("costItemForm") CostItemForm form,
                                BindingResult result,
@@ -124,6 +124,7 @@ public class CostItemController extends BaseController<CostItem, CostItemForm> {
         return "costitems/form";
     }
 
+    // Project Search
     @GetMapping("/projects/search")
     @ResponseBody
     public List<Map<String, Object>> searchProjects(@RequestParam String q) {

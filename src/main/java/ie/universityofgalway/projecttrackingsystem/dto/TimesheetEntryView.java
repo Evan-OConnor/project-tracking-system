@@ -13,6 +13,7 @@ public class TimesheetEntryView {
     private BigDecimal charge;
     private boolean billed;
 
+    // Constructor
     public TimesheetEntryView(Long id, String projectTitle, String employeeName,
                               String workDescription, LocalDate entryDate, BigDecimal hours, BigDecimal charge, boolean billed) {
         this.id = id;

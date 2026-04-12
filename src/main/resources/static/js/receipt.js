@@ -3,7 +3,6 @@ console.log("Receipts JS loaded");
 document.addEventListener("DOMContentLoaded", function () {
 
     // Receipt Table Search
-   // Receipt Table Search
    const tableSearch = document.getElementById("receiptSearch");
    const table = document.querySelector("table");
    const tableBody = document.querySelector("table tbody");
@@ -72,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            // Fetch Invoice
             fetch("/api/invoices/search?query=" + encodeURIComponent(query))
                 .then(res => res.json())
                 .then(data => {

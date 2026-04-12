@@ -8,6 +8,7 @@ public class InvoiceSearchDTO {
     private String projectTitle;
     private BigDecimal amount;
 
+    // Constructor
     public InvoiceSearchDTO(Long id, String invoiceNumber, String projectTitle, BigDecimal amount) {
         this.id = id;
         this.invoiceNumber = invoiceNumber;
@@ -16,7 +17,6 @@ public class InvoiceSearchDTO {
     }
 
     // Getters
-
     public Long getId() {return id;}
 
     public String getInvoiceNumber() {return invoiceNumber;}
@@ -26,8 +26,6 @@ public class InvoiceSearchDTO {
     public BigDecimal getAmount() {return amount;}
 
     // Setters
-
-
     public void setId(Long id) {this.id = id;}
 
     public void setInvoiceNumber(String invoiceNumber) {this.invoiceNumber = invoiceNumber;}

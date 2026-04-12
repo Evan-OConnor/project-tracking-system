@@ -35,7 +35,6 @@ public class ReceiptForm {
     private String paymentMethod;
 
     // Getters
-
     public Long getId() {
         return id;
     }

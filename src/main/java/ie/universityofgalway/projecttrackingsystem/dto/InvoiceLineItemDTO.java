@@ -14,6 +14,7 @@ public class InvoiceLineItemDTO {
     private final BigDecimal vatAmount;       // VAT value
     private final BigDecimal grossAmount;     // Net + VAT
 
+    // Constructor
     public InvoiceLineItemDTO(Long id,
                               String description,
                               BigDecimal quantity,
@@ -32,6 +33,8 @@ public class InvoiceLineItemDTO {
         this.vatAmount = vatAmount;
         this.grossAmount = grossAmount;
     }
+
+    // Getters
 
     public Long getId() {
         return id;

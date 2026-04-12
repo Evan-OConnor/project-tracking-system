@@ -11,8 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         tableRows.forEach(row => {
 
-            const numberCell = row.cells[0];   // Column 1 (Number)
-            const projectCell = row.cells[1];  // Column 2 (Project)
+            const numberCell = row.cells[0];   // Number
+            const projectCell = row.cells[1];  // Project
 
             if (!numberCell || !projectCell) return;
 

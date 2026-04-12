@@ -31,6 +31,7 @@ public class InvoiceDTO {
     private BigDecimal totalDiscount;
     private BigDecimal effectivePaid;
 
+    // Constructor
     public InvoiceDTO(Long invoiceId,
                       String invoiceNumber,
                       String projectName,

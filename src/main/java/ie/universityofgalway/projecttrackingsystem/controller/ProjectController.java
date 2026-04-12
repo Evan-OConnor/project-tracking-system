@@ -180,6 +180,7 @@ public class ProjectController  {
         }
     }
 
+    // Delete Project
     @PostMapping("/{id}/delete")
     public String deleteProject(@PathVariable Long id, RedirectAttributes ra) {
 
@@ -209,7 +210,7 @@ public class ProjectController  {
         return "projects/list";
     }
 
-    // Search
+    //Advanced Search
     @GetMapping("/search")
     public String searchProjects(@Valid @ModelAttribute("criteria") ProjectSearchCriteria criteria,
                                  BindingResult bindingResult,

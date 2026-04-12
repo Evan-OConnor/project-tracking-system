@@ -78,7 +78,7 @@ public class ProjectSpecification {
                 query.distinct(true);
             }
 
-            // Has expenses filter (CostItems)
+            // Has expenses or outlays filter (CostItems)
             if (criteria.getHasExpenses() != null) {
 
                 var costJoin = root.join("costItems", JoinType.LEFT);

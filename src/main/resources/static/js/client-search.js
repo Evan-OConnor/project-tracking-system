@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
+                // Fetch client
                 fetch(`/api/clients/search?query=${encodeURIComponent(query)}`)
                     .then(res => res.json())
                     .then(data => {
