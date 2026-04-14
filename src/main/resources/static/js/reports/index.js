@@ -13,6 +13,7 @@ const searchInput = document.getElementById('clientSearch');
             return;
         }
 
+        // Fetch Client
         fetch('/api/clients/search?query=' + encodeURIComponent(query))
             .then(response => response.json())
             .then(data => {

@@ -89,6 +89,7 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         return mapToForm(costItem);
     }
 
+    // Update Entity
     @Override
     public void updateEntity(CostItem entity, CostItemForm form) {
 
@@ -122,6 +123,7 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         entity.setType(type);
     }
 
+    // Map to form
     @Override
     public CostItemForm mapToForm(CostItem c) {
 
@@ -144,6 +146,7 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         return form;
     }
 
+    // Read Only List
     @Transactional(readOnly = true)
     public List<CostItemView> listViews() {
         return costItemRepository.findAllWithDetails()
@@ -152,6 +155,7 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
                 .toList();
     }
 
+    // Read only view
     @Transactional(readOnly = true)
     public CostItemView getViewById(Long id) {
         CostItem item = costItemRepository.findByIdWithDetails(id)
@@ -161,7 +165,6 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
     }
 
     // Internal Save
-
     private CostItem saveInternal(CostItemForm form, Long id) {
 
         CostItem costItem;
@@ -174,7 +177,7 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
             costItem = new CostItem();
         }
 
-        // Let ONE method handle all mapping + business logic
+        //  One method handles all mapping and business logic
         updateEntity(costItem, form);
 
         return costItemRepository.save(costItem);
@@ -195,7 +198,6 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
     }
 
     // Form Dropdowns
-
     public Map<String, Object> getDropdowns() {
 
         Map<String, Object> data = new HashMap<>();

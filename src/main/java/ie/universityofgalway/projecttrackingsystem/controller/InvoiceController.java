@@ -27,7 +27,7 @@ public class InvoiceController {
         this.documentService = documentService;
     }
 
-    // List Invoices
+    // List
     @GetMapping
     public String listInvoices(Model model) {
 
@@ -36,7 +36,7 @@ public class InvoiceController {
         return "invoice/list";
     }
 
-    // View Invoice
+    // View
     @GetMapping("/{id}")
     public String viewInvoice(@PathVariable Long id, Model model) {
 
@@ -72,6 +72,7 @@ public class InvoiceController {
         }
 
         Long id;
+
         try {
             id = Long.parseLong(projectId);
         } catch (NumberFormatException e) {

@@ -36,7 +36,6 @@ public class CreateUserForm {
     private String roleName = "STAFF";
 
     // Constructors
-
     public CreateUserForm() {
     }
 

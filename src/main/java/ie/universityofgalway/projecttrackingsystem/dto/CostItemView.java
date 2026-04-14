@@ -17,6 +17,7 @@ public class CostItemView {
     private String type;
     private boolean billed;
 
+    // Constructor
     public CostItemView(
             Long id,
             String projectTitle,

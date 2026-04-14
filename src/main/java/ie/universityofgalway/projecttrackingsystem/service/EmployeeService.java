@@ -17,12 +17,14 @@ public class EmployeeService {
     private final SystemUserRepository systemUserRepository;
     private final EmployeeRepository employeeRepository;
 
+    // Constructor
     public EmployeeService(SystemUserRepository systemUserRepository,
                            EmployeeRepository employeeRepository) {
         this.systemUserRepository = systemUserRepository;
         this.employeeRepository = employeeRepository;
     }
 
+    // Search Summary
     public List<EmployeeView> searchSummaries(String query) {
         return systemUserRepository
                 .searchActiveUsers(query)
@@ -35,6 +37,7 @@ public class EmployeeService {
                 .toList();
     }
 
+    // List summary
     public List<EmployeeView> listSummaries() {
         return systemUserRepository
                 .findActiveUsers()
@@ -47,6 +50,7 @@ public class EmployeeService {
                 .toList();
     }
 
+    // Current Logged In Employee
     public Employee getCurrentEmployee() {
 
         Authentication authentication =

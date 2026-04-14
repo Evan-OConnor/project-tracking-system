@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const tableRows = document.querySelectorAll("#employeesTable tbody tr");
 
             tableRows.forEach(row => {
-                 const idCell = row.cells[0];
-                const nameCell = row.cells[1]; // Name is second column (index 1)
+                 const idCell = row.cells[0]; // ID
+                const nameCell = row.cells[1]; // Name
 
                 if (!idCell || !nameCell) return;
 

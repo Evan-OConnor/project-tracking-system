@@ -92,7 +92,7 @@ public class ProjectReportController {
         return "redirect:/projects/" + projectId;
     }
 
-
+    // Exception Handler
     @ControllerAdvice
     public class FileUploadExceptionHandler {
 
@@ -102,6 +102,7 @@ public class ProjectReportController {
         }
     }
 
+    // Download File
     @GetMapping("/reports/download/{id}")
     @ResponseBody
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id) throws IOException {

@@ -24,7 +24,6 @@ public class ProjectSearchCriteria {
     private Boolean hasExpenses;
 
     // Getters
-
     public String getTitle() {
         return title;
     }

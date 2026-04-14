@@ -42,6 +42,7 @@ public class ProjectForm {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
+    // Constructor
     public ProjectForm() {
     }
 
@@ -118,7 +119,6 @@ public class ProjectForm {
         this.startDate = startDate;
     }
 
-    // Utility
     private String trim(String value) {
         if (value == null) return null;
 

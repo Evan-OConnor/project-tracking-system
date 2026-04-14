@@ -5,6 +5,7 @@ public class EmployeeView {
     private final String name;
     private final String role;
 
+    // Constructor
     public EmployeeView(Long id, String name, String role) {
         this.id = id;
         this.name = name;

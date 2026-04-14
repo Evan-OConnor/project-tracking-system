@@ -16,6 +16,7 @@ public class uiController {
     private final ContactService contactService;
     private final EmployeeService employeeService;
 
+    // Constructor
     public uiController(ProjectService projectService,
                         InvoiceService invoiceService,
                         ContactService contactService,
@@ -31,6 +32,7 @@ public class uiController {
         return "login";
     }
 
+    // Dashboard
     @GetMapping({"/", "/dashboard"})
     public String dashboard(Model model) {
 

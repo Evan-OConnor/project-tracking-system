@@ -1,4 +1,4 @@
-package ie.universityofgalway.projecttrackingsystem.service.finance;
+package ie.universityofgalway.projecttrackingsystem.service.financelogic;
 
 import ie.universityofgalway.projecttrackingsystem.domain.core.*;
 import ie.universityofgalway.projecttrackingsystem.repository.core.*;

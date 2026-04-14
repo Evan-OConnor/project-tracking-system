@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+        // Fetch Project
             fetch("/api/projects/search?query=" + encodeURIComponent(query))
                 .then(res => res.json())
                 .then(data => {

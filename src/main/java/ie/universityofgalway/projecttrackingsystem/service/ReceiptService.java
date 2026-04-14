@@ -25,6 +25,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
     private final InvoiceRepository invoiceRepository;
     private final InvoiceService invoiceService;
 
+    // Constructor
     public ReceiptService(ReceiptRepository receiptRepository,
                           InvoiceRepository invoiceRepository,
                           InvoiceService invoiceService) {
@@ -48,12 +49,13 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
                 .orElseThrow(() -> new IllegalStateException("Receipt not found"));
     }
 
+    // Form by Id
     @Override
     public ReceiptForm getFormById(Long id) {
         return mapToForm(getById(id));
     }
 
-    // Create
+    // Create Receipt
     @Override
     public Receipt create(ReceiptForm form) {
 
@@ -83,7 +85,7 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
                 form.getPaymentMethod()
         );
 
-        //  First save → generates ID
+        //  First save then generates ID
         receipt = receiptRepository.save(receipt);
 
         // Generate real receipt number
@@ -146,7 +148,6 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
     }
 
     // Update entity
-
     @Override
     public void updateEntity(Receipt receipt, ReceiptForm form) {
 
@@ -174,12 +175,13 @@ public class ReceiptService implements BaseService<Receipt, ReceiptForm> {
         return form;
     }
 
-    // Helpers
+    // Generate Receipt No.
     private String generateReceiptNumber(Long receiptId, LocalDate receiptDate) {
         return "RC-" + receiptDate.getYear() + "-" +
                 String.format("%06d", receiptId);
     }
 
+    // Validate Invoice Amounts
     private void validateAmounts(ReceiptForm form, Invoice invoice) {
 
         BigDecimal total = invoiceService.calculateInvoiceTotal(invoice);

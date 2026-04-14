@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-
+    // Live Search
     const searchInput = document.getElementById("searchInput");
     const tableRows = document.querySelectorAll("#entriesTable tbody tr");
 

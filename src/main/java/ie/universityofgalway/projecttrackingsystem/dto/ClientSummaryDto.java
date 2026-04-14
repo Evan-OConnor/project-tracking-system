@@ -7,6 +7,7 @@ public class ClientSummaryDto {
     private long totalInvoices;
     private long totalReceipts;
 
+    // Constructor
     public ClientSummaryDto(String clientName, long totalProjects, long totalInvoices, long totalReceipts) {
         this.clientName = clientName;
         this.totalProjects = totalProjects;
@@ -14,6 +15,7 @@ public class ClientSummaryDto {
         this.totalReceipts = totalReceipts;
     }
 
+    // Getters
     public String getClientName() { return clientName; }
     public long getTotalProjects() { return totalProjects; }
     public long getTotalInvoices() { return totalInvoices; }

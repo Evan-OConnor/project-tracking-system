@@ -25,7 +25,6 @@ public class ProjectDetailsView {
     private List<DocumentType> documentTypes;
 
     // Getters
-
     public Project getProject() { return project; }
 
     public List<CostItemView> getOutlays() { return outlays; }

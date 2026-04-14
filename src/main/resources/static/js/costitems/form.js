@@ -2,9 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("JS running");
 
-    // ---------------------------
     // Supplier toggle
-    // ---------------------------
     const typeSelect = document.getElementById("typeSelect");
     const supplierField = document.getElementById("supplierField");
     const supplierSelect = document.getElementById("supplierSelect");
@@ -30,9 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
         typeSelect.addEventListener("change", toggleSupplier);
     }
 
-    // ---------------------------
     // Project search
-    // ---------------------------
     const projectInput = document.getElementById("projectInput");
     const projectIdInput = document.getElementById("projectId");
     const suggestions = document.getElementById("suggestions");
@@ -52,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        // Fetch Project
         fetch("/api/projects/search?query=" + encodeURIComponent(query))
             .then(res => res.json())
             .then(data => {

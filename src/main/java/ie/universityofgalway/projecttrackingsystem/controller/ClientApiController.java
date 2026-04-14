@@ -18,6 +18,7 @@ public class ClientApiController {
         this.contactRepository = contactRepository;
     }
 
+    // Client Search
     @GetMapping("/search")
     public List<ClientDto> search(@RequestParam String query) {
         return contactRepository

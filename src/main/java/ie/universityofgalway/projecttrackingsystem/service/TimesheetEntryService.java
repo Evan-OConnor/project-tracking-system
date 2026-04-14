@@ -31,6 +31,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
     private final WorkDescriptionRepository workDescRepo;
     private final CurrentUserService currentUserService;
 
+    // Constructor
     public TimesheetEntryService(TimesheetEntryRepository repository,
                                  ProjectRepository projectRepo,
                                  EmployeeRepository employeeRepo,
@@ -44,7 +45,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         this.currentUserService = currentUserService;
     }
 
-    // List
+    // List Timesheets
     @Override
     public List<TimesheetEntryView> list() {
         return repository.findAll()
@@ -63,7 +64,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return toView(entry);
     }
 
-    // Get form
+    // Get Timesheet form
     @Override
     public TimesheetEntryForm getFormById(Long id) {
 
@@ -73,7 +74,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return toForm(entry);
     }
 
-    // Create
+    // Create Timesheet Entry
     @Override
     public TimesheetEntryView create(TimesheetEntryForm form) {
 
@@ -138,7 +139,7 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         repository.delete(entry);
     }
 
-    // Resolve "Other" Work Description
+    // "Other" Work Description
     private WorkDescription resolveWorkDescription(TimesheetEntryForm form) {
 
         WorkDescription selected = workDescRepo.findById(form.getWorkDescriptionId())
@@ -155,11 +156,13 @@ public class TimesheetEntryService implements BaseService<TimesheetEntryView, Ti
         return selected;
     }
 
+    // Update Entity
     @Override
     public void updateEntity(TimesheetEntryView entity, TimesheetEntryForm form) {
 
     }
 
+    // Map entity to form
     @Override
     public TimesheetEntryForm mapToForm(TimesheetEntryView entity) {
         return new TimesheetEntryForm();

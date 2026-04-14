@@ -29,6 +29,7 @@ public class ReportsController {
     private final EmployeeRepository employeeRepository;
     private final ReceiptRepository receiptRepository;
 
+    // Constructor
     public ReportsController(ProjectRepository projectRepository,
                              InvoiceRepository invoiceRepository,
                              TimesheetEntryRepository timesheetRepository,
@@ -51,7 +52,7 @@ public class ReportsController {
         return "reports/index";
     }
 
-    // CLIENT REPORT
+    // Client Report
     @GetMapping("/client")
     public String clientReport(@RequestParam(required = false) Long clientId, Model model) {
 
@@ -93,7 +94,7 @@ public class ReportsController {
         return "reports/client-report";
     }
 
-    // ALL CLIENTS SUMMARY (JPQL GROUP BY)
+    // All clients Summary
     @GetMapping("/summary")
     public String summaryReport(Model model) {
 
@@ -104,7 +105,7 @@ public class ReportsController {
         return "reports/summary-report";
     }
 
-    // OFFICE OUTSTANDING INVOICES
+    // Office Outstanding Invoices
     @GetMapping("/outstanding-invoices")
     public String outstandingInvoices(Model model) {
 
@@ -118,7 +119,7 @@ public class ReportsController {
         return "reports/outstanding-invoices";
     }
 
-    // EMPLOYEE TIMESHEET REPORT
+    // Employee timesheet report
     @GetMapping("/timesheets")
     public String timesheetReport(
             @RequestParam(required = false) Long employeeId,

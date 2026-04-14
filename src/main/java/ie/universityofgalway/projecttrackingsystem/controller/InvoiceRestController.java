@@ -40,6 +40,7 @@ public class InvoiceRestController {
         return data;
     }
 
+    // Invoice Search
     @GetMapping("/search")
     public List<InvoiceSearchDTO> search(@RequestParam String query) {
         return invoiceService.searchOutstandingInvoices(query);

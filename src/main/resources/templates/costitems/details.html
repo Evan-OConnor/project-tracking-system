@@ -42,7 +42,7 @@
             </p>
         </div>
 
-    </div> <!-- ✅ FIXED: closing div added -->
+    </div>
 
     <div class="card mt-4">
         <div class="card-body">
@@ -90,7 +90,7 @@
             <!-- Buttons -->
             <div class="d-flex gap-2 mt-3">
 
-                <!-- Edit (ONLY if NOT billed) -->
+                <!-- Edit ONLY if NOT billed -->
                 <a class="btn btn-outline-primary"
                    th:if="${!costItem.billed}"
                    th:href="@{/cost-items/{id}/edit(id=${costItem.id})}">

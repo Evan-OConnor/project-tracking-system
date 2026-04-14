@@ -34,6 +34,8 @@ public class InvoiceService {
     private final VatRateRepository vatRateRepo;
     private final ReceiptRepository receiptRepo;
 
+
+    // Constructor
     public InvoiceService(InvoiceRepository invoiceRepo,
                           TimesheetEntryRepository timesheetRepo,
                           CostItemRepository costItemRepo,
@@ -52,7 +54,6 @@ public class InvoiceService {
     }
 
     // Helper method to safely truncate description
-
     private String truncateDescription(String description) {
         if (description == null) {
             return "";
@@ -69,7 +70,6 @@ public class InvoiceService {
     }
 
     // Generate Invoice
-
     public InvoiceDTO generateInvoice(Long projectId) {
 
         Project project = projectRepo.findById(projectId)
@@ -140,7 +140,6 @@ public class InvoiceService {
     }
 
     // List all invoices
-
     public List<InvoiceDTO> getAllInvoices() {
 
         List<InvoiceDTO> result = new ArrayList<>();
@@ -153,7 +152,6 @@ public class InvoiceService {
     }
 
     // Get single invoice
-
     public InvoiceDTO getInvoiceById(Long id) {
 
         Invoice invoice = invoiceRepo.findByIdWithProject(id)
@@ -162,6 +160,7 @@ public class InvoiceService {
         return mapToDTO(invoice);
     }
 
+    // Calculate Total
     public BigDecimal calculateInvoiceTotal(Invoice invoice) {
         return mapToDTO(invoice).getGrossTotal();
     }
@@ -181,25 +180,24 @@ public class InvoiceService {
             );
         }
 
-        // 1. Delete invoice line items (they depend on invoice)
+        // Delete invoice line items (depends on invoice)
         lineItemRepo.deleteAll(lineItemRepo.findByInvoice(invoice));
 
-        // 2. Unlink timesheets - automatically becomes unbilled
+        // Unlink timesheets - automatically becomes unbilled
         for (TimesheetEntry entry : timesheetRepo.findByInvoice(invoice)) {
             entry.setInvoice(null);
         }
 
-        // 3. Unlink cost items - automatically becomes unbilled
+        // Unlink cost items - automatically becomes unbilled
         for (CostItem cost : costItemRepo.findByInvoice(invoice)) {
             cost.setInvoice(null);
         }
 
-        // 4. Delete the invoice itself
+        // Delete the invoice itself
         invoiceRepo.delete(invoice);
     }
 
     // Support Methods
-
     public List<Project> getAllProjects() {
         return projectRepo.findAll();
     }
@@ -214,10 +212,13 @@ public class InvoiceService {
         ).size();
     }
 
+    // Generate Invoice No.
     private String generateInvoiceNumber(Long invoiceId, LocalDate invoiceDate) {
         return "INV-" + invoiceDate.getYear() + "-" +
                 String.format("%06d", invoiceId);
     }
+
+    // Vat Rate
     private VatRate getDefaultVatRate() {
 
         return vatRateRepo.findByRatePercent(DEFAULT_VAT_RATE)
@@ -225,6 +226,7 @@ public class InvoiceService {
                         new RuntimeException("Default VAT rate not configured in database"));
     }
 
+    // Search Invoices
     public List<InvoiceDTO> searchInvoices(String query) {
 
         List<Invoice> invoices =
@@ -239,6 +241,7 @@ public class InvoiceService {
         return results;
     }
 
+    // Calculate Invoice Status
     private InvoiceStatus calculateStatus (
             BigDecimal total,
             BigDecimal effectivePaid    )
@@ -257,7 +260,7 @@ public class InvoiceService {
         }
     }
 
-    // ENTITY - DTO WITH VAT + PAYMENT CALCULATION
+    // Entity - VAT DTO and Payment Calculation
 
     private InvoiceDTO mapToDTO(Invoice invoice) {
 
@@ -307,8 +310,7 @@ public class InvoiceService {
         BigDecimal total = subtotal.add(vatAmount)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        //  PAYMENT CALCULATIONS
-
+        //  Payment Calculations
         BigDecimal totalPaid =
                 receiptRepo.sumPaymentsByInvoiceId(invoice.getId());
 
@@ -324,7 +326,7 @@ public class InvoiceService {
                 total.subtract(effectivePaid)
                         .max(BigDecimal.ZERO);
 
-        //  DETERMINE STATUS
+        //  Determine Status
         InvoiceStatus status =
                 invoice.getStatus() == InvoiceStatus.VOID
                         ? InvoiceStatus.VOID
@@ -361,6 +363,7 @@ public class InvoiceService {
         );
     }
 
+    // Search Outstanding Invoices
     public List<InvoiceSearchDTO> searchOutstandingInvoices(String query) {
         return invoiceRepo
                 .searchOutstandingInvoices(

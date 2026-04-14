@@ -17,6 +17,7 @@ public class ProjectView {
     private BigDecimal totalOutlays;
     private BigDecimal totalExpenses;
 
+    // Constructor
     public ProjectView(Long id, String title, String description, String status, String categoryName,
                        String clientName, LocalDate startDate, BigDecimal totalOutlays, BigDecimal totalExpenses) {
         this.id = id;

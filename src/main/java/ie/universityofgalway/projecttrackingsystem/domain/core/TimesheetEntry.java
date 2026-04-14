@@ -99,7 +99,7 @@ public class TimesheetEntry {
 
     // Business Rules
 
-    // Unbilled if no invoice linked //
+    // Unbilled if no invoice linked
     public boolean isUnbilled() {
         return this.invoice == null;
     }
@@ -112,6 +112,7 @@ public class TimesheetEntry {
         return hours.multiply(employee.getHourlyRate());
     }
 
+    // Combine to string
     @Override
     public String toString() {
         return "TimesheetEntry{" +
