@@ -57,7 +57,7 @@
 
         <!-- Supplier -->
         <div class="mb-3" id="supplierField">
-            <label class="form-label">Supplier (optional)</label>
+            <label class="form-label">Supplier</label>
             <select th:field="*{supplierContactId}" class="form-select" id="supplierSelect">
                 <option value="">-- None --</option>
                 <option th:each="c : ${contacts}" th:value="${c.id}" th:text="${c.name}"></option>
