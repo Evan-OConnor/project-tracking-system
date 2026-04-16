@@ -45,15 +45,6 @@
             </div>
         </div>
 
-        <!-- Employee -->
-        <div class="mb-3">
-            <label class="form-label">Employee</label>
-            <select th:field="*{employeeId}" class="form-select" required>
-                <option value="" disabled selected>Select an employee</option>
-                <option th:each="e : ${employees}" th:value="${e.id}" th:text="${e.name}"></option>
-            </select>
-            <div class="text-danger" th:if="${#fields.hasErrors('employeeId')}" th:errors="*{employeeId}"></div>
-        </div>
 
         <!-- Supplier -->
         <div class="mb-3" id="supplierField">

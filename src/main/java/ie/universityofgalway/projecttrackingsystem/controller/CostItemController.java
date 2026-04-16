@@ -1,6 +1,5 @@
 package ie.universityofgalway.projecttrackingsystem.controller;
 
-import ie.universityofgalway.projecttrackingsystem.domain.core.Project;
 import ie.universityofgalway.projecttrackingsystem.dto.CostItemForm;
 import ie.universityofgalway.projecttrackingsystem.domain.core.CostItem;
 import ie.universityofgalway.projecttrackingsystem.repository.core.ProjectRepository;

@@ -4,6 +4,7 @@ import ie.universityofgalway.projecttrackingsystem.domain.core.*;
 import ie.universityofgalway.projecttrackingsystem.dto.CostItemForm;
 import ie.universityofgalway.projecttrackingsystem.dto.CostItemView;
 import ie.universityofgalway.projecttrackingsystem.repository.core.*;
+import ie.universityofgalway.projecttrackingsystem.service.security.CurrentUserService;
 
 import org.springframework.stereotype.Service;
 
@@ -18,18 +19,18 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
 
     private final CostItemRepository costItemRepository;
     private final ProjectRepository projectRepository;
-    private final EmployeeRepository employeeRepository;
     private final ContactRepository contactRepository;
+    private final CurrentUserService currentUserService;
 
     public CostItemService(CostItemRepository costItemRepository,
                            ProjectRepository projectRepository,
-                           EmployeeRepository employeeRepository,
-                           ContactRepository contactRepository) {
+                           ContactRepository contactRepository,
+                           CurrentUserService currentUserService) {
 
         this.costItemRepository = costItemRepository;
         this.projectRepository = projectRepository;
-        this.employeeRepository = employeeRepository;
         this.contactRepository = contactRepository;
+        this.currentUserService = currentUserService;
     }
 
     // List
@@ -97,7 +98,13 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
                 .findById(form.getProjectId())
                 .orElseThrow(() -> new IllegalStateException("Project not found"));
 
-        Employee employee = employeeRepository.findById(form.getEmployeeId()).orElseThrow();
+        Employee employee = entity.getId() == null
+                ? currentUserService.getCurrentEmployee()
+                : entity.getEmployee();
+
+        if (employee == null) {
+            throw new IllegalStateException("Employee not found for current user");
+        }
 
         CostItem.Type type = form.getType();
 
@@ -203,7 +210,6 @@ public class CostItemService implements BaseService<CostItem, CostItemForm> {
         Map<String, Object> data = new HashMap<>();
 
         data.put("projects", projectRepository.findAll());
-        data.put("employees", employeeRepository.findAll());
         data.put("contacts", contactRepository.findAll());
         data.put("types", CostItem.Type.values());
 

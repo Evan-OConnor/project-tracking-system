@@ -5,11 +5,11 @@ import ie.universityofgalway.projecttrackingsystem.dto.CostItemForm;
 import ie.universityofgalway.projecttrackingsystem.repository.core.*;
 
 import ie.universityofgalway.projecttrackingsystem.service.CostItemService;
+import ie.universityofgalway.projecttrackingsystem.service.security.CurrentUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,9 +25,9 @@ class CostItemFinancialTest {
     @Mock
     private ProjectRepository projectRepo;
     @Mock
-    private EmployeeRepository employeeRepo;
-    @Mock
     private ContactRepository contactRepo;
+    @Mock
+    private CurrentUserService currentUserService;
 
     @BeforeEach
     void setup() {
@@ -54,10 +54,9 @@ class CostItemFinancialTest {
         CostItemForm form = new CostItemForm();
         form.setType(CostItem.Type.OUTLAY);
         form.setProjectId(1L);
-        form.setEmployeeId(1L);
 
         when(projectRepo.findById(any())).thenReturn(Optional.of(new Project()));
-        when(employeeRepo.findById(any())).thenReturn(Optional.of(mock(Employee.class)));
+        when(currentUserService.getCurrentEmployee()).thenReturn(mock(Employee.class));
 
         assertThrows(IllegalStateException.class,
                 () -> service.create(form));
