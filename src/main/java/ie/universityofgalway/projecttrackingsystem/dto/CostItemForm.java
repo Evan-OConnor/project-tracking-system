@@ -15,7 +15,6 @@ public class CostItemForm {
 
     private String projectName;
 
-    @NotNull(message = "Employee is required")
     private Long employeeId;
 
     private Long supplierContactId; // Optional
